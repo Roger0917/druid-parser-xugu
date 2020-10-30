@@ -1001,10 +1001,10 @@ public class XuguStatementParser extends SQLStatementParser{
             lexer.nextToken();
             block = null;
         } else {
-            block = this.parseBlock();
+            //block = this.parseBlock();
         }
 
-        stmt.setBlock(block);
+        //stmt.setBlock(block);
 
         if (lexer.identifierEquals(functionName.getSimpleName())) {
             lexer.nextToken();
@@ -1752,7 +1752,7 @@ public class XuguStatementParser extends SQLStatementParser{
             SQLParameter parameter = new SQLParameter();
             parameter.setParent(parent);
 
-            if (parent instanceof OracleCreateTypeStatement) {
+            if (parent instanceof XuguCreateTypeStatement) {
                 if (lexer.identifierEquals(FnvHash.Constants.MAP)) {
                     lexer.nextToken();
                     parameter.setMap(true);
@@ -2478,10 +2478,10 @@ public class XuguStatementParser extends SQLStatementParser{
             return stmt;
         }
 
-        if (lexer.token() == Token.IS) {
+        if (lexer.token() == Token.IS || lexer.token()==Token.AS) {
             lexer.nextToken();
         } else {
-            accept(Token.AS);
+            //accept(Token.AS);
         }
 
         if (lexer.identifierEquals("LANGUAGE")) {
@@ -2498,9 +2498,9 @@ public class XuguStatementParser extends SQLStatementParser{
             return stmt;
         }
 
-        SQLStatement block = this.parseBlock();
+        /*SQLStatement block = this.parseBlock();
 
-        stmt.setBlock(block);
+        stmt.setBlock(block);*/
 
         if (lexer.identifierEquals(procedureName.getSimpleName())) {
             lexer.nextToken();

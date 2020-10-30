@@ -47,21 +47,6 @@ public class XuguCreateTableParser extends SQLCreateTableParser {
         if (lexer.token() == Token.OF) {
             lexer.nextToken();
             stmt.setOf(this.exprParser.name());
-
-            /*if (lexer.identifierEquals("OIDINDEX")) {
-                lexer.nextToken();
-
-                OracleCreateTableStatement.OIDIndex oidIndex = new OracleCreateTableStatement.OIDIndex();
-
-                if (lexer.token() != Token.LPAREN) {
-                    oidIndex.setName(this.exprParser.name());
-                }
-                accept(Token.LPAREN);
-                this.getExprParser().parseSegmentAttributes(oidIndex);
-                accept(Token.RPAREN);
-
-                stmt.setOidIndex(oidIndex);
-            }*/
         }
 
         for (;;) {

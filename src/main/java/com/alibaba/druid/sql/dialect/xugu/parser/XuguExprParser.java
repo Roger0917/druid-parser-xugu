@@ -91,7 +91,7 @@ public class XuguExprParser extends SQLExprParser {
         }
     }
 
-    public  XuguExprParser(Lexer lexer){
+    public XuguExprParser(Lexer lexer){
         super(lexer);
         this.aggregateFunctions = AGGREGATE_FUNCTIONS;
         this.aggregateFunctionHashCodes = AGGREGATE_FUNCTIONS_CODES;
@@ -99,15 +99,15 @@ public class XuguExprParser extends SQLExprParser {
     }
 
     public XuguExprParser(String text){
-        this(new OracleLexer(text));
+        this(new XuguLexer(text));
         this.lexer.nextToken();
         this.dbType = DbType.xugu;
     }
 
     public XuguExprParser(String text, SQLParserFeature... features){
-        this(new OracleLexer(text, features));
+        this(new XuguLexer(text, features));
         this.lexer.nextToken();
-        this.dbType = DbType.oracle;
+        this.dbType = DbType.xugu;
     }
 
     @Override

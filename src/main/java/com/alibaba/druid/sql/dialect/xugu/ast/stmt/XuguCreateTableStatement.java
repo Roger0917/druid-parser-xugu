@@ -46,7 +46,6 @@ public class XuguCreateTableStatement extends SQLCreateTableStatement implements
         this.lobStorage = lobStorage;
     }
 
-    //private OracleStorageClause storage;
     private XuguLobStorageClause lobStorage;
 
     private Integer                   pctfree;
@@ -61,20 +60,15 @@ public class XuguCreateTableStatement extends SQLCreateTableStatement implements
 
     private Boolean                   cache;
 
-    //private OracleCreateTableStatement.DeferredSegmentCreation deferredSegmentCreation;
-
     private Boolean                   enableRowMovement;
 
     private List<SQLName> clusterColumns = new ArrayList<SQLName>();
     private SQLName                   cluster;
 
-    //private OracleCreateTableStatement.Organization organization;
 
     private SQLName                   of;
-    //private OracleCreateTableStatement.OIDIndex oidIndex;
     private boolean                   monitoring;
     private List<SQLName>             including = new ArrayList<SQLName>();
-    //private OracleXmlColumnProperties xmlTypeColumnProperties;
 
     @Override
     public void simplify() {
@@ -288,7 +282,6 @@ public class XuguCreateTableStatement extends SQLCreateTableStatement implements
             this.acceptChild(visitor, tableElementList);
             this.acceptChild(visitor, tablespace);
             this.acceptChild(visitor, select);
-            //this.acceptChild(visitor, storage);
             this.acceptChild(visitor, partitioning);
         }
         visitor.endVisit(this);
