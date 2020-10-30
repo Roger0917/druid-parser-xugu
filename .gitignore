@@ -7,7 +7,6 @@
 /druid-admin
 /druid-spring-boot-starter
 /derby.log
-/src/test
 # IntelliJ Idea
 .idea/
 out/
