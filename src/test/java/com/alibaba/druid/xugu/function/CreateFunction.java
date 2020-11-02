@@ -4,7 +4,6 @@ import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.SQLParameter;
 import com.alibaba.druid.sql.ast.SQLStatement;
 import com.alibaba.druid.sql.ast.statement.SQLCreateFunctionStatement;
-import com.alibaba.druid.sql.ast.statement.SQLCreateProcedureStatement;
 import com.alibaba.druid.sql.dialect.xugu.parser.XuguStatementParser;
 import com.alibaba.druid.xugu.Base;
 import junit.framework.TestCase;
@@ -23,12 +22,12 @@ public class CreateFunction extends TestCase {
     public void test(){
         List<SQLCreateFunctionStatement> createFunctionStatementList = new ArrayList<>();
         StringBuilder builder = new StringBuilder();
-        String sql = "create or replace function xugu_test_fun(id in int,name in varchar,address out varchar)return int as\n" +
-                "begin\n" +
+        String sql = /*"create or replace*/"function xugu_test_fun(id in int,name in varchar,address out varchar) return int as";
+                /*"begin\n" +
                 "DBMS_OUTPUT.PUT_LINE(id);\n" +
                 "DBMS_OUTPUT.PUT_LINE(name);\n" +
                 "return 5;\n" +
-                "end;\n";
+                "end;\n";*/
         //String sql2 = "create or replace procedure xugu_test_pro(id in int,name in varchar,address out varchar)";
         String[] arr = sql.split("\\s+");
         for(String str:arr){

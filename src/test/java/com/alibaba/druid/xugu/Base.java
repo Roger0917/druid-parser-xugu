@@ -47,13 +47,13 @@ public class Base {
         System.out.println(text);
     }
 
-    public static void oraclePrint(List<SQLStatement> stmtList) {
+    public static String oraclePrint(List<SQLStatement> stmtList) {
         String text = oracleOutput(stmtList);
         String outputProperty = System.getProperty("druid.output");
         if ("false".equals(outputProperty)) {
-            return;
+            return "error print statementList";
         }
-        //System.out.println(text);
+        return text;
     }
 
     public static List<String> judgmentDdlOrDmlOrDcl(List<SQLStatement> list){

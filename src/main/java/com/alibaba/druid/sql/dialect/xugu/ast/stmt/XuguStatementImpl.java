@@ -27,4 +27,8 @@ public abstract class XuguStatementImpl extends SQLStatementImpl implements Xugu
     @Override
     public abstract void accept0(XuguASTVisitor visitor);
 
+    public String toString() {
+        return SQLUtils.toXuguString(this);
+    }
+
 }

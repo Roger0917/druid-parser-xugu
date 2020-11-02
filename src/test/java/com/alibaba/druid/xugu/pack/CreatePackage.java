@@ -25,10 +25,10 @@ public class CreatePackage extends TestCase {
         List<XuguCreatePackageStatement> createPackageStatementList = new ArrayList<>();
         StringBuilder builder = new StringBuilder();
         String sql = "create or replace package xugu_test_pack is\n" +
-                " procedure pack_proc1(id int,name varchar);\n" +
-                " function pack_fun1(id int,name varchar) return int;\n" +
-                " procedure pack_proc2(x int,y int);\n" +
-                " function pack_fun2(x int,y int) return int;\n" +
+                " procedure pack_proc1(id number,name varchar);\n" +
+                " function pack_fun1(id number,name varchar) return number;\n" +
+                " procedure pack_proc2(x number,y number);\n" +
+                " function pack_fun2(x number,y number) return number;\n" +
                 "end;";
 
         XuguStatementParser parser = new XuguStatementParser(sql);

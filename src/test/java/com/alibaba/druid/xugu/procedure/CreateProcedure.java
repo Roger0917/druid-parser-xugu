@@ -25,22 +25,22 @@ public class CreateProcedure extends TestCase {
     public void test(){
         List<SQLCreateProcedureStatement> createProcedureStatementList = new ArrayList<>();
         StringBuilder builder = new StringBuilder();
-        String sql = "create or replace procedure xugu_test_pro(id in int,name in varchar,address out varchar)as\n" +
-                "begin\n" +
+        String sql = "create or replace procedure xugu_test_pro(id in int,name in varchar,address out varchar)as\n";
+              /*  "begin\n" +
                 "create table xugu_parser_table(id int,name varchar);\n" +
                 "alter table xugu_parser_table add constraint con1 primary key(id);\n" +
                 "insert into xugu_parser_table(id,name)values(1,'aaa');\n" +
                 "update xugu_parser_table set name='bbb' where id=1;\n" +
                 "delete from xugu_parser_table where id=1;\n" +
-                "end;" +
-                "create or replace procedure xugu_test_pro(id in int,name in varchar,address out varchar)as\\n\" +\n" +
+                "end;" ;*/
+              /*  "create or replace procedure xugu_test_pro(id in int,name in varchar,address out varchar)as\\n\" +\n" +
                 "                \"begin\\n\" +\n" +
                 "                \"create table xugu_parser_table(id int,name varchar);\\n\" +\n" +
                 "                \"alter table xugu_parser_table add constraint con1 primary key(id);\\n\" +\n" +
                 "                \"insert into xugu_parser_table(id,name)values(1,'aaa');\\n\" +\n" +
                 "                \"update xugu_parser_table set name='bbb' where id=1;\\n\" +\n" +
                 "                \"delete from xugu_parser_table where id=1;\\n\" +\n" +
-                "                \"end;";
+                "                \"end;";*/
         //String sql2 = "create or replace procedure xugu_test_pro(id in int,name in varchar,address out varchar)";
         builder.append(sql.substring(0,sql.indexOf(")")+1));
         XuguStatementParser parser = new XuguStatementParser(builder.toString());
@@ -66,9 +66,9 @@ public class CreateProcedure extends TestCase {
                 }else if(type!=null&&expr==null){
                     System.out.println("参数名: "+parameter.getName().getSimpleName()+" "+"参数类型: "+parameter.getParamType()+" "+"数据类型: "+parameter.getDataType().getName()+" 参数下标: "+i);
                 }else if(type==null&expr!=null){
-                    System.out.println("参数名: "+parameter.getName().getSimpleName()+" "+"数据类型: "+parameter.getDataType().getName()+"参数默认值: "+parameter.getDefaultValue()+" 参数下标: "+i);
+                    System.out.println("参数名: "+parameter.getName().getSimpleName()+" "+"参数类型: In"+" "+"数据类型: "+parameter.getDataType().getName()+"参数默认值: "+parameter.getDefaultValue()+" 参数下标: "+i);
                 }else{
-                    System.out.println("参数名: "+parameter.getName().getSimpleName()+" "+"数据类型: "+parameter.getDataType().getName()+" 参数下标: "+i);
+                    System.out.println("参数名: "+parameter.getName().getSimpleName()+" "+"参数类型: In"+" "+"数据类型: "+parameter.getDataType().getName()+" 参数下标: "+i);
                 }
             }
         }

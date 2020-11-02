@@ -1001,7 +1001,7 @@ public class XuguStatementParser extends SQLStatementParser{
             lexer.nextToken();
             block = null;
         } else {
-            //block = this.parseBlock();
+           // block = this.parseBlock();
         }
 
         //stmt.setBlock(block);

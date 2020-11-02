@@ -72,7 +72,14 @@ public class OracleCreatePackage extends TestCase {
                         "    end;\n" +
                         "end;";*/
 
-        OracleStatementParser parser = new OracleStatementParser(sql);
+        String sql2 = "create or replace package xugu_test_pack is\n" +
+                //" procedure pack_proc1(id int,name varchar);\n" +
+                " function pack_fun1(id int,name varchar) return numeric;\n" +
+               // " procedure pack_proc2(x number,y number);\n" +
+                " function pack_fun2(x number,y number) return datetime;\n" +
+                "end;";
+
+        OracleStatementParser parser = new OracleStatementParser(sql2);
         List<SQLStatement> statementList = parser.parseStatementList();
         Base.oraclePrint(statementList);
 
