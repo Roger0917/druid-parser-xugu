@@ -283,6 +283,12 @@
 					<systemPath>${java.home}/../lib/tools.jar</systemPath>
 					<optional>true</optional>
 				</dependency>
+				<dependency>
+					<groupId>org.projectlombok</groupId>
+					<artifactId>lombok</artifactId>
+					<version>1.18.12</version>
+					<scope>provided</scope>
+				</dependency>
 			</dependencies>
 		</profile>
 		<profile>
@@ -709,6 +715,14 @@
             <scope>system</scope>
             <systemPath>${project.basedir}/lib/openjdk-1.8-jconsole.jar</systemPath>
         </dependency>
+
+		<dependency>
+			<groupId>com.sun</groupId>
+			<artifactId>jconsole</artifactId>
+			<version>1.8</version>
+			<scope>system</scope>
+			<systemPath>${project.basedir}/lib/cloudjdbc-11.0.8.jar</systemPath>
+		</dependency>
 
 		<dependency>
 			<groupId>org.apache.curator</groupId>

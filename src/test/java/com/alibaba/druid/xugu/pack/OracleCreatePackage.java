@@ -38,11 +38,11 @@ public class OracleCreatePackage extends TestCase {
                 "END;\n" +
                 "END;"
                 +"\n"*/
-                "create or replace package emp_pkg is\n" +
-                        " procedure emp_update_ename(v_empno varchar2,v_ename varchar2);\n" +
-                        " function emp_get_sal(v_empno varchar2) return number;\n" +
-                        " end;\n";
-                       /* "create or replace package body emp_pkg\n" +
+              /*  "create or replace package emp_pkg is\n" +
+                " procedure emp_update_ename(v_empno varchar2,v_ename varchar2);\n" +
+                " function emp_get_sal(v_empno varchar2) return number;\n" +
+                " end;\n"+*/
+                /*"create or replace package body emp_pkg\n" +
                         "is\n" +
                         "    procedure emp_update_ename\n" +
                         "    (\n" +
@@ -71,17 +71,28 @@ public class OracleCreatePackage extends TestCase {
                         "    return vsal;\n" +
                         "    end;\n" +
                         "end;";*/
+                "create or replace package body xugu_test_pack is\n" +
+                        "procedure pack_proc1(id int,name varchar)is\n" +
+                        "begin\n" +
+                        "DBMS_OUTPUT.PUT_LINE(to_char(id)||name);\n" +
+                        "end;\n" +
+                        "function pack_fun1(id int,name varchar) return int is\n" +
+                        "begin\n" +
+                        "return id;\n" +
+                        "end;\n" +
+                        "procedure pack_proc2(x int,y int)is\n" +
+                        "begin\n" +
+                        "DBMS_OUTPUT.PUT_LINE(x+y);\n" +
+                        "end;\n" +
+                        "function pack_fun2(x int,y int) return int is\n" +
+                        "begin\n" +
+                        "return x+y;\n" +
+                        "end;\n" +
+                        "end;";
 
-        String sql2 = "create or replace package xugu_test_pack is\n" +
-                //" procedure pack_proc1(id int,name varchar);\n" +
-                " function pack_fun1(id int,name varchar) return numeric;\n" +
-               // " procedure pack_proc2(x number,y number);\n" +
-                " function pack_fun2(x number,y number) return datetime;\n" +
-                "end;";
-
-        OracleStatementParser parser = new OracleStatementParser(sql2);
+        OracleStatementParser parser = new OracleStatementParser(sql);
         List<SQLStatement> statementList = parser.parseStatementList();
-        Base.oraclePrint(statementList);
+        Base.print(statementList);
 
         System.out.println("package statement size: "+statementList.size());
         for (SQLStatement statement : statementList) {

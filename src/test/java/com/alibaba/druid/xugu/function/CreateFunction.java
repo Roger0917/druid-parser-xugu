@@ -22,7 +22,7 @@ public class CreateFunction extends TestCase {
     public void test(){
         List<SQLCreateFunctionStatement> createFunctionStatementList = new ArrayList<>();
         StringBuilder builder = new StringBuilder();
-        String sql = /*"create or replace*/"function xugu_test_fun(id in int,name in varchar,address out varchar) return int as";
+        String sql = /*"create or replace*/"function xugu_test_fun(id in int,name in varchar,address out varchar) return int";
                 /*"begin\n" +
                 "DBMS_OUTPUT.PUT_LINE(id);\n" +
                 "DBMS_OUTPUT.PUT_LINE(name);\n" +
@@ -30,11 +30,16 @@ public class CreateFunction extends TestCase {
                 "end;\n";*/
         //String sql2 = "create or replace procedure xugu_test_pro(id in int,name in varchar,address out varchar)";
         String[] arr = sql.split("\\s+");
-        for(String str:arr){
-            if("as".equals(str)){
-                builder.append(sql.substring(0,sql.indexOf(str)));
+        if(sql.contains("as")||sql.contains("is")||sql.contains("AS")||sql.contains("IS")){
+            for(String str:arr){
+                if("as".equalsIgnoreCase(str)||"is".equalsIgnoreCase(str)){
+                    builder.append(sql.substring(0,sql.indexOf(str)));
+                }
             }
+        }else{
+            builder.append(sql);
         }
+
         XuguStatementParser parser = new XuguStatementParser(builder.toString());
         List<SQLStatement> statementList = parser.parseStatementList();
         Base.print(statementList);

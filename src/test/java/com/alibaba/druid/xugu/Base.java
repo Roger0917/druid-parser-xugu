@@ -38,13 +38,13 @@ public class Base {
         return out.toString();
     }
 
-    public static void print(List<SQLStatement> stmtList) {
+    public static String print(List<SQLStatement> stmtList) {
         String text = output(stmtList);
         String outputProperty = System.getProperty("druid.output");
         if ("false".equals(outputProperty)) {
-            return;
+            return "error print statementList";
         }
-        System.out.println(text);
+        return text;
     }
 
     public static String oraclePrint(List<SQLStatement> stmtList) {

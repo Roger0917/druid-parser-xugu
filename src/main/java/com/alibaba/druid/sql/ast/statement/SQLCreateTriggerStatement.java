@@ -38,6 +38,8 @@ public class SQLCreateTriggerStatement extends SQLStatementImpl implements SQLCr
 
     private boolean                  forEachRow     = false;
 
+    private boolean forStatement = false;
+
     private List<SQLName>            updateOfColumns = new ArrayList<SQLName>();
 
     private SQLExpr                  when;
@@ -194,6 +196,14 @@ public class SQLCreateTriggerStatement extends SQLStatementImpl implements SQLCr
             x.setParent(this);
         }
         this.definer = x;
+    }
+
+    public boolean isForStatement() {
+        return forStatement;
+    }
+
+    public void setForStatement(boolean forStatement) {
+        this.forStatement = forStatement;
     }
 
     public static enum TriggerType {

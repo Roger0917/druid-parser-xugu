@@ -25,11 +25,11 @@ public class CreatePackage extends TestCase {
         List<XuguCreatePackageStatement> createPackageStatementList = new ArrayList<>();
         StringBuilder builder = new StringBuilder();
         String sql = "create or replace package xugu_test_pack is\n" +
-                " procedure pack_proc1(id number,name varchar);\n" +
-                " function pack_fun1(id number,name varchar) return number;\n" +
-                " procedure pack_proc2(x number,y number);\n" +
-                " function pack_fun2(x number,y number) return number;\n" +
-                "end;";
+                "                procedure pack_proc1(id int,name varchar);\n" +
+                "                function pack_fun1(id int,name varchar) return int;\n" +
+                "                procedure pack_proc2(x int,y int);\n" +
+                "                function pack_fun2(x int,y int) return int;\n" +
+                "                end;";
 
         XuguStatementParser parser = new XuguStatementParser(sql);
         List<SQLStatement> statementList = parser.parseStatementList();
@@ -44,7 +44,7 @@ public class CreatePackage extends TestCase {
         for(XuguCreatePackageStatement xuguCreatePackageStatement:createPackageStatementList){
             System.out.println("包名 "+xuguCreatePackageStatement.getName());
             if(!xuguCreatePackageStatement.isBody()){
-                System.out.println("包头: "+xuguCreatePackageStatement.getStatements());
+                System.out.println("包头: "+xuguCreatePackageStatement.getStatements().get(1));
             }
             else{
                 System.out.println("包体: "+xuguCreatePackageStatement.getStatements());

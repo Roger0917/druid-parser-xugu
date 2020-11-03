@@ -3825,9 +3825,16 @@ public class SQLStatementParser extends SQLParser {
 
         if (lexer.token == Token.FOR) {
             lexer.nextToken();
-            acceptIdentifier("EACH");
-            accept(Token.ROW);
-            stmt.setForEachRow(true);
+            try{
+                acceptIdentifier("EACH");
+                accept(Token.ROW);
+                stmt.setForEachRow(true);
+            }catch (ParserException e){
+                acceptIdentifier("STATEMENT");
+                //accept(Token.ROW);
+                stmt.setForStatement(true);
+            }
+
         }
 
         if (lexer.token == Token.WHEN) {

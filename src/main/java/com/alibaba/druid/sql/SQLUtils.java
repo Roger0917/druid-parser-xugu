@@ -44,6 +44,8 @@ import com.alibaba.druid.sql.dialect.postgresql.visitor.PGOutputVisitor;
 import com.alibaba.druid.sql.dialect.postgresql.visitor.PGSchemaStatVisitor;
 import com.alibaba.druid.sql.dialect.sqlserver.visitor.SQLServerOutputVisitor;
 import com.alibaba.druid.sql.dialect.sqlserver.visitor.SQLServerSchemaStatVisitor;
+import com.alibaba.druid.sql.dialect.xugu.visitor.XuguOutputVisitor;
+import com.alibaba.druid.sql.dialect.xugu.visitor.XuguSchemaStatVisitor;
 import com.alibaba.druid.sql.parser.*;
 import com.alibaba.druid.sql.repository.SchemaRepository;
 import com.alibaba.druid.sql.visitor.SQLASTOutputVisitor;
@@ -502,6 +504,12 @@ public class SQLUtils {
                 return new AntsparkOutputVisitor(out);
             case clickhouse:
                 return new ClickhouseOutputVisitor(out);
+            case xugu:
+                if (statementList == null || statementList.size() == 1) {
+                    return new XuguOutputVisitor(out, false);
+                } else {
+                    return new XuguOutputVisitor(out, true);
+                }
             default:
                 return new SQLASTOutputVisitor(out, dbType);
         }
@@ -532,6 +540,8 @@ public class SQLUtils {
         switch (dbType) {
             case oracle:
                 return new OracleSchemaStatVisitor(repository);
+            case xugu:
+                return new XuguSchemaStatVisitor();
             case mysql:
             case mariadb:
             case elastic_search:

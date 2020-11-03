@@ -45,7 +45,7 @@ public class CreateTrigger extends TestCase {
                 "END;";
         XuguStatementParser parser = new XuguStatementParser(sql);
         List<SQLStatement> statementList = parser.parseStatementList();
-        Base.print(statementList);
+        String text = Base.print(statementList);
 
         System.out.println("Trigger statement size: "+statementList.size());
         for (SQLStatement statement : statementList) {
@@ -72,6 +72,7 @@ public class CreateTrigger extends TestCase {
             System.out.println("更新的列: "+sqlCreateTriggerStatement.getUpdateOfColumns());
             System.out.println("条件: " +sqlCreateTriggerStatement.getWhen());
             System.out.println("触发器body: "+sqlCreateTriggerStatement.getBody());
+            //Oracle未实现 sqlCreateTriggerStatement.setDefiner();
             System.out.println("定义: "+sqlCreateTriggerStatement.getDefiner());
         }
     }
