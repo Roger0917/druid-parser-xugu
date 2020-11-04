@@ -38,6 +38,8 @@ import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleForStatement;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleSelectPivot;
 import com.alibaba.druid.sql.dialect.oracle.parser.OracleFunctionDataType;
 import com.alibaba.druid.sql.dialect.oracle.parser.OracleProcedureDataType;
+import com.alibaba.druid.sql.dialect.xugu.parser.XuguFunctionDataType;
+import com.alibaba.druid.sql.dialect.xugu.parser.XuguProdecureDataType;
 import com.alibaba.druid.util.FnvHash;
 
 import java.io.IOException;
@@ -6804,6 +6806,51 @@ public class SQLASTOutputVisitor extends SQLASTVisitorAdapter implements Paramet
 
                 if (dataType instanceof OracleProcedureDataType) {
                     OracleProcedureDataType procedureDataType = (OracleProcedureDataType) dataType;
+                    visit(procedureDataType);
+                    return false;
+                }
+
+                String dataTypeName = dataType.getName();
+                boolean printType = (dataTypeName.startsWith("TABLE OF") && x.getDefaultValue() == null)
+                        || dataTypeName.equalsIgnoreCase("REF CURSOR")
+                        || dataTypeName.startsWith("VARRAY(");
+                if (printType) {
+                    print0(ucase ? "TYPE " : "type ");
+                }
+
+                name.accept(this);
+                if (x.getParamType() == SQLParameter.ParameterType.IN) {
+                    print0(ucase ? " IN " : " in ");
+                } else if (x.getParamType() == SQLParameter.ParameterType.OUT) {
+                    print0(ucase ? " OUT " : " out ");
+                } else if (x.getParamType() == SQLParameter.ParameterType.INOUT) {
+                    print0(ucase ? " IN OUT " : " in out ");
+                } else {
+                    print(' ');
+                }
+
+                if (x.isNoCopy()) {
+                    print0(ucase ? "NOCOPY " : "nocopy ");
+                }
+
+                if (x.isConstant()) {
+                    print0(ucase ? "CONSTANT " : "constant ");
+                }
+
+                if (printType) {
+                    print0(ucase ? "IS " : "is ");
+                }
+            }else if (DbType.xugu == dbType
+                    || dataType instanceof XuguFunctionDataType
+                    || dataType instanceof XuguProdecureDataType) {
+                if (dataType instanceof XuguFunctionDataType) {
+                    XuguFunctionDataType functionDataType = (XuguFunctionDataType) dataType;
+                    visit(functionDataType);
+                    return false;
+                }
+
+                if (dataType instanceof XuguProdecureDataType) {
+                    XuguProdecureDataType procedureDataType = (XuguProdecureDataType) dataType;
                     visit(procedureDataType);
                     return false;
                 }

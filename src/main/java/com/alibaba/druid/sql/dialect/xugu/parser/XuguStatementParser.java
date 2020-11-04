@@ -4,7 +4,6 @@ import com.alibaba.druid.DbType;
 import com.alibaba.druid.sql.ast.*;
 import com.alibaba.druid.sql.ast.expr.*;
 import com.alibaba.druid.sql.ast.statement.*;
-import com.alibaba.druid.sql.dialect.mysql.parser.MySqlExprParser;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.*;
 import com.alibaba.druid.sql.dialect.oracle.parser.*;
 import com.alibaba.druid.sql.dialect.xugu.ast.clause.XuguReturningClause;
@@ -1785,7 +1784,8 @@ public class XuguStatementParser extends SQLStatementParser{
                 SQLSelect select = this.createSQLSelectParser().select();
                 parameter.setDefaultValue(new SQLQueryExpr(select));
 
-            } else if (lexer.token() == Token.PROCEDURE
+            } else if (
+                    lexer.token() == Token.PROCEDURE
                     || lexer.token() == Token.END
                     || lexer.token() == Token.TABLE) {
                 break;
@@ -1919,7 +1919,7 @@ public class XuguStatementParser extends SQLStatementParser{
                     if (name.nameHashCode64() == FnvHash.Constants.MEMBER) {
                         parameter.setMember(true);
                     }
-                    OracleFunctionDataType functionDataType = new OracleFunctionDataType();
+                    XuguFunctionDataType functionDataType = new XuguFunctionDataType();
                     functionDataType.setStatic(name.nameHashCode64() == FnvHash.Constants.STATIC);
                     lexer.nextToken();
                     functionDataType.setName(lexer.stringVal());
@@ -1945,7 +1945,7 @@ public class XuguStatementParser extends SQLStatementParser{
                     if (name.nameHashCode64() == FnvHash.Constants.MEMBER) {
                         parameter.setMember(true);
                     }
-                    OracleProcedureDataType procedureDataType = new OracleProcedureDataType();
+                    XuguProdecureDataType procedureDataType = new XuguProdecureDataType();
                     procedureDataType.setStatic(name.nameHashCode64() == FnvHash.Constants.STATIC);
                     lexer.nextToken();
                     procedureDataType.setName(lexer.stringVal());
@@ -2716,12 +2716,14 @@ public class XuguStatementParser extends SQLStatementParser{
 
         if (lexer.identifierEquals(FnvHash.Constants.STATIC)) {
             this.parserParameters(stmt.getParameters(), stmt);
-        } else if (lexer.token() == Token.TABLE) {
+        }
+        else if (lexer.token() == Token.TABLE) {
             lexer.nextToken();
             accept(Token.OF);
             SQLDataType dataType = this.exprParser.parseDataType();
             stmt.setTableOf(dataType);
-        } else if (lexer.identifierEquals(FnvHash.Constants.VARRAY)) {
+        }
+        else if (lexer.identifierEquals(FnvHash.Constants.VARRAY)) {
             lexer.nextToken();
             accept(Token.LPAREN);
             SQLExpr sizeLimit = this.exprParser.primary();
@@ -2731,7 +2733,8 @@ public class XuguStatementParser extends SQLStatementParser{
             accept(Token.OF);
             SQLDataType dataType = this.exprParser.parseDataType();
             stmt.setVarrayDataType(dataType);
-        } else if (lexer.identifierEquals(FnvHash.Constants.WRAPPED)) {
+        }
+        else if (lexer.identifierEquals(FnvHash.Constants.WRAPPED)) {
             int pos = lexer.text.indexOf(';', lexer.pos());
             if (pos != -1) {
                 String wrappedString = lexer.subString(lexer.pos(), pos - lexer.pos());
@@ -2739,13 +2742,16 @@ public class XuguStatementParser extends SQLStatementParser{
                 lexer.reset(pos, ';', Token.LITERAL_CHARS);
                 lexer.nextToken();
             }
-        } else {
+        }
+        else {
             if (lexer.token() == Token.LPAREN) {
+                System.out.println("进入1断点");
                 lexer.nextToken();
                 this.parserParameters(stmt.getParameters(), stmt);
                 stmt.setParen(true);
                 accept(Token.RPAREN);
             } else {
+                System.out.println("进入2断点");
                 this.parserParameters(stmt.getParameters(), stmt);
                 if (lexer.token() == Token.END) {
                     lexer.nextToken();
