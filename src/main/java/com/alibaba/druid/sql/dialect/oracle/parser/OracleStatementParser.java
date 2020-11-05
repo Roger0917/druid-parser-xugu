@@ -2086,10 +2086,11 @@ public class OracleStatementParser extends SQLStatementParser {
 
             parameter.setName(name);
             parameter.setDataType(dataType);
-
             parameters.add(parameter);
             Token token = lexer.token();
             if (token == Token.COMMA || token == Token.SEMI || token == Token.IS) {
+               // System.out.println("parameter name: "+parameter.getName());
+                //String str = parameter.toString();
                 lexer.nextToken();
             }
 

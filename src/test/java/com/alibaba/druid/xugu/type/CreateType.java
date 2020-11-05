@@ -26,8 +26,8 @@ public class CreateType extends TestCase {
                 "     birthdate DATE,address VARCHAR,\n" +
                 "     MEMBER PROCEDURE change_address(new_addr VARCHAR),\n" +
                 "     MEMBER FUNCTION get_info(x int) RETURN VARCHAR\n" +
-                ");"+
-                "CREATE OR REPLACE TYPE BODY person_typ2 IS\n" +
+                ");";
+               /* "CREATE OR REPLACE TYPE BODY person_typ2 IS\n" +
                 "       MEMBER PROCEDURE change_address(new_addr VARCHAR)\n" +
                 "       IS\n" +
                 "       BEGIN\n" +
@@ -40,7 +40,7 @@ public class CreateType extends TestCase {
                 "           v_info := '姓名：'||name||',出生日期：'||birthdate;\n" +
                 "           RETURN v_info;\n" +
                 "      END;\n" +
-                "END;";
+                "END;";*/
 
         XuguStatementParser parser = new XuguStatementParser(sql);
         List<SQLStatement> statementList = parser.parseStatementList();

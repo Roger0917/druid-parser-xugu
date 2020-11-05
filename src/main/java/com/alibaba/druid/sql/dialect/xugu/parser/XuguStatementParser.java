@@ -1975,10 +1975,10 @@ public class XuguStatementParser extends SQLStatementParser{
 
             parameter.setName(name);
             parameter.setDataType(dataType);
-
             parameters.add(parameter);
             Token token = lexer.token();
             if (token == Token.COMMA || token == Token.SEMI || token == Token.IS) {
+                String str = parameter.toString();
                 lexer.nextToken();
             }
 

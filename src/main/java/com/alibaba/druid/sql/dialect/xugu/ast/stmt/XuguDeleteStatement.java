@@ -45,12 +45,12 @@ public class XuguDeleteStatement extends SQLDeleteStatement {
         accept0((XuguASTVisitor) visitor);
     }
 
-    protected void accept0(OracleASTVisitor visitor) {
+    protected void accept0(XuguASTVisitor visitor) {
         if (visitor.visit(this)) {
             acceptChild(visitor, this.hints);
             acceptChild(visitor, this.tableSource);
             acceptChild(visitor, this.getWhere());
-            acceptChild(visitor, returning);
+            //acceptChild(visitor, returning);
         }
 
         visitor.endVisit(this);

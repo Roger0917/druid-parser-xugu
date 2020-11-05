@@ -48,7 +48,7 @@ public class XuguUpdateParser extends SQLStatementParser {
 
         parseWhere(update);
 
-        parseReturn(update);
+        //parseReturn(update);
 
         //parseErrorLoging(update);
 

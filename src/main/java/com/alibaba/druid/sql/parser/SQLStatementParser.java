@@ -2953,7 +2953,11 @@ public class SQLStatementParser extends SQLParser {
                 if (lexer.token == Token.COMMA) {
                     lexer.nextToken();
                     continue;
-                } else {
+                }
+                if(lexer.token == LPAREN){
+                    continue;
+                }else {
+                    System.out.println("break");
                     break;
                 }
             }

@@ -438,11 +438,17 @@ public class XuguOutputVisitor extends SQLASTOutputVisitor implements XuguASTVis
 
         printInsertColumns(x.getColumns());
 
-        if (x.getValues() != null) {
+        if (x.getValues() != null&&(x.getValuesList().size()==1)) {
             println();
             print0(ucase ? "VALUES " : "values ");
             x.getValues().accept(this);
-        } else {
+        }else if(x.getValues() != null&&(x.getValuesList().size()>1)){
+            //虚谷Insert 多values解析
+            println();
+            print0(ucase ? "VALUES " : "values ");
+            x.getValuesList().stream().forEach(m->m.accept(this));
+        }
+        else {
             if (x.getQuery() != null) {
                 println();
                 x.getQuery().accept(this);

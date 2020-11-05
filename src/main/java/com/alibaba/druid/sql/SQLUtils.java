@@ -511,7 +511,9 @@ public class SQLUtils {
                     return new XuguOutputVisitor(out, true);
                 }
             default:
-                return new SQLASTOutputVisitor(out, dbType);
+                SQLASTOutputVisitor outputVisitor = new SQLASTOutputVisitor(out,dbType);
+                return outputVisitor;
+                //return new SQLASTOutputVisitor(out, dbType);
         }
     }
 

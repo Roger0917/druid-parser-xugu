@@ -26,8 +26,8 @@ public class OracleCreateType extends TestCase {
                 "     birthdate DATE,address VARCHAR(100),\n" +
                 "     MEMBER PROCEDURE change_address(new_addr VARCHAR(20)),\n" +
                 "     MEMBER FUNCTION get_info RETURN VARCHAR(20)\n" +
-                ");"+
-                "CREATE OR REPLACE TYPE BODY person_typ2 IS\n" +
+                ");";
+               /* "CREATE OR REPLACE TYPE BODY person_typ2 IS\n" +
                 "       MEMBER PROCEDURE change_address(new_addr VARCHAR(20))\n" +
                 "       IS\n" +
                 "       BEGIN\n" +
@@ -40,7 +40,7 @@ public class OracleCreateType extends TestCase {
                 "           v_info := '姓名：'||name||',出生日期：'||birthdate;\n" +
                 "           RETURN v_info;\n" +
                 "      END;\n" +
-                "END;";
+                "END;";*/
         //builder.append(sql);
         //builder.append(sql2);
 

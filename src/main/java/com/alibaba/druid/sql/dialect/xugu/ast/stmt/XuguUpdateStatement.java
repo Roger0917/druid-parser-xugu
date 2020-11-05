@@ -44,11 +44,10 @@ public class XuguUpdateStatement extends SQLUpdateStatement implements XuguState
 
     @Override
     protected void accept0(SQLASTVisitor visitor) {
-        if (visitor instanceof OracleASTVisitor) {
+        if (visitor instanceof XuguASTVisitor) {
             accept0((XuguASTVisitor) visitor);
             return;
         }
-
         super.accept(visitor);
     }
 
@@ -59,8 +58,8 @@ public class XuguUpdateStatement extends SQLUpdateStatement implements XuguState
             acceptChild(visitor, tableSource);
             acceptChild(visitor, items);
             acceptChild(visitor, where);
-            acceptChild(visitor, returning);
-            acceptChild(visitor, returningInto);
+            //acceptChild(visitor, returning);
+            //acceptChild(visitor, returningInto);
         }
         visitor.endVisit(this);
     }

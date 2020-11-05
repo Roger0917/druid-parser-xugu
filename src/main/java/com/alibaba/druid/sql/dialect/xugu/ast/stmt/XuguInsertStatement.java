@@ -95,4 +95,11 @@ public class XuguInsertStatement extends SQLInsertStatement implements XuguState
     public List<SQLCommentHint> getHeadHintsDirect() {
         return null;
     }
+
+    public ValuesClause getValues() {
+        if (valuesList.size() == 0) {
+            return null;
+        }
+        return valuesList.get(0);
+    }
 }

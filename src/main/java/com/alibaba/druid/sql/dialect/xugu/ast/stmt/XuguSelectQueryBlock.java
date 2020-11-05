@@ -110,7 +110,7 @@ public class XuguSelectQueryBlock extends SQLSelectQueryBlock implements XuguSQL
         if (tableName == null || tableName.length() == 0) {
             from = null;
         } else {
-            from = new OracleSelectTableReference(new SQLIdentifierExpr(tableName));
+            from = new XuguSelectTableReference(new SQLIdentifierExpr(tableName));
         }
         this.setFrom(from);
     }

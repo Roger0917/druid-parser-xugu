@@ -20,6 +20,7 @@ import com.alibaba.druid.sql.SQLUtils;
 import com.alibaba.druid.sql.dialect.mysql.ast.MySqlObject;
 import com.alibaba.druid.sql.dialect.oracle.ast.OracleSQLObject;
 import com.alibaba.druid.sql.dialect.postgresql.ast.PGSQLObject;
+import com.alibaba.druid.sql.dialect.xugu.ast.XuguSQLObject;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
 
 import java.util.ArrayList;
@@ -85,11 +86,11 @@ public abstract class SQLObjectImpl implements SQLObject {
             dbType = DbType.postgresql;
         } else if (this instanceof SQLDbTypedObject) {
             dbType = ((SQLDbTypedObject) this).getDbType();
+        }else if(this instanceof XuguSQLObject){
+            dbType = DbType.xugu;
         }
 
-        accept(
-                SQLUtils.createOutputVisitor(buf, dbType)
-        );
+        accept(SQLUtils.createOutputVisitor(buf, dbType));
     }
 
     public String toString() {
