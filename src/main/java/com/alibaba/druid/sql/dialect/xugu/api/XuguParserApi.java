@@ -299,13 +299,46 @@ public class XuguParserApi {
     }
 
     /** 解析多语句 */
-    public static void parseMultiStatement(String sql){
+    public static Map<String,String> parseMultiStatement(String sql){
         String[] arr = sql.split(";");
-        String patternStr = "\\screate\\s";
-        Pattern pattern1 = Pattern.compile(patternStr,Pattern.CASE_INSENSITIVE);
-        if(pattern1.matcher(arr[0]).find()||arr[0].toUpperCase().startsWith("CREATE")){
-            System.out.println("true");
+        String createPatternStr = "^\\s+create+\\s+";
+        String alterPatternStr = "^\\s+alter+\\s+";
+        String dropPatternStr = "^\\s+drop+\\s+";
+        String tuuncatePatternStr = "^\\s+truncate+\\s+";
+        String insertPatternStr = "^\\s+insert+\\s+";
+        String updatePatternStr = "^\\s+update+\\s+";
+        String deletePatternStr = "^\\s+delete+\\s+";
+        String selectPatternStr = "^\\s+select+\\s+";
+        Map<String,String> map = new HashMap<>();
+        Pattern pattern1 = Pattern.compile(createPatternStr,Pattern.CASE_INSENSITIVE);
+        Pattern pattern2 = Pattern.compile(alterPatternStr,Pattern.CASE_INSENSITIVE);
+        Pattern pattern3 = Pattern.compile(dropPatternStr,Pattern.CASE_INSENSITIVE);
+        Pattern pattern4 = Pattern.compile(tuuncatePatternStr,Pattern.CASE_INSENSITIVE);
+        Pattern pattern5 = Pattern.compile(insertPatternStr,Pattern.CASE_INSENSITIVE);
+        Pattern pattern6 = Pattern.compile(updatePatternStr,Pattern.CASE_INSENSITIVE);
+        Pattern pattern7 = Pattern.compile(deletePatternStr,Pattern.CASE_INSENSITIVE);
+        Pattern pattern8 = Pattern.compile(selectPatternStr,Pattern.CASE_INSENSITIVE);
+
+        for(String str:arr){
+            if(pattern1.matcher(str).find()||str.toUpperCase().startsWith("CREATE")){
+                map.put(str,"CREATE");
+            }else if(pattern2.matcher(str).find()||str.toUpperCase().startsWith("ALTER")){
+                map.put(str,"ALTER");
+            }else if(pattern3.matcher(str).find()||str.toUpperCase().startsWith("DROP")){
+                map.put(str,"DROP");
+            }else if(pattern4.matcher(str).find()||str.toUpperCase().startsWith("TRUNCATE")){
+                map.put(str,"TRUNCATE");
+            }else if(pattern5.matcher(str).find()||str.toUpperCase().startsWith("INSERT")){
+                map.put(str,"INSERT");
+            }else if(pattern6.matcher(str).find()||str.toUpperCase().startsWith("UPDATE")){
+                map.put(str,"UPDATE");
+            }else if(pattern7.matcher(str).find()||str.toUpperCase().startsWith("DELETE")){
+                map.put(str,"DELETE");
+            }else if(pattern8.matcher(str).find()||str.toUpperCase().startsWith("SELECT")){
+                map.put(str,"SELECT");
+            }
         }
+        return map;
     }
 
     public static void main(String[] args) {
@@ -389,8 +422,19 @@ public class XuguParserApi {
             System.out.println(callBean.getName());
             System.out.println(callBean.getParamList());
         }*/
-        String sql = "\tcreate or replace function xugu_test_fun(id in int,name in varchar,address out varchar) return int";
-        parseMultiStatement(sql);
+        String sql = "\tcreate or replace function xugu_test_fun(id in int,name in varchar,address out varchar) return int;"
+        +"\ntruncate table tb1;"
+        +"\tdrop table tb1;"
+        +"\n\talter table tb1 add column ty(varchar);"
+        +"  \t\t\n\n\t  insert into tb1(id,name)values(1,'jk');"
+        +"   \t  \nupdate tb1 set name='aj' where id=1;"
+        +"\t\n\tdelete from tb1 where id=1;"
+        +"\n\n\n\tselect * from tb1;";
+        Map<String,String> map = parseMultiStatement(sql);
+        for (Map.Entry<String, String> entry : map.entrySet()) {
+            System.out.println("attributekey = " + entry.getKey() + ", attributevalue = " + entry.getValue());
+        }
+
     }
 
 
