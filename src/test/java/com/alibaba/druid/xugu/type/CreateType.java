@@ -26,8 +26,8 @@ public class CreateType extends TestCase {
                 "     birthdate DATE,address VARCHAR,\n" +
                 "     MEMBER PROCEDURE change_address(new_addr VARCHAR),\n" +
                 "     MEMBER FUNCTION get_info(x int) RETURN VARCHAR\n" +
-                ");";
-               /* "CREATE OR REPLACE TYPE BODY person_typ2 IS\n" +
+                ");"+
+                "CREATE OR REPLACE TYPE BODY person_typ2 IS\n" +
                 "       MEMBER PROCEDURE change_address(new_addr VARCHAR)\n" +
                 "       IS\n" +
                 "       BEGIN\n" +
@@ -40,7 +40,7 @@ public class CreateType extends TestCase {
                 "           v_info := '姓名：'||name||',出生日期：'||birthdate;\n" +
                 "           RETURN v_info;\n" +
                 "      END;\n" +
-                "END;";*/
+                "END;";
 
         XuguStatementParser parser = new XuguStatementParser(sql);
         List<SQLStatement> statementList = parser.parseStatementList();
@@ -53,7 +53,15 @@ public class CreateType extends TestCase {
             createTypeStatementList.add(createTypeStatement);
         }
         for(XuguCreateTypeStatement createTypeStatement:createTypeStatementList){
-            System.out.println("name: "+createTypeStatement.getName());
+            if(!createTypeStatement.isBody()){
+                System.out.println(createTypeStatement.toString());
+                System.out.println(createTypeStatement.getParameters().get(4).getName());
+                System.out.println(createTypeStatement.getParameters().get(4).getParamType());
+                System.out.println(createTypeStatement.getParameters().get(4).getDataType());
+                System.out.println(createTypeStatement.getParameters().get(4).getDefaultValue());
+            }
+
+            /*System.out.println("name: "+createTypeStatement.getName());
             System.out.println("oid: "+createTypeStatement.getOid());
             System.out.println("authid: "+createTypeStatement.getAuthId());
             System.out.println("final: "+createTypeStatement.getFinal());
@@ -62,8 +70,12 @@ public class CreateType extends TestCase {
             System.out.println("under: "+createTypeStatement.getUnder());
             System.out.println("VarrayDataType: "+createTypeStatement.getVarrayDataType());
             System.out.println("VarraySizeLimit: "+createTypeStatement.getVarraySizeLimit());
-            System.out.println("WrappedSource: "+createTypeStatement.getWrappedSource());
-            System.out.println("Parameters: "+createTypeStatement.getParameters());
+            System.out.println("WrappedSource: "+createTypeStatement.getWrappedSource());*/
+
+            /*System.out.println("Parameters: "+createTypeStatement.getParameters().get(4).getName()+
+                    createTypeStatement.getParameters().get(4).getDefaultValue()
+            +createTypeStatement.getParameters().get(4).getParamType()
+            +createTypeStatement.getParameters().get(4).getDataType());*/
         }
     }
 }

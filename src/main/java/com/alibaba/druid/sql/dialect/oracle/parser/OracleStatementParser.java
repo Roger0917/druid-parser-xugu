@@ -2956,13 +2956,11 @@ public class OracleStatementParser extends SQLStatementParser {
             }
         } else {
             if (lexer.token() == Token.LPAREN) {
-                System.out.println("进入1断点");
                 lexer.nextToken();
                 this.parserParameters(stmt.getParameters(), stmt);
                 stmt.setParen(true);
                 accept(Token.RPAREN);
             } else {
-                System.out.println("进入2断点");
                 this.parserParameters(stmt.getParameters(), stmt);
                 if (lexer.token() == Token.END) {
                     lexer.nextToken();

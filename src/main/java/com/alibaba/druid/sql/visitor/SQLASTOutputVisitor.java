@@ -1411,6 +1411,58 @@ public class SQLASTOutputVisitor extends SQLASTVisitorAdapter implements Paramet
         return false;
     }
 
+    public boolean visit(XuguFunctionDataType x) {
+        if (x.isStatic()) {
+            print0(ucase ? "STATIC " : "static ");
+        }
+
+        print0(ucase ? "FUNCTION " : "function ");
+
+        print0(x.getName());
+
+        print(" (");
+        printAndAccept(x.getParameters(), ", ");
+        print(")");
+        print0(ucase ? " RETURN " : " return ");
+        x.getReturnDataType().accept(this);
+
+        SQLStatement block = x.getBlock();
+        if (block != null) {
+            println();
+            print0(ucase ? "IS" : "is");
+            println();
+            block.accept(this);
+        }
+
+        return false;
+    }
+
+    public boolean visit(XuguProdecureDataType x) {
+        if (x.isStatic()) {
+            print0(ucase ? "STATIC " : "static ");
+        }
+
+        print0(ucase ? "PROCEDURE " : "procedure ");
+
+        print0(x.getName());
+
+        if (x.getParameters().size() > 0) {
+            print(" (");
+            printAndAccept(x.getParameters(), ", ");
+            print(")");
+        }
+
+        SQLStatement block = x.getBlock();
+        if (block != null) {
+            println();
+            print0(ucase ? "IS" : "is");
+            println();
+            block.accept(this);
+        }
+
+        return false;
+    }
+
     protected void printDataType(SQLDataType x) {
         boolean parameterized = this.parameterized;
         this.parameterized = false;

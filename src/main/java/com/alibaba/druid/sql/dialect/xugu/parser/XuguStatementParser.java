@@ -278,7 +278,7 @@ public class XuguStatementParser extends SQLStatementParser{
                     continue;
                 }
 
-                if (strVal.equalsIgnoreCase("EXECUTE")) {
+                if (strVal.equalsIgnoreCase("EXECUTE")||strVal.equalsIgnoreCase("EXEC")) {
                     SQLStatement stmt = this.parseExecute();
                     stmt.setParent(parent);
                     statementList.add(stmt);
@@ -799,6 +799,7 @@ public class XuguStatementParser extends SQLStatementParser{
             }
 
             return stmt;
+        }else{
         }
         throw new ParserException("TODO : " + lexer.info());
     }
@@ -2745,13 +2746,11 @@ public class XuguStatementParser extends SQLStatementParser{
         }
         else {
             if (lexer.token() == Token.LPAREN) {
-                System.out.println("进入1断点");
                 lexer.nextToken();
                 this.parserParameters(stmt.getParameters(), stmt);
                 stmt.setParen(true);
                 accept(Token.RPAREN);
             } else {
-                System.out.println("进入2断点");
                 this.parserParameters(stmt.getParameters(), stmt);
                 if (lexer.token() == Token.END) {
                     lexer.nextToken();
