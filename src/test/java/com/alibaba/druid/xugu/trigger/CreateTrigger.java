@@ -33,7 +33,7 @@ public class CreateTrigger extends TestCase {
                 "INSERT INTO test_trig_tab2 VALUES(new.id,'hh');\n" +
                 "END IF;\n" +
                 "END;";
-        String sql2 = "CREATE OR REPLACE TRIGGER trig_test3 AFTER INSERT OR UPDATE OF id,NANE ON test_trig_tab\n" +
+        String sql2 = "CREATE OR REPLACE TRIGGER trig_test4 AFTER INSERT OR UPDATE OF id,NANE ON test_trig_tab\n" +
                 "FOR statement WHEN (old.ID>=10) BEGIN\n" +
                 "IF updating THEN INSERT INTO test_trig_tab2 VALUES(1,'update tab');\n" +
                 "END IF;\n" +
@@ -43,7 +43,9 @@ public class CreateTrigger extends TestCase {
                 "INSERT INTO test_trig_tab2 VALUES(3,'hh');\n" +
                 "END IF;\n" +
                 "END;";
-        XuguStatementParser parser = new XuguStatementParser(sql);
+        builder.append(sql);
+        builder.append(sql2);
+        XuguStatementParser parser = new XuguStatementParser(builder.toString());
         List<SQLStatement> statementList = parser.parseStatementList();
         String text = Base.print(statementList);
 

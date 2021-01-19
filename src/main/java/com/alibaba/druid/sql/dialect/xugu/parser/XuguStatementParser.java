@@ -1959,17 +1959,23 @@ public class XuguStatementParser extends SQLStatementParser{
                     lexer.nextToken();
                     functionDataType.setName(lexer.stringVal());
                     accept(Token.IDENTIFIER);
+                    //虚谷自定义类型member类型过程或函数没有参数时匹配到了左括号,不解析参数直接匹配右括号
                     if (lexer.token() == Token.LPAREN) {
                         lexer.nextToken();
-                        this.parserParameters(functionDataType.getParameters(), functionDataType);
-                        accept(Token.RPAREN);
+                        if(lexer.token()==Token.RPAREN){
+                            accept(Token.RPAREN);
+                        }else{
+                            this.parserParameters(functionDataType.getParameters(), functionDataType);
+                            accept(Token.RPAREN);
+                        }
                     }
                     accept(Token.RETURN);
                     functionDataType.setReturnDataType(this.exprParser.parseDataType(false));
                     dataType = functionDataType;
                     name = null;
 
-                    if (lexer.token() == Token.IS) {
+                    //Oracle自定义类型体 中member function或member procedure 只支持is 虚谷需支持is和as
+                    if (lexer.token() == Token.IS || lexer.token()==Token.AS) {
                         lexer.nextToken();
                         SQLStatement block = this.parseBlock();
                         functionDataType.setBlock(block);
@@ -1994,7 +2000,8 @@ public class XuguStatementParser extends SQLStatementParser{
                     dataType = procedureDataType;
                     name = null;
 
-                    if (lexer.token() == Token.IS) {
+                    //Oracle自定义类型体 中member function或member procedure 只支持is 虚谷需支持is和as
+                    if (lexer.token() == Token.IS||lexer.token()==Token.AS) {
                         lexer.nextToken();
                         SQLStatement block = this.parseBlock();
                         procedureDataType.setBlock(block);
@@ -2579,11 +2586,17 @@ public class XuguStatementParser extends SQLStatementParser{
 
         SQLName pkgName = this.exprParser.name();
         stmt.setName(pkgName);
-
+        while(lexer.token()!=Token.IS&&lexer.token()!=Token.AS){
+            lexer.nextToken();
+        }
         if (lexer.token() == Token.IS) {
             lexer.nextToken();
         } else {
             accept(Token.AS);
+        }
+        //创包语句只解析包中过程和函数,忽略掉变量,类型,子类型等
+        while(lexer.token()!=Token.FUNCTION&&lexer.token()!=Token.PROCEDURE){
+            lexer.nextToken();
         }
 
         // this.parseStatementList(stmt.getStatements(), -1, stmt);
@@ -2691,6 +2704,10 @@ public class XuguStatementParser extends SQLStatementParser{
 
         if (lexer.identifierEquals(pkgName.getSimpleName())) {
             lexer.nextToken();
+        }else{
+            while (lexer.token()!=Token.SEMI){
+                lexer.nextToken();
+            }
         }
 
         //accept(Token.SEMI);

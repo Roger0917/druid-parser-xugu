@@ -98,7 +98,7 @@ public class XuguLexer extends Lexer {
         map.put("PARTITION", Token.PARTITION);
         map.put("TRUE", Token.TRUE);
         map.put("FALSE", Token.FALSE);
-        map.put("SUBTYPE",Token.SUBTYPE);
+        //map.put("SUBTYPE",Token.SUBTYPE);
         map.put("ROLE",Token.ROLE);
 
         map.put("，", Token.COMMA);
