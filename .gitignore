@@ -1,0 +1,19 @@
+/target
+/.settings
+/.project
+/.classpath
+/.DS_Store
+/1
+/druid-admin
+/druid-spring-boot-starter
+/derby.log
+# IntelliJ Idea
+.idea/
+out/
+*.ipr
+*.iws
+*.iml
+/bin
+hs_err_pid*.log
+replay_pid*.log
+/src/test/resources
