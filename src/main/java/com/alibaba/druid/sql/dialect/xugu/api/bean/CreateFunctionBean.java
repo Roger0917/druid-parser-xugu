@@ -16,7 +16,7 @@ public class CreateFunctionBean {
 
     private Integer paramSize;
 
-    private List<List<String>> params;
+    private List<Param> params;
 
     private String returnType;
 }

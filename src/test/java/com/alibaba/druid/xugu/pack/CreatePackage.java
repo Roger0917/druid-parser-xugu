@@ -1,15 +1,8 @@
 package com.alibaba.druid.xugu.pack;
 
-import com.alibaba.druid.sql.ast.SQLStatement;
-import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleCreatePackageStatement;
-import com.alibaba.druid.sql.dialect.oracle.parser.OracleStatementParser;
-import com.alibaba.druid.sql.dialect.oracle.visitor.OracleExportParameterVisitor;
-import com.alibaba.druid.sql.dialect.oracle.visitor.OracleSchemaStatVisitor;
 import com.alibaba.druid.sql.dialect.xugu.api.XuguParserApi;
 import com.alibaba.druid.sql.dialect.xugu.api.bean.CreatePackageBean;
 import com.alibaba.druid.sql.dialect.xugu.ast.stmt.XuguCreatePackageStatement;
-import com.alibaba.druid.sql.dialect.xugu.parser.XuguStatementParser;
-import com.alibaba.druid.xugu.Base;
 import junit.framework.TestCase;
 
 import java.util.ArrayList;

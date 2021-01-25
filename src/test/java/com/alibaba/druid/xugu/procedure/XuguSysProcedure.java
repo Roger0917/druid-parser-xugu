@@ -4,6 +4,8 @@ import com.alibaba.druid.sql.dialect.xugu.api.XuguParserApi;
 import com.alibaba.druid.sql.dialect.xugu.api.bean.CreateProcedureBean;
 import junit.framework.TestCase;
 
+import java.util.List;
+
 public class XuguSysProcedure extends TestCase {
 
     public void test(){
@@ -14,7 +16,7 @@ public class XuguSysProcedure extends TestCase {
                 "        \"select password into outstr  from USERT where name = names;\\n\" +\n" +
                 "        \" end;";
 
-        CreateProcedureBean createProcedureBean = XuguParserApi.parseCreateProcedure(sql);
+        List<CreateProcedureBean> createProcedureBeanList = XuguParserApi.parseCreateProcedure(sql);
         System.out.println(222);
     }
 

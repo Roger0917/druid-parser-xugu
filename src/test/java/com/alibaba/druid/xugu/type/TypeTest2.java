@@ -47,7 +47,8 @@ public class TypeTest2 extends TestCase {
                 " id int," +
                 " addr varchar," +
                 " member function getId(n int,na varchar(21)) return int," +
-                " member function getAddr(n int,na varchar) return varchar" +
+                " member function getAddr(n int,na varchar) return varchar," +
+                " static PROCEDURE printfa(p person)"+
                 ")";
         String sql9 = "create type body pack_dep_base_type as" +
                 "            member function getId(n int,na varchar(21)) return int" +
@@ -60,6 +61,11 @@ public class TypeTest2 extends TestCase {
                 "            begin" +
                 "             return addr;" +
                 "            end;" +
+                "static PROCEDURE printfa(p person)" +
+                " IS"+
+                " BEGIN "+
+                " send_msg('id='||p.id || ' name='||p.get_name || ' addr=' || p.get_adr());"+
+                " END;"+
                 "            end;";
         String sql10="create type syno_base_type as object" +
                 "(" +
@@ -117,6 +123,12 @@ public class TypeTest2 extends TestCase {
                 "   return name;" +
                 "  end;" +
                 "  end;";
+
+        String sql14 = "CREATE OR REPLACE TYPE person1 UNDER person ( wife CHAR(10), child CHAR(10), member PROCEDURE set_wIFe(name CHAR(10)), member PROCEDURE set_child(name CHAR(10)), member PROCEDURE printf1(),static PROCEDURE printfa(p person));";
+        String sql15 = "CREATE OR REPLACE TYPE BODY person1 AS member PROCEDURE set_wife (_name CHAR(10)) IS BEGIN wife:=_name; END;member PROCEDURE set_child(_name CHAR(10)) IS BEGIN child:=_name; END;member PROCEDURE printf1() IS BEGIN send_msg('id='||id || ' name='|| get_name || ' addr=' || get_adr() || ' wife='||wife || ' child='||child); " +
+                " END;"+
+                "END;";
+        String sql16 = "DECLARE TYPE typea IS VARYING ARRAY(20) OF INTEGER; ta typea; BEGIN ta.extend; SELECT id BULK COLLECT INTO ta FROM test_1; FOR i IN ta.first..ta.last LOOP INSERT INTO test_2 VALUES (ta(i),'test'||i); END LOOP; END;";
         builder.append(sql1);
         builder.append(sql2);
         builder.append(sql3);
@@ -130,6 +142,9 @@ public class TypeTest2 extends TestCase {
         builder.append(sql11);
         builder.append(sql12);
         builder.append(sql13);
+        builder.append(sql14);
+        builder.append(sql15);
+        //builder.append(sql16);
 
         XuguStatementParser parser = new XuguStatementParser(builder.toString());
         List<SQLStatement> statementList = parser.parseStatementList();

@@ -19,7 +19,7 @@ public class CreateTypeBean {
 
     private Map<String,String> attributeMap;
 
-    private Map<String,String> memberMap;
+    private Map<String,String> methodMap;
 
 
 

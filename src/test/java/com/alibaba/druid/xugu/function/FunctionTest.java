@@ -1,14 +1,18 @@
+/*
 package com.alibaba.druid.xugu.function;
 
 import com.alibaba.druid.sql.dialect.xugu.api.XuguParserApi;
 import com.alibaba.druid.sql.dialect.xugu.api.bean.CreateFunctionBean;
-import org.junit.Assert;
 import org.junit.Test;
 
+import java.util.List;
+
+*/
 /**
  * @Author: Gosin
  * @Date: 2021/1/6 9:28
- */
+ *//*
+
 public class FunctionTest {
 
     @Test
@@ -21,8 +25,9 @@ public class FunctionTest {
                 "   return v_ret;\n" +
                 "end func_getSQLXML;";
         XuguParserApi xuguParserApi = new XuguParserApi();
-        CreateFunctionBean createFunctionBean = xuguParserApi.parseCreateFunction(sql);
-        if (createFunctionBean != null) {
+        List<CreateFunctionBean> createFunctionBeanList = xuguParserApi.parseCreateFunction(sql);
+
+if (createFunctionBean != null) {
             for (int i = 0; i < createFunctionBean.getParamSize(); i++) {
                 String paraName = createFunctionBean.getParams().get(i).get(0);
                 String paraType = createFunctionBean.getParams().get(i).get(2);
@@ -38,6 +43,7 @@ public class FunctionTest {
                 System.out.println(paraDefault);
             }
         }
+
     }
 
 
@@ -267,8 +273,8 @@ String sql24 = "create or replace function FUNC_GETTIMESTAMP (inparam int) retur
 
     @Test
     public void testFunction1(){
-        XuguParserApi xuguParserApi = new XuguParserApi();
-        CreateFunctionBean createFunctionBean = xuguParserApi.parseCreateFunction(sql1);
+        XuguParserApi2 xuguParserApi2 = new XuguParserApi2();
+        CreateFunctionBean createFunctionBean = xuguParserApi2.parseCreateFunction(sql1);
         if (createFunctionBean != null) {
             for (int i = 0; i < createFunctionBean.getParamSize(); i++) {
 
@@ -315,8 +321,8 @@ String sql24 = "create or replace function FUNC_GETTIMESTAMP (inparam int) retur
     }
     @Test
     public void testFunction3(){
-        XuguParserApi xuguParserApi = new XuguParserApi();
-        CreateFunctionBean createFunctionBean = xuguParserApi.parseCreateFunction(sql3);
+        XuguParserApi2 xuguParserApi2 = new XuguParserApi2();
+        CreateFunctionBean createFunctionBean = xuguParserApi2.parseCreateFunction(sql3);
         if (createFunctionBean != null) {
             for (int i = 0; i < createFunctionBean.getParamSize(); i++) {
 
@@ -339,8 +345,8 @@ String sql24 = "create or replace function FUNC_GETTIMESTAMP (inparam int) retur
     }
     @Test
     public void testFunction4(){
-        XuguParserApi xuguParserApi = new XuguParserApi();
-        CreateFunctionBean createFunctionBean = xuguParserApi.parseCreateFunction(sql4);
+        XuguParserApi2 xuguParserApi2 = new XuguParserApi2();
+        CreateFunctionBean createFunctionBean = xuguParserApi2.parseCreateFunction(sql4);
         if (createFunctionBean != null) {
             for (int i = 0; i < createFunctionBean.getParamSize(); i++) {
 
@@ -363,8 +369,8 @@ String sql24 = "create or replace function FUNC_GETTIMESTAMP (inparam int) retur
     }
     @Test
     public void testFunction5(){
-        XuguParserApi xuguParserApi = new XuguParserApi();
-        CreateFunctionBean createFunctionBean = xuguParserApi.parseCreateFunction(sql5);
+        XuguParserApi2 xuguParserApi2 = new XuguParserApi2();
+        CreateFunctionBean createFunctionBean = xuguParserApi2.parseCreateFunction(sql5);
         if (createFunctionBean != null) {
             for (int i = 0; i < createFunctionBean.getParamSize(); i++) {
 
@@ -387,8 +393,8 @@ String sql24 = "create or replace function FUNC_GETTIMESTAMP (inparam int) retur
     }
     @Test
     public void testFunction6(){
-        XuguParserApi xuguParserApi = new XuguParserApi();
-        CreateFunctionBean createFunctionBean = xuguParserApi.parseCreateFunction(sql6);
+        XuguParserApi2 xuguParserApi2 = new XuguParserApi2();
+        CreateFunctionBean createFunctionBean = xuguParserApi2.parseCreateFunction(sql6);
         if (createFunctionBean != null) {
             for (int i = 0; i < createFunctionBean.getParamSize(); i++) {
 
@@ -411,8 +417,8 @@ String sql24 = "create or replace function FUNC_GETTIMESTAMP (inparam int) retur
     }
     @Test
     public void testFunction7(){
-        XuguParserApi xuguParserApi = new XuguParserApi();
-        CreateFunctionBean createFunctionBean = xuguParserApi.parseCreateFunction(sql7);
+        XuguParserApi2 xuguParserApi2 = new XuguParserApi2();
+        CreateFunctionBean createFunctionBean = xuguParserApi2.parseCreateFunction(sql7);
         if (createFunctionBean != null) {
             for (int i = 0; i < createFunctionBean.getParamSize(); i++) {
 
@@ -435,8 +441,8 @@ String sql24 = "create or replace function FUNC_GETTIMESTAMP (inparam int) retur
     }
     @Test
     public void testFunction8(){
-        XuguParserApi xuguParserApi = new XuguParserApi();
-        CreateFunctionBean createFunctionBean = xuguParserApi.parseCreateFunction(sql8);
+        XuguParserApi2 xuguParserApi2 = new XuguParserApi2();
+        CreateFunctionBean createFunctionBean = xuguParserApi2.parseCreateFunction(sql8);
         if (createFunctionBean != null) {
             for (int i = 0; i < createFunctionBean.getParamSize(); i++) {
 
@@ -459,8 +465,8 @@ String sql24 = "create or replace function FUNC_GETTIMESTAMP (inparam int) retur
     }
     @Test
     public void testFunction9(){
-        XuguParserApi xuguParserApi = new XuguParserApi();
-        CreateFunctionBean createFunctionBean = xuguParserApi.parseCreateFunction(sql9);
+        XuguParserApi2 xuguParserApi2 = new XuguParserApi2();
+        CreateFunctionBean createFunctionBean = xuguParserApi2.parseCreateFunction(sql9);
         if (createFunctionBean != null) {
             for (int i = 0; i < createFunctionBean.getParamSize(); i++) {
 
@@ -482,8 +488,8 @@ String sql24 = "create or replace function FUNC_GETTIMESTAMP (inparam int) retur
         }
     }    @Test
     public void testFunction10(){
-        XuguParserApi xuguParserApi = new XuguParserApi();
-        CreateFunctionBean createFunctionBean = xuguParserApi.parseCreateFunction(sql10);
+        XuguParserApi2 xuguParserApi2 = new XuguParserApi2();
+        CreateFunctionBean createFunctionBean = xuguParserApi2.parseCreateFunction(sql10);
         if (createFunctionBean != null) {
             for (int i = 0; i < createFunctionBean.getParamSize(); i++) {
 
@@ -508,8 +514,8 @@ String sql24 = "create or replace function FUNC_GETTIMESTAMP (inparam int) retur
 
     @Test
     public void testFunction11(){
-        XuguParserApi xuguParserApi = new XuguParserApi();
-        CreateFunctionBean createFunctionBean = xuguParserApi.parseCreateFunction(sql11);
+        XuguParserApi2 xuguParserApi2 = new XuguParserApi2();
+        CreateFunctionBean createFunctionBean = xuguParserApi2.parseCreateFunction(sql11);
         if (createFunctionBean != null) {
             for (int i = 0; i < createFunctionBean.getParamSize(); i++) {
 
@@ -532,8 +538,8 @@ String sql24 = "create or replace function FUNC_GETTIMESTAMP (inparam int) retur
     }
     @Test
     public void testFunction12(){
-        XuguParserApi xuguParserApi = new XuguParserApi();
-        CreateFunctionBean createFunctionBean = xuguParserApi.parseCreateFunction(sql12);
+        XuguParserApi2 xuguParserApi2 = new XuguParserApi2();
+        CreateFunctionBean createFunctionBean = xuguParserApi2.parseCreateFunction(sql12);
         if (createFunctionBean != null) {
             for (int i = 0; i < createFunctionBean.getParamSize(); i++) {
 
@@ -556,8 +562,8 @@ String sql24 = "create or replace function FUNC_GETTIMESTAMP (inparam int) retur
     }
     @Test
     public void testFunction13(){
-        XuguParserApi xuguParserApi = new XuguParserApi();
-        CreateFunctionBean createFunctionBean = xuguParserApi.parseCreateFunction(sql13);
+        XuguParserApi2 xuguParserApi2 = new XuguParserApi2();
+        CreateFunctionBean createFunctionBean = xuguParserApi2.parseCreateFunction(sql13);
         if (createFunctionBean != null) {
             for (int i = 0; i < createFunctionBean.getParamSize(); i++) {
 
@@ -580,8 +586,8 @@ String sql24 = "create or replace function FUNC_GETTIMESTAMP (inparam int) retur
     }
     @Test
     public void testFunction14(){
-        XuguParserApi xuguParserApi = new XuguParserApi();
-        CreateFunctionBean createFunctionBean = xuguParserApi.parseCreateFunction(sql14);
+        XuguParserApi2 xuguParserApi2 = new XuguParserApi2();
+        CreateFunctionBean createFunctionBean = xuguParserApi2.parseCreateFunction(sql14);
         if (createFunctionBean != null) {
             for (int i = 0; i < createFunctionBean.getParamSize(); i++) {
 
@@ -604,8 +610,8 @@ String sql24 = "create or replace function FUNC_GETTIMESTAMP (inparam int) retur
     }
     @Test
     public void testFunction15(){
-        XuguParserApi xuguParserApi = new XuguParserApi();
-        CreateFunctionBean createFunctionBean = xuguParserApi.parseCreateFunction(sql15);
+        XuguParserApi2 xuguParserApi2 = new XuguParserApi2();
+        CreateFunctionBean createFunctionBean = xuguParserApi2.parseCreateFunction(sql15);
         if (createFunctionBean != null) {
             for (int i = 0; i < createFunctionBean.getParamSize(); i++) {
 
@@ -628,8 +634,8 @@ String sql24 = "create or replace function FUNC_GETTIMESTAMP (inparam int) retur
     }
     @Test
     public void testFunction16(){
-        XuguParserApi xuguParserApi = new XuguParserApi();
-        CreateFunctionBean createFunctionBean = xuguParserApi.parseCreateFunction(sql16);
+        XuguParserApi2 xuguParserApi2 = new XuguParserApi2();
+        CreateFunctionBean createFunctionBean = xuguParserApi2.parseCreateFunction(sql16);
         if (createFunctionBean != null) {
             for (int i = 0; i < createFunctionBean.getParamSize(); i++) {
 
@@ -652,8 +658,8 @@ String sql24 = "create or replace function FUNC_GETTIMESTAMP (inparam int) retur
     }
     @Test
     public void testFunction17(){
-        XuguParserApi xuguParserApi = new XuguParserApi();
-        CreateFunctionBean createFunctionBean = xuguParserApi.parseCreateFunction(sql17);
+        XuguParserApi2 xuguParserApi2 = new XuguParserApi2();
+        CreateFunctionBean createFunctionBean = xuguParserApi2.parseCreateFunction(sql17);
         if (createFunctionBean != null) {
             for (int i = 0; i < createFunctionBean.getParamSize(); i++) {
 
@@ -676,8 +682,8 @@ String sql24 = "create or replace function FUNC_GETTIMESTAMP (inparam int) retur
     }
     @Test
     public void testFunction18(){
-        XuguParserApi xuguParserApi = new XuguParserApi();
-        CreateFunctionBean createFunctionBean = xuguParserApi.parseCreateFunction(sql18);
+        XuguParserApi2 xuguParserApi2 = new XuguParserApi2();
+        CreateFunctionBean createFunctionBean = xuguParserApi2.parseCreateFunction(sql18);
         if (createFunctionBean != null) {
             for (int i = 0; i < createFunctionBean.getParamSize(); i++) {
 
@@ -700,8 +706,8 @@ String sql24 = "create or replace function FUNC_GETTIMESTAMP (inparam int) retur
     }
     @Test
     public void testFunction19(){
-        XuguParserApi xuguParserApi = new XuguParserApi();
-        CreateFunctionBean createFunctionBean = xuguParserApi.parseCreateFunction(sql19);
+        XuguParserApi2 xuguParserApi2 = new XuguParserApi2();
+        CreateFunctionBean createFunctionBean = xuguParserApi2.parseCreateFunction(sql19);
         if (createFunctionBean != null) {
             for (int i = 0; i < createFunctionBean.getParamSize(); i++) {
 
@@ -724,8 +730,8 @@ String sql24 = "create or replace function FUNC_GETTIMESTAMP (inparam int) retur
     }
     @Test
     public void testFunction20(){
-        XuguParserApi xuguParserApi = new XuguParserApi();
-        CreateFunctionBean createFunctionBean = xuguParserApi.parseCreateFunction(sql20);
+        XuguParserApi2 xuguParserApi2 = new XuguParserApi2();
+        CreateFunctionBean createFunctionBean = xuguParserApi2.parseCreateFunction(sql20);
         if (createFunctionBean != null) {
             for (int i = 0; i < createFunctionBean.getParamSize(); i++) {
 
@@ -748,8 +754,8 @@ String sql24 = "create or replace function FUNC_GETTIMESTAMP (inparam int) retur
     }
     @Test
     public void testFunction21(){
-        XuguParserApi xuguParserApi = new XuguParserApi();
-        CreateFunctionBean createFunctionBean = xuguParserApi.parseCreateFunction(sql21);
+        XuguParserApi2 xuguParserApi2 = new XuguParserApi2();
+        CreateFunctionBean createFunctionBean = xuguParserApi2.parseCreateFunction(sql21);
         if (createFunctionBean != null) {
             for (int i = 0; i < createFunctionBean.getParamSize(); i++) {
 
@@ -772,8 +778,8 @@ String sql24 = "create or replace function FUNC_GETTIMESTAMP (inparam int) retur
     }
     @Test
     public void testFunction22(){
-        XuguParserApi xuguParserApi = new XuguParserApi();
-        CreateFunctionBean createFunctionBean = xuguParserApi.parseCreateFunction(sql22);
+        XuguParserApi2 xuguParserApi2 = new XuguParserApi2();
+        CreateFunctionBean createFunctionBean = xuguParserApi2.parseCreateFunction(sql22);
         if (createFunctionBean != null) {
             for (int i = 0; i < createFunctionBean.getParamSize(); i++) {
 
@@ -796,8 +802,8 @@ String sql24 = "create or replace function FUNC_GETTIMESTAMP (inparam int) retur
     }
     @Test
     public void testFunction23(){
-        XuguParserApi xuguParserApi = new XuguParserApi();
-        CreateFunctionBean createFunctionBean = xuguParserApi.parseCreateFunction(sql23);
+        XuguParserApi2 xuguParserApi2 = new XuguParserApi2();
+        CreateFunctionBean createFunctionBean = xuguParserApi2.parseCreateFunction(sql23);
         if (createFunctionBean != null) {
             for (int i = 0; i < createFunctionBean.getParamSize(); i++) {
 
@@ -820,8 +826,8 @@ String sql24 = "create or replace function FUNC_GETTIMESTAMP (inparam int) retur
     }
     @Test
     public void testFunction24(){
-        XuguParserApi xuguParserApi = new XuguParserApi();
-        CreateFunctionBean createFunctionBean = xuguParserApi.parseCreateFunction(sql24);
+        XuguParserApi2 xuguParserApi2 = new XuguParserApi2();
+        CreateFunctionBean createFunctionBean = xuguParserApi2.parseCreateFunction(sql24);
         if (createFunctionBean != null) {
             for (int i = 0; i < createFunctionBean.getParamSize(); i++) {
 
@@ -844,8 +850,8 @@ String sql24 = "create or replace function FUNC_GETTIMESTAMP (inparam int) retur
     }
     @Test
     public void testFunction25(){
-        XuguParserApi xuguParserApi = new XuguParserApi();
-        CreateFunctionBean createFunctionBean = xuguParserApi.parseCreateFunction(sql25);
+        XuguParserApi2 xuguParserApi2 = new XuguParserApi2();
+        CreateFunctionBean createFunctionBean = xuguParserApi2.parseCreateFunction(sql25);
         if (createFunctionBean != null) {
             for (int i = 0; i < createFunctionBean.getParamSize(); i++) {
 
@@ -868,8 +874,8 @@ String sql24 = "create or replace function FUNC_GETTIMESTAMP (inparam int) retur
     }
     @Test
     public void testFunction26(){
-        XuguParserApi xuguParserApi = new XuguParserApi();
-        CreateFunctionBean createFunctionBean = xuguParserApi.parseCreateFunction(sql26);
+        XuguParserApi2 xuguParserApi2 = new XuguParserApi2();
+        CreateFunctionBean createFunctionBean = xuguParserApi2.parseCreateFunction(sql26);
         if (createFunctionBean != null) {
             for (int i = 0; i < createFunctionBean.getParamSize(); i++) {
 
@@ -892,8 +898,8 @@ String sql24 = "create or replace function FUNC_GETTIMESTAMP (inparam int) retur
     }
     @Test
     public void testFunction27(){
-        XuguParserApi xuguParserApi = new XuguParserApi();
-        CreateFunctionBean createFunctionBean = xuguParserApi.parseCreateFunction(sql27);
+        XuguParserApi2 xuguParserApi2 = new XuguParserApi2();
+        CreateFunctionBean createFunctionBean = xuguParserApi2.parseCreateFunction(sql27);
         if (createFunctionBean != null) {
             for (int i = 0; i < createFunctionBean.getParamSize(); i++) {
 
@@ -916,8 +922,8 @@ String sql24 = "create or replace function FUNC_GETTIMESTAMP (inparam int) retur
     }
     @Test
     public void testFunction28(){
-        XuguParserApi xuguParserApi = new XuguParserApi();
-        CreateFunctionBean createFunctionBean = xuguParserApi.parseCreateFunction(sql28);
+        XuguParserApi2 xuguParserApi2 = new XuguParserApi2();
+        CreateFunctionBean createFunctionBean = xuguParserApi2.parseCreateFunction(sql28);
         if (createFunctionBean != null) {
             for (int i = 0; i < createFunctionBean.getParamSize(); i++) {
 
@@ -940,8 +946,8 @@ String sql24 = "create or replace function FUNC_GETTIMESTAMP (inparam int) retur
     }
     @Test
     public void testFunction29(){
-        XuguParserApi xuguParserApi = new XuguParserApi();
-        CreateFunctionBean createFunctionBean = xuguParserApi.parseCreateFunction(sql29);
+        XuguParserApi2 xuguParserApi2 = new XuguParserApi2();
+        CreateFunctionBean createFunctionBean = xuguParserApi2.parseCreateFunction(sql29);
         if (createFunctionBean != null) {
             for (int i = 0; i < createFunctionBean.getParamSize(); i++) {
 
@@ -964,7 +970,7 @@ String sql24 = "create or replace function FUNC_GETTIMESTAMP (inparam int) retur
 
     @Test
     public void testFunction30(){
-        XuguParserApi xuguPaserApi = new XuguParserApi();
+        XuguParserApi2 xuguPaserApi = new XuguParserApi2();
         CreateFunctionBean createFunctionBean = xuguPaserApi.parseCreateFunction(sql30);
         if (createFunctionBean != null) {
             for (int i = 0; i < createFunctionBean.getParamSize(); i++) {
@@ -989,8 +995,8 @@ String sql24 = "create or replace function FUNC_GETTIMESTAMP (inparam int) retur
 
     @Test
     public void testFunction31(){
-        XuguParserApi xuguParserApi = new XuguParserApi();
-        CreateFunctionBean createFunctionBean = xuguParserApi.parseCreateFunction(sql31);
+        XuguParserApi2 xuguParserApi2 = new XuguParserApi2();
+        CreateFunctionBean createFunctionBean = xuguParserApi2.parseCreateFunction(sql31);
         if (createFunctionBean != null) {
             for (int i = 0; i < createFunctionBean.getParamSize(); i++) {
 
@@ -1013,3 +1019,4 @@ String sql24 = "create or replace function FUNC_GETTIMESTAMP (inparam int) retur
 
 
 }
+*/

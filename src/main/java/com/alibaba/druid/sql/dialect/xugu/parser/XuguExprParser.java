@@ -199,6 +199,7 @@ public class XuguExprParser extends SQLExprParser {
                     if (lexer.token() == Token.LPAREN) {
                         lexer.nextToken();
                         interval.getArguments().stream().forEach(sqlExpr -> intervalDayToSecond.addArgument(sqlExpr));
+                        //intervalDayToSecond.addArgument(this.expr());
                         intervalDayToSecond.getFractionalSeconds().add(this.expr());
                         accept(Token.RPAREN);
                     }
@@ -228,6 +229,7 @@ public class XuguExprParser extends SQLExprParser {
                         if (lexer.token() == Token.LPAREN) {
                             lexer.nextToken();
                             interval.getArguments().stream().forEach(sqlExpr -> intervalHourToSecond.addArgument(sqlExpr));
+                            //intervalHourToSecond.addArgument(this.expr());
                             intervalHourToSecond.getFractionalSeconds().add(this.expr());
                             accept(Token.RPAREN);
                         }
@@ -252,6 +254,7 @@ public class XuguExprParser extends SQLExprParser {
                     if (lexer.token() == Token.LPAREN) {
                         lexer.nextToken();
                         interval.getArguments().stream().forEach(sqlExpr -> intervalMinuteToSecond.addArgument(sqlExpr));
+                        //intervalMinuteToSecond.addArgument(this.expr());
                         intervalMinuteToSecond.getFractionalSeconds().add(this.expr());
                         accept(Token.RPAREN);
                     }

@@ -3,6 +3,7 @@ package com.alibaba.druid.sql.dialect.xugu.api.bean;
 import lombok.Data;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @description:
@@ -16,5 +17,7 @@ public class CreateProcedureBean {
 
     private Integer paramSize;
 
-    private List<List<String>> params;
+    private List<Param> params;
+    
+    private Map<Integer,String> schemas;
 }

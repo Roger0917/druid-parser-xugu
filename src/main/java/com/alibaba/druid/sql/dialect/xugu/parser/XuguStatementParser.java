@@ -1991,10 +1991,15 @@ public class XuguStatementParser extends SQLStatementParser{
                     lexer.nextToken();
                     procedureDataType.setName(lexer.stringVal());
                     accept(Token.IDENTIFIER);
+                    //虚谷自定义类型member类型过程或函数没有参数时匹配到了左括号,不解析参数直接匹配右括号
                     if (lexer.token() == Token.LPAREN) {
                         lexer.nextToken();
-                        this.parserParameters(procedureDataType.getParameters(), procedureDataType);
-                        accept(Token.RPAREN);
+                        if(lexer.token()==Token.RPAREN){
+                            accept(Token.RPAREN);
+                        }else{
+                            this.parserParameters(procedureDataType.getParameters(), procedureDataType);
+                            accept(Token.RPAREN);
+                        }
                     }
 
                     dataType = procedureDataType;

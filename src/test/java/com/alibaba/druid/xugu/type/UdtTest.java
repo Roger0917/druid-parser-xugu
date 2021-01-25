@@ -120,15 +120,15 @@ public class UdtTest {
             "  end;" +
             "  end;";
 
-    XuguParserApi xuguParserApi = new XuguParserApi();
+    XuguParserApi XuguParserApi = new XuguParserApi();
     Map<String,String> attributesHashMap;
     Map<String, String> methodsMap ;
 
     @Test
     public void udtTest1(){
-        CreateTypeBean createTypeBean = xuguParserApi.parseCreateType(sql1);
+        CreateTypeBean createTypeBean = XuguParserApi.parseCreateType(sql1);
         attributesHashMap =  createTypeBean.getAttributeMap();
-        methodsMap = createTypeBean.getMemberMap();
+        methodsMap = createTypeBean.getMethodMap();
             Iterator<Map.Entry<String, String>> it = attributesHashMap.entrySet().iterator();
             while (it.hasNext()) {
                 Map.Entry<String, String> entry = it.next();
@@ -139,9 +139,9 @@ public class UdtTest {
 
     @Test
     public void udtTest2(){
-        CreateTypeBean createTypeBean = xuguParserApi.parseCreateType(sql2);
+        CreateTypeBean createTypeBean = XuguParserApi.parseCreateType(sql2);
         attributesHashMap =  createTypeBean.getAttributeMap();
-        methodsMap = createTypeBean.getMemberMap();
+        methodsMap = createTypeBean.getMethodMap();
         Iterator<Map.Entry<String, String>> it = attributesHashMap.entrySet().iterator();
         while (it.hasNext()) {
             Map.Entry<String, String> entry = it.next();
@@ -152,9 +152,9 @@ public class UdtTest {
 
 
     public void udtTest3(){
-        CreateTypeBean createTypeBean = xuguParserApi.parseCreateType(sql3);
+        CreateTypeBean createTypeBean = XuguParserApi.parseCreateType(sql3);
         attributesHashMap =  createTypeBean.getAttributeMap();
-        methodsMap = createTypeBean.getMemberMap();
+        methodsMap = createTypeBean.getMethodMap();
         Iterator<Map.Entry<String, String>> it = attributesHashMap.entrySet().iterator();
         while (it.hasNext()) {
             Map.Entry<String, String> entry = it.next();
@@ -165,9 +165,9 @@ public class UdtTest {
 
     @Test
     public void udtTest4(){
-        CreateTypeBean createTypeBean = xuguParserApi.parseCreateType(sql4);
+        CreateTypeBean createTypeBean = XuguParserApi.parseCreateType(sql4);
         attributesHashMap =  createTypeBean.getAttributeMap();
-        methodsMap = createTypeBean.getMemberMap();
+        methodsMap = createTypeBean.getMethodMap();
         Iterator<Map.Entry<String, String>> it = attributesHashMap.entrySet().iterator();
         while (it.hasNext()) {
             Map.Entry<String, String> entry = it.next();
@@ -178,9 +178,9 @@ public class UdtTest {
 
     @Test
     public void udtTest5(){
-        CreateTypeBean createTypeBean = xuguParserApi.parseCreateType(sql5);
+        CreateTypeBean createTypeBean = XuguParserApi.parseCreateType(sql5);
         attributesHashMap =  createTypeBean.getAttributeMap();
-        methodsMap = createTypeBean.getMemberMap();
+        methodsMap = createTypeBean.getMethodMap();
         Iterator<Map.Entry<String, String>> it = attributesHashMap.entrySet().iterator();
         while (it.hasNext()) {
             Map.Entry<String, String> entry = it.next();
@@ -191,9 +191,9 @@ public class UdtTest {
 
     @Test
     public void udtTest6(){
-        CreateTypeBean createTypeBean = xuguParserApi.parseCreateType(sql6);
+        CreateTypeBean createTypeBean = XuguParserApi.parseCreateType(sql6);
         attributesHashMap =  createTypeBean.getAttributeMap();
-        methodsMap = createTypeBean.getMemberMap();
+        methodsMap = createTypeBean.getMethodMap();
         Iterator<Map.Entry<String, String>> it = attributesHashMap.entrySet().iterator();
         while (it.hasNext()) {
             Map.Entry<String, String> entry = it.next();
@@ -204,9 +204,9 @@ public class UdtTest {
 
     @Test
     public void udtTest7(){
-        CreateTypeBean createTypeBean = xuguParserApi.parseCreateType(sql7);
+        CreateTypeBean createTypeBean = XuguParserApi.parseCreateType(sql7);
         attributesHashMap =  createTypeBean.getAttributeMap();
-        methodsMap = createTypeBean.getMemberMap();
+        methodsMap = createTypeBean.getMethodMap();
         Iterator<Map.Entry<String, String>> it = attributesHashMap.entrySet().iterator();
         while (it.hasNext()) {
             Map.Entry<String, String> entry = it.next();
@@ -217,9 +217,9 @@ public class UdtTest {
 
     @Test
     public void udtTest8(){
-        CreateTypeBean createTypeBean = xuguParserApi.parseCreateType(sql8);
+        CreateTypeBean createTypeBean = XuguParserApi.parseCreateType(sql8);
         attributesHashMap =  createTypeBean.getAttributeMap();
-        methodsMap = createTypeBean.getMemberMap();
+        methodsMap = createTypeBean.getMethodMap();
         Iterator<Map.Entry<String, String>> it = attributesHashMap.entrySet().iterator();
         while (it.hasNext()) {
             Map.Entry<String, String> entry = it.next();
@@ -230,9 +230,9 @@ public class UdtTest {
 
     @Test
     public void udtTest9(){
-        CreateTypeBean createTypeBean = xuguParserApi.parseCreateType(sql9);
+        CreateTypeBean createTypeBean = XuguParserApi.parseCreateType(sql9);
         attributesHashMap =  createTypeBean.getAttributeMap();
-        methodsMap = createTypeBean.getMemberMap();
+        methodsMap = createTypeBean.getMethodMap();
         Iterator<Map.Entry<String, String>> it = attributesHashMap.entrySet().iterator();
         while (it.hasNext()) {
             Map.Entry<String, String> entry = it.next();
@@ -243,9 +243,9 @@ public class UdtTest {
 
     @Test
     public void udtTest10(){
-        CreateTypeBean createTypeBean = xuguParserApi.parseCreateType(sql10);
+        CreateTypeBean createTypeBean = XuguParserApi.parseCreateType(sql10);
         attributesHashMap =  createTypeBean.getAttributeMap();
-        methodsMap = createTypeBean.getMemberMap();
+        methodsMap = createTypeBean.getMethodMap();
         Iterator<Map.Entry<String, String>> it = attributesHashMap.entrySet().iterator();
         while (it.hasNext()) {
             Map.Entry<String, String> entry = it.next();
@@ -256,9 +256,9 @@ public class UdtTest {
 
     @Test
     public void udtTest11(){
-        CreateTypeBean createTypeBean = xuguParserApi.parseCreateType(sql11);
+        CreateTypeBean createTypeBean = XuguParserApi.parseCreateType(sql11);
         attributesHashMap =  createTypeBean.getAttributeMap();
-        methodsMap = createTypeBean.getMemberMap();
+        methodsMap = createTypeBean.getMethodMap();
         Iterator<Map.Entry<String, String>> it = attributesHashMap.entrySet().iterator();
         while (it.hasNext()) {
             Map.Entry<String, String> entry = it.next();

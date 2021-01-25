@@ -1,21 +1,25 @@
+/*
 package com.alibaba.druid.xugu.procedure;
 
 import static org.junit.Assert.assertTrue;
 
 import com.alibaba.druid.sql.dialect.xugu.api.XuguParserApi;
 import com.alibaba.druid.sql.dialect.xugu.api.bean.CreateProcedureBean;
-import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+*/
 /**
  * Unit test for simple App.
- */
+ *//*
+
 public class ProcedureTest
 {
-    /**
+    */
+/**
      * Rigorous Test :-)
-     */
+     *//*
+
 
     String sql = "-- Create Procedure --\n" +
             "CREATE OR REPLACE PROCEDURE prc_test1()\n" +
@@ -303,10 +307,10 @@ public class ProcedureTest
             "  commit;\n" +
             "end sysauditor.proc_setint ;";
 
-static XuguParserApi xuguParserApi;
+static XuguParserApi2 xuguParserApi2;
 @BeforeClass
 public  static void afterClass(){
-     xuguParserApi = new XuguParserApi();
+     xuguParserApi2 = new XuguParserApi2();
 }
 
 
@@ -314,7 +318,7 @@ public  static void afterClass(){
 
     @Test
     public void testProcedure() {
-        CreateProcedureBean createProcedureBean = xuguParserApi.parseCreateProcedure(sql);
+        CreateProcedureBean createProcedureBean = xuguParserApi2.parseCreateProcedure(sql);
         if (createProcedureBean != null) {
             for (int i = 0; i < createProcedureBean.getParamSize(); i++) {
                 String paraName = createProcedureBean.getParams().get(i).get(0);
@@ -334,7 +338,7 @@ public  static void afterClass(){
 
     @Test
     public void testProcedure1() {
-            CreateProcedureBean createProcedureBean = xuguParserApi.parseCreateProcedure(sql);
+            CreateProcedureBean createProcedureBean = xuguParserApi2.parseCreateProcedure(sql);
             if (createProcedureBean != null) {
                 for (int i = 0; i < createProcedureBean.getParamSize(); i++) {
                     String paraName = createProcedureBean.getParams().get(i).get(0);
@@ -353,7 +357,7 @@ public  static void afterClass(){
         }
     @Test
     public void testProcedure2() {
-                CreateProcedureBean createProcedureBean = xuguParserApi.parseCreateProcedure(sql2);
+                CreateProcedureBean createProcedureBean = xuguParserApi2.parseCreateProcedure(sql2);
                 if (createProcedureBean != null) {
                     for (int i = 0; i < createProcedureBean.getParamSize(); i++) {
                         String paraName = createProcedureBean.getParams().get(i).get(0);
@@ -372,7 +376,7 @@ public  static void afterClass(){
             }
     @Test
     public void testProcedure3() {
-                    CreateProcedureBean createProcedureBean = xuguParserApi.parseCreateProcedure(sql3);
+                    CreateProcedureBean createProcedureBean = xuguParserApi2.parseCreateProcedure(sql3);
                     if (createProcedureBean != null) {
                         for (int i = 0; i < createProcedureBean.getParamSize(); i++) {
                             String paraName = createProcedureBean.getParams().get(i).get(0);
@@ -391,7 +395,7 @@ public  static void afterClass(){
                 }
     @Test
     public void testProcedure4(){
-        CreateProcedureBean createProcedureBean = xuguParserApi.parseCreateProcedure(sql4);
+        CreateProcedureBean createProcedureBean = xuguParserApi2.parseCreateProcedure(sql4);
         if (createProcedureBean != null) {
             for (int i = 0; i < createProcedureBean.getParamSize(); i++) {
                 String paraName = createProcedureBean.getParams().get(i).get(0);
@@ -411,7 +415,7 @@ public  static void afterClass(){
 
     @Test
     public void testProcedure5(){
-        CreateProcedureBean createProcedureBean = xuguParserApi.parseCreateProcedure(sql5);
+        CreateProcedureBean createProcedureBean = xuguParserApi2.parseCreateProcedure(sql5);
         if (createProcedureBean != null) {
             for (int i = 0; i < createProcedureBean.getParamSize(); i++) {
                 String paraName = createProcedureBean.getParams().get(i).get(0);
@@ -430,7 +434,7 @@ public  static void afterClass(){
     }
     @Test
     public void testProcedure6(){
-        CreateProcedureBean createProcedureBean = xuguParserApi.parseCreateProcedure(sql6);
+        CreateProcedureBean createProcedureBean = xuguParserApi2.parseCreateProcedure(sql6);
         if (createProcedureBean != null) {
             for (int i = 0; i < createProcedureBean.getParamSize(); i++) {
                 String paraName = createProcedureBean.getParams().get(i).get(0);
@@ -449,7 +453,7 @@ public  static void afterClass(){
     }
     @Test
     public void testProcedure7(){
-        CreateProcedureBean createProcedureBean = xuguParserApi.parseCreateProcedure(sql7);
+        CreateProcedureBean createProcedureBean = xuguParserApi2.parseCreateProcedure(sql7);
         if (createProcedureBean != null) {
             for (int i = 0; i < createProcedureBean.getParamSize(); i++) {
                 String paraName = createProcedureBean.getParams().get(i).get(0);
@@ -468,7 +472,7 @@ public  static void afterClass(){
     }
     @Test
     public void testProcedure8(){
-        CreateProcedureBean createProcedureBean = xuguParserApi.parseCreateProcedure(sql8);
+        CreateProcedureBean createProcedureBean = xuguParserApi2.parseCreateProcedure(sql8);
         if (createProcedureBean != null) {
             for (int i = 0; i < createProcedureBean.getParamSize(); i++) {
                 String paraName = createProcedureBean.getParams().get(i).get(0);
@@ -487,7 +491,7 @@ public  static void afterClass(){
     }
     @Test
     public void testProcedure9(){
-        CreateProcedureBean createProcedureBean = xuguParserApi.parseCreateProcedure(sql9);
+        CreateProcedureBean createProcedureBean = xuguParserApi2.parseCreateProcedure(sql9);
         if (createProcedureBean != null) {
             for (int i = 0; i < createProcedureBean.getParamSize(); i++) {
                 String paraName = createProcedureBean.getParams().get(i).get(0);
@@ -506,7 +510,7 @@ public  static void afterClass(){
     }
     @Test
     public void testProcedure10(){
-        CreateProcedureBean createProcedureBean = xuguParserApi.parseCreateProcedure(sql10);
+        CreateProcedureBean createProcedureBean = xuguParserApi2.parseCreateProcedure(sql10);
         if (createProcedureBean != null) {
             for (int i = 0; i < createProcedureBean.getParamSize(); i++) {
                 String paraName = createProcedureBean.getParams().get(i).get(0);
@@ -525,7 +529,7 @@ public  static void afterClass(){
     }
     @Test
     public void testProcedure11(){
-        CreateProcedureBean createProcedureBean = xuguParserApi.parseCreateProcedure(sql11);
+        CreateProcedureBean createProcedureBean = xuguParserApi2.parseCreateProcedure(sql11);
         if (createProcedureBean != null) {
             for (int i = 0; i < createProcedureBean.getParamSize(); i++) {
                 String paraName = createProcedureBean.getParams().get(i).get(0);
@@ -544,7 +548,7 @@ public  static void afterClass(){
     }
     @Test
     public void testProcedure12(){
-        CreateProcedureBean createProcedureBean = xuguParserApi.parseCreateProcedure(sql12);
+        CreateProcedureBean createProcedureBean = xuguParserApi2.parseCreateProcedure(sql12);
         if (createProcedureBean != null) {
             for (int i = 0; i < createProcedureBean.getParamSize(); i++) {
                 String paraName = createProcedureBean.getParams().get(i).get(0);
@@ -563,7 +567,7 @@ public  static void afterClass(){
     }
     @Test
     public void testProcedure13(){
-        CreateProcedureBean createProcedureBean = xuguParserApi.parseCreateProcedure(sql13);
+        CreateProcedureBean createProcedureBean = xuguParserApi2.parseCreateProcedure(sql13);
         if (createProcedureBean != null) {
             for (int i = 0; i < createProcedureBean.getParamSize(); i++) {
                 String paraName = createProcedureBean.getParams().get(i).get(0);
@@ -582,7 +586,7 @@ public  static void afterClass(){
     }
     @Test
     public void testProcedure14(){
-        CreateProcedureBean createProcedureBean = xuguParserApi.parseCreateProcedure(sql14);
+        CreateProcedureBean createProcedureBean = xuguParserApi2.parseCreateProcedure(sql14);
         if (createProcedureBean != null) {
             for (int i = 0; i < createProcedureBean.getParamSize(); i++) {
                 String paraName = createProcedureBean.getParams().get(i).get(0);
@@ -601,7 +605,7 @@ public  static void afterClass(){
     }
     @Test
     public void testProcedure15(){
-        CreateProcedureBean createProcedureBean = xuguParserApi.parseCreateProcedure(sql15);
+        CreateProcedureBean createProcedureBean = xuguParserApi2.parseCreateProcedure(sql15);
         if (createProcedureBean != null) {
             for (int i = 0; i < createProcedureBean.getParamSize(); i++) {
                 String paraName = createProcedureBean.getParams().get(i).get(0);
@@ -620,7 +624,7 @@ public  static void afterClass(){
     }
     @Test
     public void testProcedure16(){
-        CreateProcedureBean createProcedureBean = xuguParserApi.parseCreateProcedure(sql16);
+        CreateProcedureBean createProcedureBean = xuguParserApi2.parseCreateProcedure(sql16);
         if (createProcedureBean != null) {
             for (int i = 0; i < createProcedureBean.getParamSize(); i++) {
                 String paraName = createProcedureBean.getParams().get(i).get(0);
@@ -639,7 +643,7 @@ public  static void afterClass(){
     }
     @Test
     public void testProcedure17(){
-        CreateProcedureBean createProcedureBean = xuguParserApi.parseCreateProcedure(sql17);
+        CreateProcedureBean createProcedureBean = xuguParserApi2.parseCreateProcedure(sql17);
         if (createProcedureBean != null) {
             for (int i = 0; i < createProcedureBean.getParamSize(); i++) {
                 String paraName = createProcedureBean.getParams().get(i).get(0);
@@ -658,7 +662,7 @@ public  static void afterClass(){
     }
     @Test
     public void testProcedure18(){
-        CreateProcedureBean createProcedureBean = xuguParserApi.parseCreateProcedure(sql18);
+        CreateProcedureBean createProcedureBean = xuguParserApi2.parseCreateProcedure(sql18);
         if (createProcedureBean != null) {
             for (int i = 0; i < createProcedureBean.getParamSize(); i++) {
                 String paraName = createProcedureBean.getParams().get(i).get(0);
@@ -677,7 +681,7 @@ public  static void afterClass(){
     }
     @Test
     public void testProcedure19(){
-        CreateProcedureBean createProcedureBean = xuguParserApi.parseCreateProcedure(sql19);
+        CreateProcedureBean createProcedureBean = xuguParserApi2.parseCreateProcedure(sql19);
         if (createProcedureBean != null) {
             for (int i = 0; i < createProcedureBean.getParamSize(); i++) {
                 String paraName = createProcedureBean.getParams().get(i).get(0);
@@ -696,7 +700,7 @@ public  static void afterClass(){
     }
     @Test
     public void testProcedure20(){
-        CreateProcedureBean createProcedureBean = xuguParserApi.parseCreateProcedure(sql20);
+        CreateProcedureBean createProcedureBean = xuguParserApi2.parseCreateProcedure(sql20);
         if (createProcedureBean != null) {
             for (int i = 0; i < createProcedureBean.getParamSize(); i++) {
                 String paraName = createProcedureBean.getParams().get(i).get(0);
@@ -715,7 +719,7 @@ public  static void afterClass(){
     }
     @Test
     public void testProcedure21(){
-        CreateProcedureBean createProcedureBean = xuguParserApi.parseCreateProcedure(sql21);
+        CreateProcedureBean createProcedureBean = xuguParserApi2.parseCreateProcedure(sql21);
         if (createProcedureBean != null) {
             for (int i = 0; i < createProcedureBean.getParamSize(); i++) {
                 String paraName = createProcedureBean.getParams().get(i).get(0);
@@ -734,7 +738,7 @@ public  static void afterClass(){
     }
     @Test
     public void testProcedure22(){
-        CreateProcedureBean createProcedureBean = xuguParserApi.parseCreateProcedure(sql22);
+        CreateProcedureBean createProcedureBean = xuguParserApi2.parseCreateProcedure(sql22);
         if (createProcedureBean != null) {
             for (int i = 0; i < createProcedureBean.getParamSize(); i++) {
                 String paraName = createProcedureBean.getParams().get(i).get(0);
@@ -753,7 +757,7 @@ public  static void afterClass(){
     }
     @Test
     public void testProcedure23(){
-        CreateProcedureBean createProcedureBean = xuguParserApi.parseCreateProcedure(sql23);
+        CreateProcedureBean createProcedureBean = xuguParserApi2.parseCreateProcedure(sql23);
         if (createProcedureBean != null) {
             for (int i = 0; i < createProcedureBean.getParamSize(); i++) {
                 String paraName = createProcedureBean.getParams().get(i).get(0);
@@ -772,7 +776,7 @@ public  static void afterClass(){
     }
     @Test
     public void testProcedure24(){
-        CreateProcedureBean createProcedureBean = xuguParserApi.parseCreateProcedure(sql24);
+        CreateProcedureBean createProcedureBean = xuguParserApi2.parseCreateProcedure(sql24);
         if (createProcedureBean != null) {
             for (int i = 0; i < createProcedureBean.getParamSize(); i++) {
                 String paraName = createProcedureBean.getParams().get(i).get(0);
@@ -791,7 +795,7 @@ public  static void afterClass(){
     }
     @Test
     public void testProcedure25(){
-        CreateProcedureBean createProcedureBean = xuguParserApi.parseCreateProcedure(sql25);
+        CreateProcedureBean createProcedureBean = xuguParserApi2.parseCreateProcedure(sql25);
         if (createProcedureBean != null) {
             for (int i = 0; i < createProcedureBean.getParamSize(); i++) {
                 String paraName = createProcedureBean.getParams().get(i).get(0);
@@ -810,7 +814,7 @@ public  static void afterClass(){
     }
     @Test
     public void testProcedure26(){
-        CreateProcedureBean createProcedureBean = xuguParserApi.parseCreateProcedure(sql26);
+        CreateProcedureBean createProcedureBean = xuguParserApi2.parseCreateProcedure(sql26);
         if (createProcedureBean != null) {
             for (int i = 0; i < createProcedureBean.getParamSize(); i++) {
                 String paraName = createProcedureBean.getParams().get(i).get(0);
@@ -829,7 +833,7 @@ public  static void afterClass(){
     }
     @Test
     public void testProcedure27(){
-        CreateProcedureBean createProcedureBean = xuguParserApi.parseCreateProcedure(sql27);
+        CreateProcedureBean createProcedureBean = xuguParserApi2.parseCreateProcedure(sql27);
         if (createProcedureBean != null) {
             for (int i = 0; i < createProcedureBean.getParamSize(); i++) {
                 String paraName = createProcedureBean.getParams().get(i).get(0);
@@ -848,7 +852,7 @@ public  static void afterClass(){
     }
     @Test
     public void testProcedure28(){
-        CreateProcedureBean createProcedureBean = xuguParserApi.parseCreateProcedure(sql28);
+        CreateProcedureBean createProcedureBean = xuguParserApi2.parseCreateProcedure(sql28);
         if (createProcedureBean != null) {
             for (int i = 0; i < createProcedureBean.getParamSize(); i++) {
                 String paraName = createProcedureBean.getParams().get(i).get(0);
@@ -866,7 +870,7 @@ public  static void afterClass(){
         }
     }    @Test
 public void testProcedure29(){
-    CreateProcedureBean createProcedureBean = xuguParserApi.parseCreateProcedure(sql29);
+    CreateProcedureBean createProcedureBean = xuguParserApi2.parseCreateProcedure(sql29);
     if (createProcedureBean != null) {
         for (int i = 0; i < createProcedureBean.getParamSize(); i++) {
             String paraName = createProcedureBean.getParams().get(i).get(0);
@@ -885,7 +889,7 @@ public void testProcedure29(){
 }
     @Test
     public void testProcedure30(){
-        CreateProcedureBean createProcedureBean = xuguParserApi.parseCreateProcedure(sql30);
+        CreateProcedureBean createProcedureBean = xuguParserApi2.parseCreateProcedure(sql30);
         if (createProcedureBean != null) {
             for (int i = 0; i < createProcedureBean.getParamSize(); i++) {
                 String paraName = createProcedureBean.getParams().get(i).get(0);
@@ -903,7 +907,7 @@ public void testProcedure29(){
         }
     }    @Test
 public void testProcedure31(){
-    CreateProcedureBean createProcedureBean = xuguParserApi.parseCreateProcedure(sql31);
+    CreateProcedureBean createProcedureBean = xuguParserApi2.parseCreateProcedure(sql31);
     if (createProcedureBean != null) {
         for (int i = 0; i < createProcedureBean.getParamSize(); i++) {
             String paraName = createProcedureBean.getParams().get(i).get(0);
@@ -921,7 +925,7 @@ public void testProcedure31(){
     }
 }    @Test
 public void testProcedure32(){
-    CreateProcedureBean createProcedureBean = xuguParserApi.parseCreateProcedure(sql32);
+    CreateProcedureBean createProcedureBean = xuguParserApi2.parseCreateProcedure(sql32);
     if (createProcedureBean != null) {
         for (int i = 0; i < createProcedureBean.getParamSize(); i++) {
             String paraName = createProcedureBean.getParams().get(i).get(0);
@@ -940,7 +944,7 @@ public void testProcedure32(){
 }
     @Test
     public void testProcedure33(){
-        CreateProcedureBean createProcedureBean = xuguParserApi.parseCreateProcedure(sql33);
+        CreateProcedureBean createProcedureBean = xuguParserApi2.parseCreateProcedure(sql33);
         if (createProcedureBean != null) {
             for (int i = 0; i < createProcedureBean.getParamSize(); i++) {
                 String paraName = createProcedureBean.getParams().get(i).get(0);
@@ -958,7 +962,7 @@ public void testProcedure32(){
         }
     }    @Test
 public void testProcedure34(){
-    CreateProcedureBean createProcedureBean = xuguParserApi.parseCreateProcedure(sql34);
+    CreateProcedureBean createProcedureBean = xuguParserApi2.parseCreateProcedure(sql34);
     if (createProcedureBean != null) {
         for (int i = 0; i < createProcedureBean.getParamSize(); i++) {
             String paraName = createProcedureBean.getParams().get(i).get(0);
@@ -976,7 +980,7 @@ public void testProcedure34(){
     }
 }    @Test
 public void testProcedure35(){
-    CreateProcedureBean createProcedureBean = xuguParserApi.parseCreateProcedure(sql35);
+    CreateProcedureBean createProcedureBean = xuguParserApi2.parseCreateProcedure(sql35);
     if (createProcedureBean != null) {
         for (int i = 0; i < createProcedureBean.getParamSize(); i++) {
             String paraName = createProcedureBean.getParams().get(i).get(0);
@@ -995,7 +999,7 @@ public void testProcedure35(){
 }
     @Test
     public void testProcedure36(){
-        CreateProcedureBean createProcedureBean = xuguParserApi.parseCreateProcedure(sql36);
+        CreateProcedureBean createProcedureBean = xuguParserApi2.parseCreateProcedure(sql36);
         if (createProcedureBean != null) {
             for (int i = 0; i < createProcedureBean.getParamSize(); i++) {
                 String paraName = createProcedureBean.getParams().get(i).get(0);
@@ -1014,7 +1018,7 @@ public void testProcedure35(){
     }
     @Test
     public void testProcedure37(){
-        CreateProcedureBean createProcedureBean = xuguParserApi.parseCreateProcedure(sql37);
+        CreateProcedureBean createProcedureBean = xuguParserApi2.parseCreateProcedure(sql37);
         if (createProcedureBean != null) {
             for (int i = 0; i < createProcedureBean.getParamSize(); i++) {
                 String paraName = createProcedureBean.getParams().get(i).get(0);
@@ -1032,7 +1036,7 @@ public void testProcedure35(){
         }
     }    @Test
 public void testProcedure38(){
-    CreateProcedureBean createProcedureBean = xuguParserApi.parseCreateProcedure(sql38);
+    CreateProcedureBean createProcedureBean = xuguParserApi2.parseCreateProcedure(sql38);
     if (createProcedureBean != null) {
         for (int i = 0; i < createProcedureBean.getParamSize(); i++) {
             String paraName = createProcedureBean.getParams().get(i).get(0);
@@ -1050,7 +1054,7 @@ public void testProcedure38(){
     }
 }    @Test
 public void testProcedure39(){
-    CreateProcedureBean createProcedureBean = xuguParserApi.parseCreateProcedure(sql39);
+    CreateProcedureBean createProcedureBean = xuguParserApi2.parseCreateProcedure(sql39);
     if (createProcedureBean != null) {
         for (int i = 0; i < createProcedureBean.getParamSize(); i++) {
             String paraName = createProcedureBean.getParams().get(i).get(0);
@@ -1068,7 +1072,7 @@ public void testProcedure39(){
     }
 }    @Test
 public void testProcedure40(){
-    CreateProcedureBean createProcedureBean = xuguParserApi.parseCreateProcedure(sql40);
+    CreateProcedureBean createProcedureBean = xuguParserApi2.parseCreateProcedure(sql40);
     if (createProcedureBean != null) {
         for (int i = 0; i < createProcedureBean.getParamSize(); i++) {
             String paraName = createProcedureBean.getParams().get(i).get(0);
@@ -1086,7 +1090,7 @@ public void testProcedure40(){
     }
 }    @Test
 public void testProcedure41(){
-    CreateProcedureBean createProcedureBean = xuguParserApi.parseCreateProcedure(sql41);
+    CreateProcedureBean createProcedureBean = xuguParserApi2.parseCreateProcedure(sql41);
     if (createProcedureBean != null) {
         for (int i = 0; i < createProcedureBean.getParamSize(); i++) {
             String paraName = createProcedureBean.getParams().get(i).get(0);
@@ -1104,7 +1108,7 @@ public void testProcedure41(){
     }
 }    @Test
 public void testProcedure42(){
-    CreateProcedureBean createProcedureBean = xuguParserApi.parseCreateProcedure(sql42);
+    CreateProcedureBean createProcedureBean = xuguParserApi2.parseCreateProcedure(sql42);
     if (createProcedureBean != null) {
         for (int i = 0; i < createProcedureBean.getParamSize(); i++) {
             String paraName = createProcedureBean.getParams().get(i).get(0);
@@ -1122,7 +1126,7 @@ public void testProcedure42(){
     }
 }    @Test
 public void testProcedure43(){
-    CreateProcedureBean createProcedureBean = xuguParserApi.parseCreateProcedure(sql43);
+    CreateProcedureBean createProcedureBean = xuguParserApi2.parseCreateProcedure(sql43);
     if (createProcedureBean != null) {
         for (int i = 0; i < createProcedureBean.getParamSize(); i++) {
             String paraName = createProcedureBean.getParams().get(i).get(0);
@@ -1141,7 +1145,7 @@ public void testProcedure43(){
 }
     @Test
     public void testProcedure44(){
-        CreateProcedureBean createProcedureBean = xuguParserApi.parseCreateProcedure(sql44);
+        CreateProcedureBean createProcedureBean = xuguParserApi2.parseCreateProcedure(sql44);
         if (createProcedureBean != null) {
             for (int i = 0; i < createProcedureBean.getParamSize(); i++) {
                 String paraName = createProcedureBean.getParams().get(i).get(0);
@@ -1160,7 +1164,7 @@ public void testProcedure43(){
     }
     @Test
     public void testProcedure45(){
-        CreateProcedureBean createProcedureBean = xuguParserApi.parseCreateProcedure(sql45);
+        CreateProcedureBean createProcedureBean = xuguParserApi2.parseCreateProcedure(sql45);
         if (createProcedureBean != null) {
             for (int i = 0; i < createProcedureBean.getParamSize(); i++) {
                 String paraName = createProcedureBean.getParams().get(i).get(0);
@@ -1179,7 +1183,7 @@ public void testProcedure43(){
     }
     @Test
     public void testProcedure46(){
-        CreateProcedureBean createProcedureBean = xuguParserApi.parseCreateProcedure(sql46);
+        CreateProcedureBean createProcedureBean = xuguParserApi2.parseCreateProcedure(sql46);
         if (createProcedureBean != null) {
             for (int i = 0; i < createProcedureBean.getParamSize(); i++) {
                 String paraName = createProcedureBean.getParams().get(i).get(0);
@@ -1198,7 +1202,7 @@ public void testProcedure43(){
     }
     @Test
     public void testProcedure47(){
-        CreateProcedureBean createProcedureBean = xuguParserApi.parseCreateProcedure(sql47);
+        CreateProcedureBean createProcedureBean = xuguParserApi2.parseCreateProcedure(sql47);
         if (createProcedureBean != null) {
             for (int i = 0; i < createProcedureBean.getParamSize(); i++) {
                 String paraName = createProcedureBean.getParams().get(i).get(0);
@@ -1218,7 +1222,7 @@ public void testProcedure43(){
 
     @Test
     public void testProcedure48(){
-        CreateProcedureBean createProcedureBean = xuguParserApi.parseCreateProcedure(sql48);
+        CreateProcedureBean createProcedureBean = xuguParserApi2.parseCreateProcedure(sql48);
         if (createProcedureBean != null) {
             for (int i = 0; i < createProcedureBean.getParamSize(); i++) {
                 String paraName = createProcedureBean.getParams().get(i).get(0);
@@ -1237,7 +1241,7 @@ public void testProcedure43(){
     }
     @Test
     public void testProcedure49(){
-        CreateProcedureBean createProcedureBean = xuguParserApi.parseCreateProcedure(sql49);
+        CreateProcedureBean createProcedureBean = xuguParserApi2.parseCreateProcedure(sql49);
         if (createProcedureBean != null) {
             for (int i = 0; i < createProcedureBean.getParamSize(); i++) {
                 String paraName = createProcedureBean.getParams().get(i).get(0);
@@ -1270,3 +1274,4 @@ public void testProcedure43(){
 
 
 }
+*/

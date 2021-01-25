@@ -18,10 +18,16 @@ public class CreateView extends TestCase {
 
         String sql = "create view view_cm_config as select * from cm_config;";
         String sql2 = "create view SYSDBA.view_cm_role as select * from cm_role;";
-        String sql3 = "create view u1.v1 as select * from u2.t1 left join u1.t1 on XXXX";
+        String sql3 = "create view sysdba.v1 as select * from sysdba.teacher a left join user_sod.student b on a.id=b.tid;";
+        String sql4 = "create view sysdba.v1 as select * from sysdba.teacher a inner join user_sod.student b on a.id=b.tid;";
+        String sql5 = "create view sysdba.vv as select s.sname,c.cid,c.cname,t.tname\n" +
+                "    from sysdba.students s,user_sod2.course c,user_sod.teacher t\n" +
+                "    where s.courseid = c.cid and c.tid = t.tid;";
         builder.append(sql);
         builder.append(sql2);
         builder.append(sql3);
+        builder.append(sql4);
+        builder.append(sql5);
 
         XuguStatementParser parser = new XuguStatementParser(builder.toString());
         List<SQLStatement> statementList = parser.parseStatementList();

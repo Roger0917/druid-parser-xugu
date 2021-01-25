@@ -1,15 +1,8 @@
 package com.alibaba.druid.xugu.pack;
 
-import com.alibaba.druid.DbType;
-import com.alibaba.druid.sql.SQLUtils;
-import com.alibaba.druid.sql.ast.SQLStatement;
 import com.alibaba.druid.sql.dialect.xugu.api.XuguParserApi;
 import com.alibaba.druid.sql.dialect.xugu.api.bean.CreatePackageBean;
-import com.alibaba.druid.util.JdbcConstants;
 import junit.framework.TestCase;
-import org.apache.commons.lang.StringEscapeUtils;
-
-import java.util.List;
 
 public class XuguSysPack extends TestCase {
 

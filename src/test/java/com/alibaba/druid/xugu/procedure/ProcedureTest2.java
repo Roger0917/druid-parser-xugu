@@ -375,14 +375,18 @@ public class ProcedureTest2 extends XuguTest {
         String sqlIntervalMinuteToSecond = "create or replace procedure test_proc3(ss in interval minute(6) to second(3))\n" +
                 "as\n" +
                 "begin\n" +
-                "select * from sys_tables ;\n" +
+                " select * from sys_tables ;\n" +
+                " delete from sysdba.t3 where sysdba.t3.id=1;"+
                 "end;";
 
         String normal = "create or replace procedure test_proc3(ss in interval minute(6) to second(3),id int,name varchar(20),money numeric(10,5),address char(10))\n" +
                 "as\n" +
-                "begin\n" +
-                "select * from sys_tables ;\n" +
-                "end;";
+                " begin\n" +
+                " insert into sysdba.t1(id,name) values(1,'roger');"+
+                " select * from sysdba.sys_tables ;\n" +
+                " update sysdba.t1 set id=1 where name='roger1';"+
+                " delete from sysdba.t3 where sysdba.t3.id=1;"+
+                " end;";
 
         builder.append(sql);
         builder.append(sql1);
