@@ -19,13 +19,13 @@ import java.util.List;
 
 public class XuguExceptionStatement extends XuguStatementImpl implements XuguStatement {
 
-    private List<XuguExceptionStatement.Item> items = new ArrayList<XuguExceptionStatement.Item>();
+    private List<Item> items = new ArrayList<Item>();
 
-    public List<XuguExceptionStatement.Item> getItems() {
+    public List<Item> getItems() {
         return items;
     }
 
-    public void addItem(XuguExceptionStatement.Item item) {
+    public void addItem(Item item) {
         if (item != null) {
             item.setParent(this);
         }
@@ -67,8 +67,8 @@ public class XuguExceptionStatement extends XuguStatementImpl implements XuguSta
         }
 
         @Override
-        public XuguExceptionStatement.Item clone() {
-            XuguExceptionStatement.Item x = new XuguExceptionStatement.Item();
+        public Item clone() {
+            Item x = new Item();
             if (when != null) {
                 x.setWhen(when.clone());
             }
@@ -92,8 +92,8 @@ public class XuguExceptionStatement extends XuguStatementImpl implements XuguSta
     @Override
     public XuguExceptionStatement clone() {
         XuguExceptionStatement x = new XuguExceptionStatement();
-        for (XuguExceptionStatement.Item item : items) {
-            XuguExceptionStatement.Item item2 = item.clone();
+        for (Item item : items) {
+            Item item2 = item.clone();
             item2.setParent(x);
             x.items.add(item2);
         }

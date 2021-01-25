@@ -1,4 +1,4 @@
-/*
+package com.alibaba.druid.xugu.procedure;/*
 package com.alibaba.druid.xugu.procedure;
 
 import static org.junit.Assert.assertTrue;

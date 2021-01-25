@@ -18,11 +18,8 @@ package com.alibaba.druid.bvt.sql.oracle.create;
 import com.alibaba.druid.sql.OracleTest;
 import com.alibaba.druid.sql.ast.SQLStatement;
 import com.alibaba.druid.sql.ast.statement.SQLCreateProcedureStatement;
-import com.alibaba.druid.sql.dialect.oracle.parser.OracleStatementParser;
-import com.alibaba.druid.sql.dialect.oracle.visitor.OracleSchemaStatVisitor;
 import com.alibaba.druid.sql.dialect.xugu.parser.XuguStatementParser;
 import com.alibaba.druid.sql.dialect.xugu.visitor.XuguSchemaStatVisitor;
-import com.alibaba.druid.stat.TableStat;
 import org.junit.Assert;
 
 import java.util.ArrayList;

@@ -1,4 +1,4 @@
-/**
+package com.alibaba.druid.sql.dialect.xugu.api; /**
 
 import cn.hutool.core.util.StrUtil;
 import com.alibaba.druid.DbType;

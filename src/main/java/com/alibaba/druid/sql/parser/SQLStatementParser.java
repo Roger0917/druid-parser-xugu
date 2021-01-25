@@ -3813,6 +3813,10 @@ public class SQLStatementParser extends SQLParser {
 
                 if (lexer.token == Token.OF) {
                     lexer.nextToken();
+                    //兼容xugu语法触发器update 列可以跟括号update of id,update of (id,name)
+                    if(lexer.token== LPAREN){
+                        lexer.nextToken();
+                    }
                     this.exprParser.names(stmt.getUpdateOfColumns(), stmt);
                 }
             } else if (lexer.token == Token.DELETE) {
@@ -3828,10 +3832,15 @@ public class SQLStatementParser extends SQLParser {
 
             break;
         }
-
+        //兼容xugu 触发器update 列可跟()语法
+        if(lexer.token== RPAREN){
+            lexer.nextToken();
+        }
         accept(Token.ON);
         stmt.setOn(this.exprParser.name());
-
+        while(lexer.token!= FOR){
+            lexer.nextToken();
+        }
         if (lexer.token == Token.FOR) {
             lexer.nextToken();
             try{

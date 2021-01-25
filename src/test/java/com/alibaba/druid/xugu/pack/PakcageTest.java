@@ -1,4 +1,4 @@
-/*
+package com.alibaba.druid.xugu.pack;/*
 package com.alibaba.druid.xugu.pack;
 
 import com.alibaba.druid.sql.dialect.xugu.api.XuguParserApi2;

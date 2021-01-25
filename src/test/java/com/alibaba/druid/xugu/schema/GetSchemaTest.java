@@ -30,8 +30,6 @@ public class GetSchemaTest extends TestCase {
         SQLBlockStatement body = null;
         XuguStatementParser parser = new XuguStatementParser(sql.toString());
         List<SQLStatement> statementList =  parser.parseStatementList();
-        ExportSchemaVisitor visitor = new ExportSchemaVisitor();
-        statementList.get(0).accept(visitor);
         for (SQLStatement statement:statementList){
             if(statement instanceof SQLCreateProcedureStatement){
                 head = (SQLCreateProcedureStatement) statement;

@@ -15,10 +15,10 @@ import java.util.List;
 
 public class XuguSQLPartitionValue extends XuguSegmentAttributesImpl{
 
-    protected XuguSQLPartitionValue.Operator operator;
+    protected Operator operator;
     protected final List<SQLExpr> items = new ArrayList<SQLExpr>();
 
-    public XuguSQLPartitionValue(XuguSQLPartitionValue.Operator operator){
+    public XuguSQLPartitionValue(Operator operator){
         super();
         this.operator = operator;
     }
@@ -34,7 +34,7 @@ public class XuguSQLPartitionValue extends XuguSegmentAttributesImpl{
         this.items.add(item);
     }
 
-    public XuguSQLPartitionValue.Operator getOperator() {
+    public Operator getOperator() {
         return operator;
     }
 

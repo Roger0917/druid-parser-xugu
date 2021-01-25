@@ -101,9 +101,11 @@ public class XuguParserApi {
             triggerBean.setTriggerOccasion(sqlCreateTriggerStatement.getTriggerType().name());
             if(sqlCreateTriggerStatement.isInsert()){
                 operators.add("Insert");
-            }else if(sqlCreateTriggerStatement.isUpdate()){
+            }
+            if(sqlCreateTriggerStatement.isUpdate()){
                 operators.add("Update");
-            }else if(sqlCreateTriggerStatement.isDelete()){
+            }
+            if(sqlCreateTriggerStatement.isDelete()){
                 operators.add("Delete");
             }
             triggerBean.setOperators(operators);

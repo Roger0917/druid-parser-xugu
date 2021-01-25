@@ -1,7 +1,6 @@
 package com.alibaba.druid.sql;
 
 import com.alibaba.druid.sql.ast.SQLStatement;
-import com.alibaba.druid.sql.dialect.oracle.visitor.OracleOutputVisitor;
 import com.alibaba.druid.sql.dialect.xugu.visitor.XuguOutputVisitor;
 import junit.framework.TestCase;
 

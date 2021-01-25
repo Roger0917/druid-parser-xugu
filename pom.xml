@@ -97,6 +97,51 @@
 
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-pmd-plugin</artifactId>
+				<version>3.8</version>
+				<configuration>
+					<skip>false</skip>
+					<rulesets>
+						<!--            <ruleset>rulesets/java/ali-comment.xml</ruleset>-->
+						<ruleset>rulesets/java/ali-concurrent.xml</ruleset>
+						<!-- <ruleset>rulesets/java/ali-constant.xml</ruleset>-->
+						<ruleset>rulesets/java/ali-exception.xml</ruleset>
+						<ruleset>rulesets/java/ali-flowcontrol.xml</ruleset>
+						<!--            <ruleset>rulesets/java/ali-naming.xml</ruleset>-->
+						<ruleset>rulesets/java/ali-oop.xml</ruleset>
+						<ruleset>rulesets/java/ali-orm.xml</ruleset>
+						<!--            <ruleset>rulesets/java/ali-other.xml</ruleset>-->
+						<ruleset>rulesets/java/ali-set.xml</ruleset>
+					</rulesets>
+					<printFailingErrors>true</printFailingErrors>
+				</configuration>
+				<executions>
+					<execution>
+						<id>inspection-code-by-pmd</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>check</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>pmd-pmd-site</id>
+						<phase>package</phase>
+						<goals>
+							<goal>pmd</goal>
+						</goals>
+					</execution>
+				</executions>
+				<dependencies>
+					<dependency>
+						<groupId>com.alibaba.p3c</groupId>
+						<artifactId>p3c-pmd</artifactId>
+						<version>1.3.6</version>
+					</dependency>
+				</dependencies>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-source-plugin</artifactId>
 				<version>3.0.1</version>
 				<executions>
@@ -313,9 +358,6 @@
 			<build>
 				<plugins>
 					<!--<plugin>
-						&lt;!&ndash; for codecov.io &ndash;&gt;
-						&lt;!&ndash; config example: https://github.com/codecov/example-java &ndash;&gt;
-						&lt;!&ndash; plugin docs: http://eclemma.org/jacoco/trunk/doc/ &ndash;&gt;
 						<groupId>org.jacoco</groupId>
 						<artifactId>jacoco-maven-plugin</artifactId>
 						<version>0.7.6.201602180812</version>
