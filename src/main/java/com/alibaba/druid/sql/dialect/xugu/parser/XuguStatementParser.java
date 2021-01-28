@@ -1168,6 +1168,10 @@ public class XuguStatementParser extends SQLStatementParser{
 
         stmt.setIndex(this.exprParser.name());
         accept(Token.IN);
+        //兼容虚谷 for i in [reverse] 5..1这种写法
+        if("reverse".equalsIgnoreCase(lexer.stringVal())){
+            lexer.nextToken();
+        }
         stmt.setRange(this.exprParser.expr());
 
         if (stmt.isAll()) {

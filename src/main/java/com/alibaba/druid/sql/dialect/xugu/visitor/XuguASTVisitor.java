@@ -468,6 +468,22 @@ public interface XuguASTVisitor extends SQLASTVisitor {
 
     }
 
+    default boolean visit(XuguSQLPartitionValue x) {
+        return true;
+    }
+
+    default void endVisit(XuguSQLPartitionValue x) {
+
+    }
+
+    default boolean visit(XuguSQLPartition x) {
+        return true;
+    }
+
+    default void endVisit(XuguSQLPartition x) {
+
+    }
+
     default boolean visit(OracleIsOfTypeExpr x) {
         return true;
     }

@@ -3838,6 +3838,7 @@ public class SQLStatementParser extends SQLParser {
         }
         accept(Token.ON);
         stmt.setOn(this.exprParser.name());
+        //解决xugu有oracle不支持的referencing new as nn的写法
         while(lexer.token!= FOR){
             lexer.nextToken();
         }

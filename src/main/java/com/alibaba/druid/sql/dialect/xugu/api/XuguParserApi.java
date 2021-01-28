@@ -5,7 +5,11 @@ import com.alibaba.druid.sql.ast.SQLName;
 import com.alibaba.druid.sql.ast.SQLParameter;
 import com.alibaba.druid.sql.ast.SQLStatement;
 import com.alibaba.druid.sql.ast.expr.SQLMethodInvokeExpr;
+import com.alibaba.druid.sql.ast.expr.SQLPropertyExpr;
 import com.alibaba.druid.sql.ast.statement.*;
+import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleSelectJoin;
+import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleSelectQueryBlock;
+import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleSelectTableReference;
 import com.alibaba.druid.sql.dialect.xugu.api.bean.*;
 import com.alibaba.druid.sql.dialect.xugu.ast.XuguDataTypeIntervalDayToSecond;
 import com.alibaba.druid.sql.dialect.xugu.ast.XuguDataTypeIntervalHourToSecond;
@@ -16,10 +20,7 @@ import com.alibaba.druid.sql.dialect.xugu.parser.XuguFunctionDataType;
 import com.alibaba.druid.sql.dialect.xugu.parser.XuguProdecureDataType;
 import com.alibaba.druid.sql.dialect.xugu.parser.XuguStatementParser;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class XuguParserApi {
@@ -247,12 +248,16 @@ public class XuguParserApi {
         }
         for(SQLCreateViewStatement createViewStatement:createViewStatementList){
             CreateViewBean viewBean;
+            OracleSelectQueryBlock block=null;
+            if(createViewStatement.getSubQuery().getQuery() instanceof OracleSelectQueryBlock){
+                block = (OracleSelectQueryBlock) createViewStatement.getSubQuery().getQuery();
+            }
             if(createViewStatement.getSchema()!=null){
                 viewBean = CreateViewBean.builder().name(createViewStatement.getName().getSimpleName()).
-                        schemaName(createViewStatement.getSchema().toString()).tableName(createViewStatement.getTableSource().getTableName()).build();
+                        schemaName(createViewStatement.getSchema()).tableName(block.getFrom().toString()).build();
             }else{
                 viewBean = CreateViewBean.builder().name(createViewStatement.getName().getSimpleName()).
-                        schemaName("").tableName(createViewStatement.getTableSource().getTableName()).build();
+                        schemaName(null).tableName(block.getFrom().toString()).build();
             }
             createViewBeans.add(viewBean);
         }
@@ -387,6 +392,189 @@ public class XuguParserApi {
                 param.setScale(null);
             }
         }
+    }
+    
+    public static String replaceViewSqlSchema(String sql,HashMap<String,String> map){
+        XuguStatementParser parser = new XuguStatementParser(sql);
+        //List<String> schemas = new ArrayList<>();
+        List<SQLCreateViewStatement> createViewStatements = new ArrayList<>();
+        List<SQLStatement> statementList = parser.parseStatementList();
+        for(SQLStatement statement:statementList){
+            if(statement instanceof SQLCreateViewStatement){
+                SQLCreateViewStatement createViewStatement = (SQLCreateViewStatement) statement;
+                createViewStatements.add(createViewStatement);
+            }
+        }
+        //schemas.add(createViewStatements.get(0).getSchema());
+        //TODO 替换视图模式
+        /*if(map.containsKey(createViewStatements.get(0).getSchema())){
+            createViewStatements.get(0).getSchema()
+        }*/
+        //List<String> reverseSchemas = new ArrayList<>();
+
+        for(SQLCreateViewStatement createViewStatement:createViewStatements){
+            if(createViewStatement.getSubQuery().getQuery() instanceof OracleSelectQueryBlock){
+                //对于join的,v1,v2,v3需倒排序模式
+                if(((OracleSelectQueryBlock) createViewStatement.getSubQuery().getQuery()).getFrom() instanceof OracleSelectJoin){
+                    OracleSelectJoin join = (OracleSelectJoin) ((OracleSelectQueryBlock) createViewStatement.getSubQuery().getQuery()).getFrom();
+                    viewRecursion2(join,map);
+                }else if(((OracleSelectQueryBlock) createViewStatement.getSubQuery().getQuery()).getFrom() instanceof OracleSelectTableReference){
+                    SQLExpr expr = ((OracleSelectTableReference) ((OracleSelectQueryBlock) createViewStatement.getSubQuery().getQuery()).getFrom()).getExpr();
+                    if(expr instanceof SQLPropertyExpr){
+                        //reverseSchemas.add(((SQLPropertyExpr) expr).getOwnerName());
+                        if(map.containsKey(((SQLPropertyExpr) expr).getOwnerName())){
+                            ((SQLPropertyExpr) expr).setOwner(map.get(((SQLPropertyExpr) expr).getOwnerName()));
+                        }
+                    }
+                }
+            }else if(createViewStatement.getSubQuery().getQuery() instanceof SQLUnionQuery){
+                //对于union的,union的每个语句里的模式要倒排,但union语句间模式保持顺序不变
+                SQLUnionQuery unionQuery = (SQLUnionQuery) createViewStatement.getSubQuery().getQuery();
+                for(SQLSelectQuery sqlSelectQuery:unionQuery.getRelations()){
+                    List<String> oneUnionReverseSchemas = new ArrayList<>();
+                    if(sqlSelectQuery instanceof OracleSelectQueryBlock){
+                        if(((OracleSelectQueryBlock) sqlSelectQuery).getFrom() instanceof OracleSelectJoin){
+                            OracleSelectJoin join = (OracleSelectJoin) ((OracleSelectQueryBlock) createViewStatement.getSubQuery().getQuery()).getFrom();
+                            viewRecursion2(join,map);
+                        }else if (((OracleSelectQueryBlock) sqlSelectQuery).getFrom() instanceof OracleSelectTableReference){
+                            SQLExpr expr = ((OracleSelectTableReference) ((OracleSelectQueryBlock) sqlSelectQuery).getFrom()).getExpr();
+                            if(expr instanceof SQLPropertyExpr){
+                                //oneUnionReverseSchemas.add(((SQLPropertyExpr) expr).getOwnerName());
+                                if(map.containsKey(((SQLPropertyExpr) expr).getOwnerName())){
+                                    ((SQLPropertyExpr) expr).setOwner(map.get(((SQLPropertyExpr) expr).getOwnerName()));
+                                }
+                            }
+                        }
+                    }
+                    //Collections.reverse(oneUnionReverseSchemas);
+                    //schemas.addAll(oneUnionReverseSchemas);
+                }
+            }
+        }
+        //Collections.reverse(reverseSchemas);
+        //schemas.addAll(reverseSchemas);
+        return createViewStatements.get(0).toString();
+    }
+    
+    public static List<String> getSchemaFromView(String sql){
+        XuguStatementParser parser = new XuguStatementParser(sql);
+        List<String> schemas = new ArrayList<>();
+        List<SQLCreateViewStatement> createViewStatements = new ArrayList<>();
+        List<SQLStatement> statementList = parser.parseStatementList();
+        for(SQLStatement statement:statementList){
+            if(statement instanceof SQLCreateViewStatement){
+                SQLCreateViewStatement createViewStatement = (SQLCreateViewStatement) statement;
+                createViewStatements.add(createViewStatement);
+            }
+        }
+        schemas.add(createViewStatements.get(0).getSchema());
+        List<String> reverseSchemas = new ArrayList<>();
+
+        for(SQLCreateViewStatement createViewStatement:createViewStatements){
+            if(createViewStatement.getSubQuery().getQuery() instanceof OracleSelectQueryBlock){
+                //对于join的,v1,v2,v3需倒排序模式
+                if(((OracleSelectQueryBlock) createViewStatement.getSubQuery().getQuery()).getFrom() instanceof OracleSelectJoin){
+                    OracleSelectJoin join = (OracleSelectJoin) ((OracleSelectQueryBlock) createViewStatement.getSubQuery().getQuery()).getFrom();
+                    viewRecursion(join,reverseSchemas);
+                }else if(((OracleSelectQueryBlock) createViewStatement.getSubQuery().getQuery()).getFrom() instanceof OracleSelectTableReference){
+                    SQLExpr expr = ((OracleSelectTableReference) ((OracleSelectQueryBlock) createViewStatement.getSubQuery().getQuery()).getFrom()).getExpr();
+                    if(expr instanceof SQLPropertyExpr){
+                        reverseSchemas.add(((SQLPropertyExpr) expr).getOwnerName());
+                    }
+                }
+            }else if(createViewStatement.getSubQuery().getQuery() instanceof SQLUnionQuery){
+                //对于union的,union的每个语句里的模式要倒排,但union语句间模式保持顺序不变
+                SQLUnionQuery unionQuery = (SQLUnionQuery) createViewStatement.getSubQuery().getQuery();
+                for(SQLSelectQuery sqlSelectQuery:unionQuery.getRelations()){
+                    List<String> oneUnionReverseSchemas = new ArrayList<>();
+                    if(sqlSelectQuery instanceof OracleSelectQueryBlock){
+                        if(((OracleSelectQueryBlock) sqlSelectQuery).getFrom() instanceof OracleSelectJoin){
+                            OracleSelectJoin join = (OracleSelectJoin) ((OracleSelectQueryBlock) createViewStatement.getSubQuery().getQuery()).getFrom();
+                            viewRecursion(join,oneUnionReverseSchemas);
+                        }else if (((OracleSelectQueryBlock) sqlSelectQuery).getFrom() instanceof OracleSelectTableReference){
+                            SQLExpr expr = ((OracleSelectTableReference) ((OracleSelectQueryBlock) sqlSelectQuery).getFrom()).getExpr();
+                            if(expr instanceof SQLPropertyExpr){
+                                oneUnionReverseSchemas.add(((SQLPropertyExpr) expr).getOwnerName());
+                            }
+                        }
+                    }
+                    Collections.reverse(oneUnionReverseSchemas);
+                    schemas.addAll(oneUnionReverseSchemas);
+                }
+            }
+        }
+        Collections.reverse(reverseSchemas);
+        schemas.addAll(reverseSchemas);
+        return schemas;
+    }
+
+
+
+    /** 视图递归 **/
+    private static void viewRecursion(OracleSelectJoin join, List<String> reverseSchemas){
+        if(join.getLeft() instanceof OracleSelectTableReference){
+            if(((OracleSelectTableReference) join.getRight()).getExpr() instanceof SQLPropertyExpr){
+                reverseSchemas.add(((SQLPropertyExpr) ((OracleSelectTableReference) join.getRight()).getExpr()).getOwnerName());
+            }
+            if(((OracleSelectTableReference) join.getLeft()).getExpr() instanceof SQLPropertyExpr){
+                reverseSchemas.add(((SQLPropertyExpr) ((OracleSelectTableReference) join.getLeft()).getExpr()).getOwnerName());
+            }
+        }else if (join.getLeft() instanceof OracleSelectJoin){
+            OracleSelectTableReference reference = (OracleSelectTableReference) join.getRight();
+            if(reference.getExpr() instanceof SQLPropertyExpr){
+                reverseSchemas.add(((SQLPropertyExpr) reference.getExpr()).getOwnerName());
+            }
+            if(join.getLeft() instanceof OracleSelectJoin){
+                viewRecursion((OracleSelectJoin) join.getLeft(),reverseSchemas);
+            }else if(join.getLeft() instanceof OracleSelectTableReference){
+                OracleSelectTableReference tableReference = (OracleSelectTableReference) join.getLeft();
+                if(tableReference.getExpr() instanceof SQLPropertyExpr){
+                    reverseSchemas.add(((SQLPropertyExpr)tableReference.getExpr()).getOwnerName());
+                }
+            }
+        }
+       /* if(reverseSchemas.size()>0){
+            Collections.reverse(reverseSchemas);
+        }*/
+    }
+
+    private static void viewRecursion2(OracleSelectJoin join,HashMap<String,String> map){
+        if(join.getLeft() instanceof OracleSelectTableReference){
+            if(((OracleSelectTableReference) join.getRight()).getExpr() instanceof SQLPropertyExpr){
+                //reverseSchemas.add(((SQLPropertyExpr) ((OracleSelectTableReference) join.getRight()).getExpr()).getOwnerName());
+                if(map.containsKey(((SQLPropertyExpr) ((OracleSelectTableReference) join.getRight()).getExpr()).getOwnerName())){
+                    ((SQLPropertyExpr) ((OracleSelectTableReference) join.getRight()).getExpr()).setOwner(map.get(((SQLPropertyExpr) ((OracleSelectTableReference) join.getRight()).getExpr()).getOwnerName()));
+                }
+            }
+            if(((OracleSelectTableReference) join.getLeft()).getExpr() instanceof SQLPropertyExpr){
+                //reverseSchemas.add(((SQLPropertyExpr) ((OracleSelectTableReference) join.getLeft()).getExpr()).getOwnerName());
+                if(map.containsKey(((SQLPropertyExpr) ((OracleSelectTableReference) join.getLeft()).getExpr()).getOwnerName())){
+                    ((SQLPropertyExpr) ((OracleSelectTableReference) join.getLeft()).getExpr()).setOwner(map.get(((SQLPropertyExpr) ((OracleSelectTableReference) join.getLeft()).getExpr()).getOwnerName()));
+                }
+            }
+        }else if (join.getLeft() instanceof OracleSelectJoin){
+            OracleSelectTableReference reference = (OracleSelectTableReference) join.getRight();
+            if(reference.getExpr() instanceof SQLPropertyExpr){
+                //reverseSchemas.add(((SQLPropertyExpr) reference.getExpr()).getOwnerName());
+                if(map.containsKey(((SQLPropertyExpr) reference.getExpr()).getOwnerName())){
+                    ((SQLPropertyExpr) reference.getExpr()).setOwner(map.get(((SQLPropertyExpr) reference.getExpr()).getOwnerName()));
+                }
+            }
+            if(join.getLeft() instanceof OracleSelectJoin){
+                viewRecursion2((OracleSelectJoin) join.getLeft(),map);
+            }else if(join.getLeft() instanceof OracleSelectTableReference){
+                OracleSelectTableReference tableReference = (OracleSelectTableReference) join.getLeft();
+                if(tableReference.getExpr() instanceof SQLPropertyExpr){
+                    //reverseSchemas.add(((SQLPropertyExpr)tableReference.getExpr()).getOwnerName());
+                    if(map.containsKey(((SQLPropertyExpr) tableReference.getExpr()).getOwnerName())){
+                        ((SQLPropertyExpr) tableReference.getExpr()).setOwner(map.get(((SQLPropertyExpr) tableReference.getExpr()).getOwnerName()));
+                    }
+                }
+            }
+        }
+       /* if(reverseSchemas.size()>0){
+            Collections.reverse(reverseSchemas);
+        }*/
     }
 
 

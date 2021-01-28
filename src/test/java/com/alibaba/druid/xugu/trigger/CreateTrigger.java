@@ -43,7 +43,7 @@ public class CreateTrigger extends TestCase {
                 "INSERT INTO test_trig_tab2 VALUES(3,'hh');\n" +
                 "END IF;\n" +
                 "END;";
-        builder.append(sql);
+       // builder.append(sql);
         builder.append(sql2);
         XuguStatementParser parser = new XuguStatementParser(builder.toString());
         List<SQLStatement> statementList = parser.parseStatementList();

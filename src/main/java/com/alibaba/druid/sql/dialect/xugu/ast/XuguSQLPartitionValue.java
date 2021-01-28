@@ -2,6 +2,7 @@ package com.alibaba.druid.sql.dialect.xugu.ast;
 
 import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.SQLPartitionValue;
+import com.alibaba.druid.sql.dialect.xugu.visitor.XuguASTVisitor;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
 
 import java.util.ArrayList;

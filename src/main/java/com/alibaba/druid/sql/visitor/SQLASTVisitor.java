@@ -1251,6 +1251,7 @@ public interface SQLASTVisitor {
 
     }
 
+
     default boolean visit(SQLPartition x) {
         return true;
     }
@@ -1259,13 +1260,6 @@ public interface SQLASTVisitor {
 
     }
 
-    default boolean visit(XuguSQLPartition x) {
-        return true;
-    }
-
-    default void endVisit(XuguSQLPartition x) {
-
-    }
 
     default boolean visit(SQLPartitionByRange x) {
         return true;

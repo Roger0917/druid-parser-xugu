@@ -1,6 +1,7 @@
 package com.alibaba.druid.xugu.procedure;
 
 import com.alibaba.druid.sql.ast.SQLStatement;
+import com.alibaba.druid.sql.ast.statement.SQLBlockStatement;
 import com.alibaba.druid.sql.ast.statement.SQLCreateFunctionStatement;
 import com.alibaba.druid.sql.ast.statement.SQLCreateProcedureStatement;
 import com.alibaba.druid.sql.dialect.xugu.parser.XuguStatementParser;
@@ -437,6 +438,9 @@ public class ProcedureTest2 extends XuguTest {
 
         XuguStatementParser parser = new XuguStatementParser(builder.toString());
         List<SQLStatement> statementList = parser.parseStatementList();
+        SQLBlockStatement blockStatement = (SQLBlockStatement) statementList.get(5);
+        String str = blockStatement.toString();
+
         List<SQLStatement> createProcedureSqlStatementList = new ArrayList<>();
         for(SQLStatement statement:statementList){
             if (statement instanceof SQLCreateProcedureStatement){

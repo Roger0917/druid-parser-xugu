@@ -1,6 +1,7 @@
 package com.alibaba.druid.xugu.type;
 
 import com.alibaba.druid.sql.ast.SQLStatement;
+import com.alibaba.druid.sql.dialect.xugu.ast.stmt.XuguCreateTypeStatement;
 import com.alibaba.druid.sql.dialect.xugu.parser.XuguStatementParser;
 import junit.framework.TestCase;
 
@@ -28,7 +29,7 @@ public class TypeTest2 extends TestCase {
                 " age int," +
                 " member function getId(n int,na varchar) return int," +
                 " member function getAge(n int,na varchar ) return int" +
-                ")";
+                ");";
 
        String sql7= "create type body func_dep_base_type as" +
                 "            member function getId(n int,na varchar) return int" +
@@ -49,7 +50,7 @@ public class TypeTest2 extends TestCase {
                 " member function getId(n int,na varchar(21)) return int," +
                 " member function getAddr(n int,na varchar) return varchar," +
                 " static PROCEDURE printfa(p person)"+
-                ")";
+                ");";
         String sql9 = "create type body pack_dep_base_type as" +
                 "            member function getId(n int,na varchar(21)) return int" +
                 "            as" +
@@ -73,7 +74,7 @@ public class TypeTest2 extends TestCase {
                 "  addr varchar," +
                 "  member function getName(n int,na numeric(21,6)) return varchar," +
                 "  member function getAddr(n int,na varchar) return varchar"+
-                ")";
+                ");";
         String sql11=
                 "create type body syno_base_type as" +
                 " member function getName(n int,na numeric(21,6)) return varchar" +
@@ -148,6 +149,8 @@ public class TypeTest2 extends TestCase {
 
         XuguStatementParser parser = new XuguStatementParser(builder.toString());
         List<SQLStatement> statementList = parser.parseStatementList();
+        XuguCreateTypeStatement createTypeStatement = (XuguCreateTypeStatement) statementList.get(4);
+        String str = createTypeStatement.getParameters().get(2).toString();
         System.out.println(222);
     }
 
