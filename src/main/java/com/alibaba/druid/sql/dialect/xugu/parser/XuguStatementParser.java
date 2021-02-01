@@ -961,10 +961,10 @@ public class XuguStatementParser extends SQLStatementParser{
         accept(Token.RETURN);
         SQLDataType returnDataType = this.exprParser.parseDataType(false);
         stmt.setReturnDataType(returnDataType);
-        lexer.setToken(Token.SEMI);
+        //lexer.setToken(Token.SEMI);
         //Xugu 创建函数解析到return 类型就返回statement
-        return stmt;
-       /* if (identifierEquals("PIPELINED")) {
+        //return stmt;
+        if (identifierEquals("PIPELINED")) {
             lexer.nextToken();
             stmt.setPipelined(true);
         }
@@ -1051,7 +1051,7 @@ public class XuguStatementParser extends SQLStatementParser{
             lexer.nextToken();
         }
 
-        return stmt;*/
+        return stmt;
     }
 
     public SQLStatement parseRaise() {
@@ -2500,9 +2500,9 @@ public class XuguStatementParser extends SQLStatementParser{
 
         }
 
-        lexer.setToken(Token.SEMI);
-        return stmt;
-       /* if (lexer.identifierEquals("AUTHID")) {
+        //lexer.setToken(Token.SEMI);
+        //return stmt;
+       if (lexer.identifierEquals("AUTHID")) {
             lexer.nextToken();
             String strVal = lexer.stringVal();
             if (lexer.identifierEquals("CURRENT_USER")) {
@@ -2564,7 +2564,7 @@ public class XuguStatementParser extends SQLStatementParser{
             lexer.nextToken();
         }
 
-        return stmt;*/
+        return stmt;
     }
 
     @Override
@@ -2673,12 +2673,14 @@ public class XuguStatementParser extends SQLStatementParser{
                 SQLStatement function = this.parseFunction();
                 function.setParent(stmt);
                 stmt.getStatements().add(function);
-                lexer.nextToken();
+               // lexer.nextToken();
             } else if (lexer.token() == Token.PROCEDURE) {
                 SQLStatement proc = this.parseCreateProcedure();
                 proc.setParent(stmt);
                 stmt.getStatements().add(proc);
-                lexer.nextToken();
+                /*if(lexer.token()!=Token.END){
+                    lexer.nextToken();
+                }*/
             } else if (lexer.token() == Token.END) {
                 break;
             } else if (lexer.token() == Token.BEGIN) {

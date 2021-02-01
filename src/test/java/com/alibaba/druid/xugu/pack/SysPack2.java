@@ -18,7 +18,7 @@ public class SysPack2 extends TestPSCache {
                 "       PROCEDURE KILL_TRANS(NODEID INTEGER,TRANID BIGINT);\n" +
                 "       PROCEDURE KILL_SESSION(NODEID INTEGER,SESSID INTEGER);\n" +
                 "       PROCEDURE KILL_SESSION_TRANS(NODEID INTEGER,SESSID INTEGER);\n" +
-                "       FUNCTION KILL_SESSION_TRANS1(NODEID integer,num1 interval hour(5) to second(3))return varchar;"+
+                "       FUNCTION KILL_SESSION_TRANS1(NODEID integer,num1 varchar)return varchar;"+
                 "END SYSDBA.DBMS_DBA;";
         String sql2 =  "CREATE OR REPLACE PACKAGE SYSDBA.DBMS_OUTPUT \n" +
                 "IS\n" +

@@ -2,6 +2,8 @@ package com.alibaba.druid.xugu.function;
 
 import com.alibaba.druid.sql.ast.SQLStatement;
 import com.alibaba.druid.sql.ast.statement.SQLCreateFunctionStatement;
+import com.alibaba.druid.sql.dialect.xugu.api.XuguParserApi;
+import com.alibaba.druid.sql.dialect.xugu.api.bean.CreateFunctionBean;
 import com.alibaba.druid.sql.dialect.xugu.parser.XuguStatementParser;
 import junit.framework.TestCase;
 
@@ -232,19 +234,24 @@ public class FunctionTest2 extends TestCase {
                 "name2:=name1;\n" +
                 "return  name2;\n" +
                 "end;";
-        /*String sql32 = "create function dep_view_func(b in varchar) return int as\n" +
+        String sql32 = "create function dep_view_func(b in varchar) return int as\n" +
                 " begin\n" +
                 "  for i in 1..5 loop\n" +
                 "   insert into dep_base_view_1 values(i,b||i);\n" +
                 "  end loop;\n" +
-                " end;";*/
+                " end;";
         String sql33 = "create function dep_view_func(b in varchar) return int as\n" +
                 " begin\n" +
                 "  for i in reverse 5..1 loop\n" +
                 "   insert into dep_base_view_1 values(i,b||i);\n" +
                 "  end loop;\n" +
                 " end;";
-        /*builder.append(sql1);
+        String sql34 = "create or replace function fun_test(A interval day(5) to second(3)) return interval day(5) to second(3)\n" +
+                "as\n" +
+                "begin\n" +
+                "insert into test_1(id,name)values(1,'roger');\n" +
+                "end;";
+      /*  builder.append(sql1);
         builder.append(sql2);
         builder.append(sql3);
         builder.append(sql4);
@@ -279,9 +286,12 @@ public class FunctionTest2 extends TestCase {
         builder.append(sql28);
         builder.append(sql29);
         builder.append(sql30);
-        builder.append(sql31);*/
-        //builder.append(sql32);
+        builder.append(sql31);
+        */
+        builder.append(sql32);
         builder.append(sql33);
+        builder.append(sql34);
+
 
         XuguStatementParser parser = new XuguStatementParser(builder.toString());
         List<SQLCreateFunctionStatement> createFunctionStatementList = new ArrayList<>();
@@ -292,8 +302,14 @@ public class FunctionTest2 extends TestCase {
                 createFunctionStatementList.add(createFunctionStatement);
             }
         }
-        System.out.println(222);
-
+        List<CreateFunctionBean> createFunctionBeanList = XuguParserApi.parseCreateFunction(sql34);
+        try{
+            String str = createFunctionStatementList.get(0).toString();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        
+        System.out.printf("222");
     }
     
 }

@@ -23,7 +23,7 @@ public class XuguForStatement extends SQLForStatement implements XuguStatement{
     @Override
     protected void accept0(SQLASTVisitor v) {
         if (v instanceof XuguASTVisitor) {
-            accept0((OracleASTVisitor) v);
+            accept0((XuguASTVisitor) v);
             return;
         }
 

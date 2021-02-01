@@ -16,6 +16,7 @@ import com.alibaba.druid.sql.dialect.oracle.parser.OracleSelectParser;
 import com.alibaba.druid.sql.dialect.oracle.parser.OracleStatementParser;
 import com.alibaba.druid.sql.dialect.xugu.ast.*;
 import com.alibaba.druid.sql.dialect.xugu.ast.clause.XuguLobStorageClause;
+import com.alibaba.druid.sql.dialect.xugu.ast.expr.XuguRangeExpr;
 import com.alibaba.druid.sql.dialect.xugu.ast.stmt.XuguConstraint;
 import com.alibaba.druid.sql.dialect.xugu.ast.stmt.XuguPrimaryKey;
 import com.alibaba.druid.sql.parser.*;
@@ -659,7 +660,7 @@ public class XuguExprParser extends SQLExprParser {
             lexer.nextToken();
             SQLExpr upBound = expr();
 
-            return new OracleRangeExpr(expr, upBound);
+            return new XuguRangeExpr(expr, upBound);
         }
 
         if (lexer.token() == Token.MONKEYS_AT) {

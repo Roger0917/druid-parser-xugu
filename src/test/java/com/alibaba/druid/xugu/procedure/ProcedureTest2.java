@@ -388,7 +388,14 @@ public class ProcedureTest2 extends XuguTest {
                 " update sysdba.t1 set id=1 where name='roger1';"+
                 " delete from sysdba.t3 where sysdba.t3.id=1;"+
                 " end;";
-
+        String normal2 =  "create or replace procedure test_proc3(id func_dep_base_type,name syno_base_type,address syno_base_type1)\n" +
+                "as\n" +
+                " begin\n" +
+                " insert into sysdba.t1(id,name) values(1,'roger');"+
+                " select * from sysdba.sys_tables ;\n" +
+                " update sysdba.t1 set id=1 where name='roger1';"+
+                " delete from sysdba.t3 where sysdba.t3.id=1;"+
+                " end;";
         builder.append(sql);
         builder.append(sql1);
         builder.append(sql2);
@@ -435,11 +442,10 @@ public class ProcedureTest2 extends XuguTest {
         builder.append(sqlIntervalHourToSecond);
         builder.append(sqlIntervalMinuteToSecond);
         builder.append(normal);
+        builder.append(normal2);
 
         XuguStatementParser parser = new XuguStatementParser(builder.toString());
         List<SQLStatement> statementList = parser.parseStatementList();
-        SQLBlockStatement blockStatement = (SQLBlockStatement) statementList.get(5);
-        String str = blockStatement.toString();
 
         List<SQLStatement> createProcedureSqlStatementList = new ArrayList<>();
         for(SQLStatement statement:statementList){

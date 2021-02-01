@@ -13,6 +13,7 @@ import com.alibaba.druid.sql.dialect.xugu.ast.clause.XuguReturningClause;
 import com.alibaba.druid.sql.dialect.xugu.ast.clause.XuguWithSubqueryEntry;
 import com.alibaba.druid.sql.dialect.xugu.ast.expr.XuguBinaryDoubleExpr;
 import com.alibaba.druid.sql.dialect.xugu.ast.expr.XuguBinaryFloatExpr;
+import com.alibaba.druid.sql.dialect.xugu.ast.expr.XuguRangeExpr;
 import com.alibaba.druid.sql.dialect.xugu.ast.stmt.*;
 import com.alibaba.druid.sql.dialect.xugu.parser.XuguFunctionDataType;
 import com.alibaba.druid.sql.dialect.xugu.parser.XuguProdecureDataType;
@@ -755,6 +756,18 @@ public class XuguOutputVisitor extends SQLASTOutputVisitor implements XuguASTVis
         }
         x.getIndex().accept(this);
         print0(ucase ? " IN " : " in ");
+        if(x.getRange() instanceof XuguRangeExpr){
+            XuguRangeExpr rangeExpr = (XuguRangeExpr) x.getRange();
+            if(rangeExpr.getLowBound() instanceof SQLIntegerExpr&&rangeExpr.getUpBound() instanceof SQLIntegerExpr){
+                if(((SQLIntegerExpr) rangeExpr.getLowBound()).getNumber()instanceof Integer&&((SQLIntegerExpr) rangeExpr.getUpBound()).getNumber()instanceof Integer){
+                    Integer lowBound = (Integer) ((SQLIntegerExpr) rangeExpr.getLowBound()).getNumber();
+                    Integer upBound = (Integer) ((SQLIntegerExpr) rangeExpr.getUpBound()).getNumber();
+                    if(lowBound>upBound){
+                        print0(" REVERSE ");
+                    }
+                }
+            }
+        }
 
         SQLExpr range = x.getRange();
         range.accept(this);
@@ -862,7 +875,7 @@ public class XuguOutputVisitor extends SQLASTOutputVisitor implements XuguASTVis
     }
 
     @Override
-    public boolean visit(OracleRangeExpr x) {
+    public boolean visit(XuguRangeExpr x) {
         x.getLowBound().accept(this);
         print0("..");
         x.getUpBound().accept(this);
@@ -1366,16 +1379,16 @@ public class XuguOutputVisitor extends SQLASTOutputVisitor implements XuguASTVis
 
     @Override
     public boolean visit(XuguDataTypeIntervalDayToSecond x) {
-        print0(x.getName());
+        //print0(x.getName());
+        print0("INTERVAL DAY");
         if (x.getArguments().size() > 0) {
+
             print('(');
             x.getArguments().get(0).accept(this);
             //x.getArguments().stream().forEach(sqlExpr -> sqlExpr.accept(this));
             print(')');
         }
-
-        //print0(ucase ? " TO SECOND" : " to second");
-
+        print0(ucase ? " TO SECOND" : " to second");
         if (x.getFractionalSeconds().size() > 0) {
             print('(');
             x.getFractionalSeconds().get(0).accept(this);
@@ -1400,14 +1413,15 @@ public class XuguOutputVisitor extends SQLASTOutputVisitor implements XuguASTVis
 
     @Override
     public boolean visit(XuguDataTypeIntervalHourToSecond x) {
-        print0(x.getName());
+        //print0(x.getName());
+        print0("INTERVAL HOUR");
         if (x.getArguments().size() > 0) {
             print('(');
             x.getArguments().get(0).accept(this);
             print(')');
         }
 
-        //print0(ucase ? " TO SECOND" : " to second");
+        print0(ucase ? " TO SECOND" : " to second");
 
         if (x.getFractionalSeconds().size() > 0) {
             print('(');
@@ -1420,14 +1434,20 @@ public class XuguOutputVisitor extends SQLASTOutputVisitor implements XuguASTVis
 
     @Override
     public boolean visit(XuguDataTypeIntervalMinuteToSecond x) {
-        print0(x.getName());
+        //print0(x.getName());
+        print0("INTERVAL MINUTE");
         if (x.getArguments().size() > 0) {
             print('(');
             x.getArguments().get(0).accept(this);
             print(')');
         }
 
-        //print0(ucase ? " TO SECOND" : " to second");
+        print0(ucase ? " TO SECOND" : " to second");
+        if (x.getFractionalSeconds().size() > 0) {
+            print('(');
+            x.getFractionalSeconds().get(0).accept(this);
+            print(')');
+        }
         return false;
     }
 

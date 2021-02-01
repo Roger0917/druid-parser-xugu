@@ -6199,9 +6199,22 @@ public class SQLASTOutputVisitor extends SQLASTVisitorAdapter implements Paramet
             print0(ucase ? " UPDATE" : " update");
 
             List<SQLName> colums = x.getUpdateOfColumns();
-            for (SQLName colum : colums) {
-                print(' ');
+            if(colums.size()>0){
+                print(" OF");
+            }
+            /*for (SQLName colum : colums) {
+                //print(' ');
+                print(',');
                 colum.accept(this);
+            }*/
+            for(int i=0;i<colums.size();i++){
+                if(i!=0){
+                    print(',');
+                    colums.get(i).accept(this);
+                }else{
+                    print(' ');
+                    colums.get(i).accept(this);
+                }
             }
         }
 
@@ -6823,6 +6836,58 @@ public class SQLASTOutputVisitor extends SQLASTVisitorAdapter implements Paramet
 
         return false;
     }
+
+    /*public boolean visit(XuguFunctionDataType x) {
+        if (x.isStatic()) {
+            print0(ucase ? "STATIC " : "static ");
+        }
+
+        print0(ucase ? "FUNCTION " : "function ");
+
+        print0(x.getName());
+
+        print(" (");
+        printAndAccept(x.getParameters(), ", ");
+        print(")");
+        print0(ucase ? " RETURN " : " return ");
+        x.getReturnDataType().accept(this);
+
+        SQLStatement block = x.getBlock();
+        if (block != null) {
+            println();
+            print0(ucase ? "IS" : "is");
+            println();
+            block.accept(this);
+        }
+
+        return false;
+    }
+
+    public boolean visit(XuguProdecureDataType x) {
+        if (x.isStatic()) {
+            print0(ucase ? "STATIC " : "static ");
+        }
+
+        print0(ucase ? "PROCEDURE " : "procedure ");
+
+        print0(x.getName());
+
+        if (x.getParameters().size() > 0) {
+            print(" (");
+            printAndAccept(x.getParameters(), ", ");
+            print(")");
+        }
+
+        SQLStatement block = x.getBlock();
+        if (block != null) {
+            println();
+            print0(ucase ? "IS" : "is");
+            println();
+            block.accept(this);
+        }
+
+        return false;
+    }*/
 
     @Override
     public boolean visit(SQLParameter x) {

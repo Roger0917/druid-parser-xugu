@@ -11,6 +11,7 @@ import com.alibaba.druid.sql.dialect.xugu.ast.clause.XuguLobStorageClause;
 import com.alibaba.druid.sql.dialect.xugu.ast.clause.XuguReturningClause;
 import com.alibaba.druid.sql.dialect.xugu.ast.expr.XuguBinaryDoubleExpr;
 import com.alibaba.druid.sql.dialect.xugu.ast.expr.XuguBinaryFloatExpr;
+import com.alibaba.druid.sql.dialect.xugu.ast.expr.XuguRangeExpr;
 import com.alibaba.druid.sql.dialect.xugu.ast.stmt.*;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
 
@@ -219,11 +220,11 @@ public interface XuguASTVisitor extends SQLASTVisitor {
 
     }
 
-    default boolean visit(OracleRangeExpr x) {
+    default boolean visit(XuguRangeExpr x) {
         return true;
     }
 
-    default void endVisit(OracleRangeExpr x) {
+    default void endVisit(XuguRangeExpr x) {
 
     }
 
