@@ -1150,6 +1150,10 @@ public class XuguOutputVisitor extends SQLASTOutputVisitor implements XuguASTVis
             this.indentCount--;
             println();
             print(')');
+        }else if(paramSize==0){
+            //兼容xugu 过程函数无参时()写法
+            print0(" (");
+            print(')');
         }
 
         String wrappedSource = x.getWrappedSource();
@@ -1190,7 +1194,8 @@ public class XuguOutputVisitor extends SQLASTOutputVisitor implements XuguASTVis
             println();
             if (block instanceof SQLBlockStatement) {
                 SQLBlockStatement blockStatement = (SQLBlockStatement) block;
-                if (blockStatement.getParameters().size() > 0 || authid != null) {
+                if (blockStatement.getParameters().size() >= 0 || authid != null) {
+                    //兼容xugu语法 函数里有无声明的参数都应输出as或is
                     println(ucase ? "AS" : "as");
                 }
             }
@@ -1572,27 +1577,39 @@ public class XuguOutputVisitor extends SQLASTOutputVisitor implements XuguASTVis
         }
 
         x.getName().accept(this);
+        print0(ucase? " IS " : " is ");
 
         if (x.isBody()) {
             println();
-            print0(ucase ? "BEGIN" : "begin");
+            //print0(ucase ? "BEGIN" : "begin");
         }
 
         this.indentCount++;
 
         List<SQLStatement> statements = x.getStatements();
-        for (int i = 0, size = statements.size(); i < size; ++i) {
-            println();
-            SQLStatement stmt = statements.get(i);
-            stmt.accept(this);
+        if(!x.isBody()){
+            for (int i = 0, size = statements.size(); i < size; ++i) {
+                println();
+                SQLStatement stmt = statements.get(i);
+                stmt.accept(this);
+                print(";");
+            }
+        }else{
+            for (int i = 0, size = statements.size(); i < size; ++i) {
+                println();
+                SQLStatement stmt = statements.get(i);
+                stmt.accept(this);
+            }
         }
+
 
         this.indentCount--;
 
         if (x.isBody() || statements.size() > 0) {
             println();
             print0(ucase ? "END " : "end ");
-            x.getName().accept(this);
+            //虚谷包 end不用指定包名
+            //x.getName().accept(this);
             print(';');
         }
 

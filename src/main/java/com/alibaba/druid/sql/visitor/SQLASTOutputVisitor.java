@@ -8811,6 +8811,8 @@ public class SQLASTOutputVisitor extends SQLASTVisitorAdapter implements Paramet
                     || x.getParent() instanceof SQLCreateFunctionStatement
                     || x.getParent() instanceof OracleFunctionDataType
                     || x.getParent() instanceof OracleProcedureDataType)
+                    || x.getParent() instanceof XuguFunctionDataType
+                    || x.getParent() instanceof XuguProdecureDataType
                     ) {
                 print0(ucase ? "DECLARE" : "declare");
                 println();
@@ -8879,6 +8881,10 @@ public class SQLASTOutputVisitor extends SQLASTVisitorAdapter implements Paramet
 
             this.indentCount--;
             println();
+            print(')');
+        }else if(paramSize==0){
+            //兼容xugu 过程函数无参时()写法
+            print0(" (");
             print(')');
         }
 

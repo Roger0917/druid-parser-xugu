@@ -191,6 +191,46 @@ public class XuguParserApi {
         }
         return callBeanList;
     }
+    
+    public static List<CreateExecuteBean> parseExecute(String sql) {
+        List<CreateExecuteBean> executeBeanList = new ArrayList<>();
+        List<XuguExecuteStatement> executeStatementList = new ArrayList<>();
+        StringBuilder builder = new StringBuilder();
+        builder.append(sql);
+        XuguStatementParser parser = new XuguStatementParser(builder.toString());
+        List<SQLStatement> statementList = parser.parseStatementList();
+        //SQLStatement statement = statementList.get(0);
+
+        for (SQLStatement sqlStatement : statementList) {
+            XuguExecuteStatement executeStatement = (XuguExecuteStatement) sqlStatement;
+            executeStatementList.add(executeStatement);
+        }
+
+        for (XuguExecuteStatement executeStatement : executeStatementList) {
+            CreateExecuteBean executeBean = new CreateExecuteBean();
+            List<String> paramList = new ArrayList<>();
+            if (executeStatement.getDynamicSql() instanceof SQLMethodInvokeExpr) {
+                executeBean.setName(((SQLMethodInvokeExpr) executeStatement.getDynamicSql()).getMethodName());
+                if(((SQLMethodInvokeExpr) executeStatement.getDynamicSql()).getOwner()==null){
+                    executeBean.setSchema(null);
+                }else{
+                    executeBean.setSchema(((SQLMethodInvokeExpr) executeStatement.getDynamicSql()).getOwner().toString());
+                }
+                for (SQLExpr sqlExpr : ((SQLMethodInvokeExpr) executeStatement.getDynamicSql()).getArguments()) {
+                    if (sqlExpr.toString().contains(":")) {
+                        paramList.add(sqlExpr.toString().replaceAll(":", ""));
+                    } else if (sqlExpr.toString().contains("=>")) {
+                        paramList.add(sqlExpr.toString().substring(0, sqlExpr.toString().indexOf("=>")));
+                    }else{
+                        paramList.add(sqlExpr.toString());
+                    }
+                }
+                executeBean.setParamList(paramList);
+                executeBeanList.add(executeBean);
+            }
+        }
+        return executeBeanList;
+    }
 
     public static List<BlockProAndFunBean> parseBlockProAndFun(String sql) {
         List<SQLBlockStatement> blockStatementList = new ArrayList<>();
@@ -396,7 +436,7 @@ public class XuguParserApi {
         }
     }
     
-    public static String replaceTypeSqlSchema(String sql,HashMap<String,String> map){
+    public static String replaceTypeSqlSchema(String sql,Map<String,String> map){
         XuguStatementParser parser = new XuguStatementParser(sql);
         List<SQLStatement> statementList = parser.parseStatementList();
         List<XuguCreateTypeStatement> createTypeStatementList = new ArrayList<>();
@@ -425,7 +465,7 @@ public class XuguParserApi {
         return createTypeStatementList.get(0).toString();
     }
     
-    public static String replacePackageSqlSchema(String sql,HashMap<String,String> map){
+    public static String replacePackageSqlSchema(String sql,Map<String,String> map){
         XuguStatementParser parser = new XuguStatementParser(sql);
         List<SQLStatement> statementList = parser.parseStatementList();
         List<XuguCreatePackageStatement> createPackageStatementList = new ArrayList<>();
@@ -441,7 +481,34 @@ public class XuguParserApi {
                 ((SQLPropertyExpr) createPackageStatementList.get(0).getName()).setOwner(map.get(key));
             }
         }
+        //替换包体名
+        if(createPackageStatementList.get(1).getName() instanceof SQLPropertyExpr){
+            if(map.containsKey(((SQLPropertyExpr) createPackageStatementList.get(1).getName()).getOwnerName())){
+                String key = ((SQLPropertyExpr) createPackageStatementList.get(1).getName()).getOwnerName();
+                ((SQLPropertyExpr) createPackageStatementList.get(1).getName()).setOwner(map.get(key));
+            }
+        }
         createPackageStatementList.get(0).getStatements().forEach(x->{
+            if(x instanceof SQLCreateProcedureStatement){
+                SQLCreateProcedureStatement procedureStatement = (SQLCreateProcedureStatement) x;
+                if(procedureStatement.getBlock() instanceof SQLBlockStatement){
+                    replaceBlockSchema((SQLBlockStatement) procedureStatement.getBlock(),map);
+                }
+            }else if(x instanceof SQLCreateFunctionStatement){
+                SQLCreateFunctionStatement functionStatement = (SQLCreateFunctionStatement) x;
+                if(functionStatement.getBlock()!=null){
+                    replaceBlockSchema((SQLBlockStatement) functionStatement.getBlock(),map);
+                }
+            }
+        });
+
+        if(createPackageStatementList.get(1).getName() instanceof SQLPropertyExpr){
+            if(map.containsKey(((SQLPropertyExpr) createPackageStatementList.get(0).getName()).getOwnerName())){
+                String key = ((SQLPropertyExpr) createPackageStatementList.get(0).getName()).getOwnerName();
+                ((SQLPropertyExpr) createPackageStatementList.get(0).getName()).setOwner(map.get(key));
+            }
+        }
+        createPackageStatementList.get(1).getStatements().forEach(x->{
             if(x instanceof SQLCreateProcedureStatement){
                 SQLCreateProcedureStatement procedureStatement = (SQLCreateProcedureStatement) x;
                 if(procedureStatement.getBlock() instanceof SQLBlockStatement){
@@ -453,10 +520,10 @@ public class XuguParserApi {
             }
         });
         
-        return createPackageStatementList.get(0).toString();
+        return createPackageStatementList.get(0).toString()+createPackageStatementList.get(1).toString();
     }
     
-    public static String replaceViewSqlSchema(String sql,HashMap<String,String> map){
+    public static String replaceViewSqlSchema(String sql,Map<String,String> map){
         XuguStatementParser parser = new XuguStatementParser(sql);
         //List<String> schemas = new ArrayList<>();
         List<SQLCreateViewStatement> createViewStatements = new ArrayList<>();
@@ -602,7 +669,7 @@ public class XuguParserApi {
         }*/
     }
 
-    private static void viewRecursion2(OracleSelectJoin join,HashMap<String,String> map){
+    private static void viewRecursion2(OracleSelectJoin join,Map<String,String> map){
         if(join.getLeft() instanceof OracleSelectTableReference){
             if(((OracleSelectTableReference) join.getRight()).getExpr() instanceof SQLPropertyExpr){
                 //reverseSchemas.add(((SQLPropertyExpr) ((OracleSelectTableReference) join.getRight()).getExpr()).getOwnerName());
@@ -641,7 +708,7 @@ public class XuguParserApi {
         }*/
     }
     
-    public static String replaceProcedureSqlSchema(String sql,HashMap<String,String> map){
+    public static String replaceProcedureSqlSchema(String sql,Map<String,String> map){
         XuguStatementParser parser = new XuguStatementParser(sql);
         List<SQLStatement> statementList = parser.parseStatementList();
         List<SQLCreateProcedureStatement> createProcedureStatementList = new ArrayList<>();
@@ -668,7 +735,7 @@ public class XuguParserApi {
         return createProcedureStatementList.get(0).toString();
     }
 
-    public static String replaceFunctionSqlSchema(String sql,HashMap<String,String> map){
+    public static String replaceFunctionSqlSchema(String sql,Map<String,String> map){
         XuguStatementParser parser = new XuguStatementParser(sql);
         List<SQLStatement> statementList = parser.parseStatementList();
         List<SQLCreateFunctionStatement> createFunctionStatementList = new ArrayList<>();
@@ -695,7 +762,7 @@ public class XuguParserApi {
         return createFunctionStatementList.get(0).toString();
     }
 
-    public static String replaceTriggerSchema(String sql,HashMap<String,String> map){
+    public static String replaceTriggerSchema(String sql,Map<String,String> map){
         XuguStatementParser parser = new XuguStatementParser(sql);
         List<SQLStatement> statementList = parser.parseStatementList();
         List<SQLCreateTriggerStatement> createTriggerStatementList = new ArrayList<>();
@@ -741,7 +808,7 @@ public class XuguParserApi {
         return createTriggerStatementList.get(0).toString();
     }
     
-    private static void replaceBlockSchema(SQLBlockStatement blockStatement,HashMap<String,String> map){
+    private static void replaceBlockSchema(SQLBlockStatement blockStatement,Map<String,String> map){
         for(SQLStatement statement:blockStatement.getStatementList()){
             if(statement instanceof XuguInsertStatement){
                 XuguInsertStatement insertStatement = (XuguInsertStatement) statement;
@@ -809,7 +876,9 @@ public class XuguParserApi {
                             viewRecursion2(join,map);
                         }else if(((OracleSelectQueryBlock) ((SQLSelectStatement) statement).getSelect().getQuery()).getFrom() instanceof OracleSelectTableReference){
                             //recursionWhere((SQLBinaryOpExpr) ((OracleSelectJoin) ((OracleSelectQueryBlock) ((SQLSelectStatement) statement).getSelect().getQuery()).getFrom()).getCondition(),map);
-                            recursionWhere((SQLBinaryOpExpr) ((OracleSelectQueryBlock) ((SQLSelectStatement) statement).getSelect().getQuery()).getWhere(),map);
+                            if(((OracleSelectQueryBlock) ((SQLSelectStatement) statement).getSelect().getQuery()).getWhere()!=null){
+                                recursionWhere((SQLBinaryOpExpr) ((OracleSelectQueryBlock) ((SQLSelectStatement) statement).getSelect().getQuery()).getWhere(),map);
+                            }
                             SQLExpr expr = ((OracleSelectTableReference) ((OracleSelectQueryBlock) ((SQLSelectStatement) statement).getSelect().getQuery()).getFrom()).getExpr();
                             if(expr instanceof SQLPropertyExpr){
                                 //reverseSchemas.add(((SQLPropertyExpr) expr).getOwnerName());
@@ -863,7 +932,7 @@ public class XuguParserApi {
             }
         }
 
-    private static void recursionWhere(SQLBinaryOpExpr binaryOpExpr,HashMap<String,String> map){
+    private static void recursionWhere(SQLBinaryOpExpr binaryOpExpr,Map<String,String> map){
         if(binaryOpExpr.getRight() instanceof SQLBinaryOpExpr){
             if(((SQLBinaryOpExpr) binaryOpExpr.getRight()).getLeft() instanceof SQLPropertyExpr){
                 if(((SQLPropertyExpr) ((SQLBinaryOpExpr) binaryOpExpr.getRight()).getLeft()).getOwner() instanceof SQLPropertyExpr){

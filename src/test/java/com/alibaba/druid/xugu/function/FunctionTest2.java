@@ -251,12 +251,12 @@ public class FunctionTest2 extends TestCase {
                 "begin\n" +
                 "insert into test_1(id,name)values(1,'roger');\n" +
                 "end;";
-        String sql35 = "create or replace function sysdba.dep_proc_func(a in int, b in int) return int as\n" +
+        String sql35 = "create or replace function sysdba.dep_proc_func() return int as\n" +
                 " begin\n" +
                 "   execute sysdba.dep_base_proc_1(a,b);\n" +
                 "   call sysdba.dep_base_proc_1(a,b);\n" +
                 " end;";
-      /*  builder.append(sql1);
+        builder.append(sql1);
         builder.append(sql2);
         builder.append(sql3);
         builder.append(sql4);
@@ -292,10 +292,9 @@ public class FunctionTest2 extends TestCase {
         builder.append(sql29);
         builder.append(sql30);
         builder.append(sql31);
-        */
-        /*builder.append(sql32);
+        builder.append(sql32);
         builder.append(sql33);
-        builder.append(sql34);*/
+        builder.append(sql34);
         builder.append(sql35);
 
 
