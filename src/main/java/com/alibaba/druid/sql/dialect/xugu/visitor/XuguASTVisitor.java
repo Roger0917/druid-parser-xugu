@@ -445,6 +445,15 @@ public interface XuguASTVisitor extends SQLASTVisitor {
 
     }
 
+    default boolean visit(XuguExecuteStatement x) {
+        return true;
+    }
+
+    default void endVisit(XuguExecuteStatement x) {
+
+    }
+
+
     default boolean visit(XuguExecuteImmediateStatement x) {
         return true;
     }

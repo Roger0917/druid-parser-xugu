@@ -24,7 +24,7 @@ public class TriggerTest2 extends TestCase {
     }
     
     public void test2(){
-        String sql = "CREATE OR REPLACE TRIGGER trig_user AFTER INSERT OR UPDATE OF id,name ON text_table_trigger\n" +
+        String sql = "CREATE OR REPLACE TRIGGER trig_user AFTER INSERT OR UPDATE OF (id,name) ON text_table_trigger\n" +
                 "FOR each ROW\n" +
                 "BEGIN\n" +
                 "IF updating THEN\n" +

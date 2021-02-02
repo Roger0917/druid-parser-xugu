@@ -827,7 +827,57 @@ public class XuguStatementParser extends SQLStatementParser{
             }
 
             return stmt;
-        }else{
+        }else if(lexer.token()==Token.IDENTIFIER){
+            XuguExecuteStatement stmt = new XuguExecuteStatement();
+
+            SQLExpr dyanmiacSql = this.exprParser.primary();
+            stmt.setDynamicSql(dyanmiacSql);
+
+            if (lexer.token() == Token.INTO) {
+                lexer.nextToken();
+
+                this.exprParser.exprList(stmt.getInto(), stmt);
+            }
+
+            if (lexer.token() == Token.USING) {
+                lexer.nextToken();
+
+                for (;;) {
+                    SQLArgument arg = new SQLArgument();
+
+                    if (lexer.token() == Token.IN) {
+                        lexer.nextToken();
+                        if (lexer.token() == Token.OUT) {
+                            lexer.nextToken();
+                            arg.setType(SQLParameter.ParameterType.INOUT);
+                        } else {
+                            arg.setType(SQLParameter.ParameterType.IN);
+                        }
+                    } else if (lexer.token() == Token.OUT) {
+                        lexer.nextToken();
+                        arg.setType(SQLParameter.ParameterType.OUT);
+                    }
+
+                    arg.setExpr(this.exprParser.primary());
+                    arg.setParent(stmt);
+                    stmt.getArguments().add(arg);
+
+                    if (lexer.token() == Token.COMMA) {
+                        lexer.nextToken();
+                        continue;
+                    }
+                    break;
+                }
+            }
+
+            if (lexer.token() == Token.RETURNING) {
+                lexer.nextToken();
+                accept(Token.INTO);
+
+                this.exprParser.exprList(stmt.getReturnInto(), stmt);
+            }
+
+            return stmt;
         }
         throw new ParserException("TODO : " + lexer.info());
     }

@@ -396,6 +396,23 @@ public class ProcedureTest2 extends XuguTest {
                 " update sysdba.t1 set id=1 where name='roger1';"+
                 " delete from sysdba.t3 where sysdba.t3.id=1;"+
                 " end;";
+        String execImmediate = "create or replace procedure sysdba.pro_immediate(id int,name varchar,a in int, b in int) as \n" +
+                "begin\n" +
+                "select * from sysdba.test_1;\n" +
+                "update sysdba.test_1 set id=1 where name='roger';\n" +
+                "insert into sysdba.test_1(id,name)values(1,'roger');\n" +
+                "delete from sysdba.test_1 where id=1;\n" +
+                "execute sysdba.dep_base_proc_1(a,b);\n" +
+                "call sysdba.dep_base_proc_1(a,b);\n" +
+                "execute immediate 'create schema sc';\n" +
+                "execute immediate 'create table sc.tb1(id int,name varhcar)';\n" +
+                "execute immediate 'create table sc.students(id int,name varhcar)';\n" +
+                "execute immediate 'create index sc.idx1 on sc.tb1(id)';\n" +
+                "execute immediate 'create view sc.view1 as select * from sc.tb1';\n" +
+                "execute immediate 'create synonym sc.stu for sc.students';\n" +
+                "execute immediate 'truncate table sc.tb1';\n" +
+                "execute immediate 'drop table sc.tb1';\n" +
+                "end;";
         builder.append(sql);
         builder.append(sql1);
         builder.append(sql2);
@@ -443,6 +460,7 @@ public class ProcedureTest2 extends XuguTest {
         builder.append(sqlIntervalMinuteToSecond);
         builder.append(normal);
         builder.append(normal2);
+        builder.append(execImmediate);
 
         XuguStatementParser parser = new XuguStatementParser(builder.toString());
         List<SQLStatement> statementList = parser.parseStatementList();

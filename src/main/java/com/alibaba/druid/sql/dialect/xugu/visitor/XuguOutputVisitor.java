@@ -1600,6 +1600,31 @@ public class XuguOutputVisitor extends SQLASTOutputVisitor implements XuguASTVis
     }
 
     @Override
+    public boolean visit(XuguExecuteStatement x) {
+        print0(ucase ? "EXECUTE " : "execute ");
+        x.getDynamicSql().accept(this);
+
+        List<SQLExpr> into = x.getInto();
+        if (into.size() > 0) {
+            print0(ucase ? " INTO " : " into ");
+            printAndAccept(into, ", ");
+        }
+
+        List<SQLArgument> using = x.getArguments();
+        if (using.size() > 0) {
+            print0(ucase ? " USING " : " using ");
+            printAndAccept(using, ", ");
+        }
+
+        List<SQLExpr> returnInto = x.getReturnInto();
+        if (returnInto.size() > 0) {
+            print0(ucase ? " RETURNNING INTO " : " returnning into ");
+            printAndAccept(returnInto, ", ");
+        }
+        return false;
+    }
+
+    @Override
     public boolean visit(XuguExecuteImmediateStatement x) {
         print0(ucase ? "EXECUTE IMMEDIATE " : "execute immediate ");
         x.getDynamicSql().accept(this);

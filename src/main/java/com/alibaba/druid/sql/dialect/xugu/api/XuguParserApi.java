@@ -276,7 +276,7 @@ public class XuguParserApi {
                 SQLParameter.ParameterType type = parameter.getParamType();
                 SQLExpr expr = parameter.getDefaultValue();
                 if(type!=null&&expr!=null){
-                    param.setIndex(i);
+                    param.setIndex(i+1);
                     param.setName(parameter.getName().toString());
                     param.setParamType(parameter.getParamType().name());
                     param.setDataType(parameter.getDataType().getName());
@@ -330,7 +330,7 @@ public class XuguParserApi {
                 SQLParameter.ParameterType type = parameter.getParamType();
                 SQLExpr expr = parameter.getDefaultValue();
                 if(type!=null&&expr!=null){
-                    param.setIndex(i);
+                    param.setIndex(i+1);
                     param.setName(parameter.getName().toString());
                     param.setParamType(parameter.getParamType().name());
                     param.setDataType(parameter.getDataType().getName());
@@ -808,7 +808,8 @@ public class XuguParserApi {
                             OracleSelectJoin join = (OracleSelectJoin) ((OracleSelectQueryBlock) ((SQLSelectStatement) statement).getSelect().getQuery()).getFrom();
                             viewRecursion2(join,map);
                         }else if(((OracleSelectQueryBlock) ((SQLSelectStatement) statement).getSelect().getQuery()).getFrom() instanceof OracleSelectTableReference){
-                            recursionWhere((SQLBinaryOpExpr) ((OracleSelectJoin) ((OracleSelectQueryBlock) ((SQLSelectStatement) statement).getSelect().getQuery()).getFrom()).getCondition(),map);
+                            //recursionWhere((SQLBinaryOpExpr) ((OracleSelectJoin) ((OracleSelectQueryBlock) ((SQLSelectStatement) statement).getSelect().getQuery()).getFrom()).getCondition(),map);
+                            recursionWhere((SQLBinaryOpExpr) ((OracleSelectQueryBlock) ((SQLSelectStatement) statement).getSelect().getQuery()).getWhere(),map);
                             SQLExpr expr = ((OracleSelectTableReference) ((OracleSelectQueryBlock) ((SQLSelectStatement) statement).getSelect().getQuery()).getFrom()).getExpr();
                             if(expr instanceof SQLPropertyExpr){
                                 //reverseSchemas.add(((SQLPropertyExpr) expr).getOwnerName());
@@ -842,7 +843,23 @@ public class XuguParserApi {
                             }
                         }
                     }
+                }else if(statement instanceof XuguExecuteStatement){
+                   if(((XuguExecuteStatement) statement).getDynamicSql() instanceof SQLMethodInvokeExpr){
+                       if(((SQLMethodInvokeExpr) ((XuguExecuteStatement) statement).getDynamicSql()).getOwner() instanceof SQLIdentifierExpr){
+                           if(map.containsKey(((SQLIdentifierExpr) ((SQLMethodInvokeExpr) ((XuguExecuteStatement) statement).getDynamicSql()).getOwner()).getName())){
+                               String key = ((SQLIdentifierExpr) ((SQLMethodInvokeExpr) ((XuguExecuteStatement) statement).getDynamicSql()).getOwner()).getName();
+                               ((SQLIdentifierExpr) ((SQLMethodInvokeExpr) ((XuguExecuteStatement) statement).getDynamicSql()).getOwner()).setName(map.get(key));
+                           }
+                       }
+                   }
+            }else if(statement instanceof SQLCallStatement){
+                if(((SQLCallStatement) statement).getProcedureName() instanceof SQLPropertyExpr){
+                    if(map.containsKey(((SQLPropertyExpr) ((SQLCallStatement) statement).getProcedureName()).getOwnerName())){
+                        String key = ((SQLPropertyExpr) ((SQLCallStatement) statement).getProcedureName()).getOwnerName();
+                        ((SQLPropertyExpr) ((SQLCallStatement) statement).getProcedureName()).setOwner(map.get(key));
+                    }
                 }
+            }
             }
         }
 
