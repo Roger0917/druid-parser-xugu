@@ -33,7 +33,8 @@ public class GetSchemaFromProcedure extends TestCase {
         HashMap<String,String> map = new HashMap<>();
         map.put("schema1","schema2");
         map.put("sysdba","sysdba1");
-        String returnStr = XuguParserApi.replaceProcedureSqlSchema(sql,map);
+        String returnStr = XuguParserApi.replaceProcedureSqlSchema(sql,map,"schema1");
+        System.out.println(222);
     }
     
     public void test2(){
@@ -60,7 +61,7 @@ public class GetSchemaFromProcedure extends TestCase {
         map.put("sysdba","sysdba1");
         XuguStatementParser parser = new XuguStatementParser(sql);
         List<SQLStatement> statementList = parser.parseStatementList();
-        String str = XuguParserApi.replaceProcedureSqlSchema(sql,map);
+        String str = XuguParserApi.replaceProcedureSqlSchema(sql,map,"sysdba");
         System.out.println(222);
     }
 
@@ -88,7 +89,7 @@ public class GetSchemaFromProcedure extends TestCase {
         map.put("sysdba","sysdba1");
         XuguStatementParser parser = new XuguStatementParser(sql);
         List<SQLStatement> statementList = parser.parseStatementList();
-        String str = XuguParserApi.replaceProcedureSqlSchema(sql,map);
+        String str = XuguParserApi.replaceProcedureSqlSchema(sql,map,"schema1");
         System.out.println(222);
     }
 }

@@ -17,6 +17,7 @@ import com.alibaba.druid.sql.dialect.xugu.ast.stmt.*;
 import com.alibaba.druid.sql.dialect.xugu.parser.XuguFunctionDataType;
 import com.alibaba.druid.sql.dialect.xugu.parser.XuguProdecureDataType;
 import com.alibaba.druid.sql.dialect.xugu.parser.XuguStatementParser;
+import org.apache.ibatis.jdbc.SQL;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -99,13 +100,13 @@ public class XuguParserApi {
             triggerBean.setTable(sqlCreateTriggerStatement.getOn().getTableName());
             triggerBean.setTriggerOccasion(sqlCreateTriggerStatement.getTriggerType().name());
             if(sqlCreateTriggerStatement.isInsert()){
-                operators.add("Insert");
+                operators.add("INSERT");
             }
             if(sqlCreateTriggerStatement.isUpdate()){
-                operators.add("Update");
+                operators.add("UPDATE");
             }
             if(sqlCreateTriggerStatement.isDelete()){
-                operators.add("Delete");
+                operators.add("DELETE");
             }
             triggerBean.setOperators(operators);
             if(sqlCreateTriggerStatement.getUpdateOfColumns().size()>0){
@@ -141,9 +142,9 @@ public class XuguParserApi {
                     }else{
                         //过程或函数类型
                         if(sqlParameter.getDataType() instanceof XuguProdecureDataType){
-                            attributeMap.put(sqlParameter.getDataType().getName(), "Procedure");
+                            attributeMap.put(sqlParameter.getDataType().getName(), "PROCEDURE");
                         }else if(sqlParameter.getDataType() instanceof XuguFunctionDataType){
-                            attributeMap.put(sqlParameter.getDataType().getName(), "Function");
+                            attributeMap.put(sqlParameter.getDataType().getName(), "FUNCTION");
                         }
 
                     }
@@ -153,7 +154,13 @@ public class XuguParserApi {
                 createTypeBean.setBody(createTypeStatement.toString());
                 Map<String,String> methodMap = new HashMap<>();
                 for(SQLParameter sqlParameter:createTypeStatement.getParameters()){
-                    methodMap.put(sqlParameter.getDataType().getName(),sqlParameter.toString());
+                    //自定义类型存方法名和类型
+                     if(sqlParameter.getDataType() instanceof XuguFunctionDataType){
+                         methodMap.put(sqlParameter.getDataType().getName(),"FUNCTION");
+                    } else if (sqlParameter.getDataType() instanceof XuguProdecureDataType) {
+                         methodMap.put(sqlParameter.getDataType().getName(),"PROCEDURE");
+                    }
+                    //methodMap.put(sqlParameter.getDataType().getName(),sqlParameter.toString());
                 }
                 createTypeBean.setMethodMap(methodMap);
             }
@@ -323,23 +330,23 @@ public class XuguParserApi {
                     param.setDefaultValue(parameter.getDefaultValue().toString());
                     getPrecisionAndScale(parameter,param);
                 }else if(type!=null&&expr==null){
-                    param.setIndex(i);
+                    param.setIndex(i+1);
                     param.setName(parameter.getName().toString());
                     param.setParamType(parameter.getParamType().name());
                     param.setDataType(parameter.getDataType().getName());
                     param.setDefaultValue(null);
                     getPrecisionAndScale(parameter,param);
                 }else if(type==null&expr!=null){
-                    param.setIndex(i);
+                    param.setIndex(i+1);
                     param.setName(parameter.getName().toString());
-                    param.setParamType("In");
+                    param.setParamType("IN");
                     param.setDataType(parameter.getDataType().getName());
                     param.setDefaultValue(parameter.getDefaultValue().toString());
                     getPrecisionAndScale(parameter,param);
                 }else{
-                    param.setIndex(i);
+                    param.setIndex(i+1);
                     param.setName(parameter.getName().toString());
-                    param.setParamType("In");
+                    param.setParamType("IN");
                     param.setDataType(parameter.getDataType().getName());
                     param.setDefaultValue(null);
                     getPrecisionAndScale(parameter,param);
@@ -377,23 +384,23 @@ public class XuguParserApi {
                     param.setDefaultValue(parameter.getDefaultValue().toString());
                     getPrecisionAndScale(parameter,param);
                 }else if(type!=null&&expr==null){
-                    param.setIndex(i);
+                    param.setIndex(i+1);
                     param.setName(parameter.getName().toString());
                     param.setParamType(parameter.getParamType().name());
                     param.setDataType(parameter.getDataType().getName());
                     param.setDefaultValue(null);
                     getPrecisionAndScale(parameter,param);
                 }else if(type==null&expr!=null){
-                    param.setIndex(i);
+                    param.setIndex(i+1);
                     param.setName(parameter.getName().toString());
-                    param.setParamType("In");
+                    param.setParamType("IN");
                     param.setDataType(parameter.getDataType().getName());
                     param.setDefaultValue(parameter.getDefaultValue().toString());
                     getPrecisionAndScale(parameter,param);
                 }else{
-                    param.setIndex(i);
+                    param.setIndex(i+1);
                     param.setName(parameter.getName().toString());
-                    param.setParamType("In");
+                    param.setParamType("IN");
                     param.setDataType(parameter.getDataType().getName());
                     param.setDefaultValue(null);
                     getPrecisionAndScale(parameter,param);
@@ -436,7 +443,7 @@ public class XuguParserApi {
         }
     }
     
-    public static String replaceTypeSqlSchema(String sql,Map<String,String> map){
+    public static String replaceTypeSqlSchema(String sql,Map<String,String> map,String sourceSchema){
         XuguStatementParser parser = new XuguStatementParser(sql);
         List<SQLStatement> statementList = parser.parseStatementList();
         List<XuguCreateTypeStatement> createTypeStatementList = new ArrayList<>();
@@ -445,27 +452,59 @@ public class XuguParserApi {
                 createTypeStatementList.add((XuguCreateTypeStatement) x);
             }
         });
+        //替换类型模式名
         if(createTypeStatementList.get(0).getName() instanceof SQLPropertyExpr){
             if(map.containsKey(((SQLPropertyExpr) createTypeStatementList.get(0).getName()).getOwnerName())){
                 String key = ((SQLPropertyExpr) createTypeStatementList.get(0).getName()).getOwnerName();
                 ((SQLPropertyExpr) createTypeStatementList.get(0).getName()).setOwner(map.get(key));
             }
         }
+        //增加类型模式名
+        if(createTypeStatementList.get(0).getName() instanceof SQLIdentifierExpr&&map.containsKey(sourceSchema)){
+            SQLPropertyExpr expr =new SQLPropertyExpr(map.get(sourceSchema),((SQLIdentifierExpr) createTypeStatementList.get(0).getName()).getName());
+            createTypeStatementList.get(0).setName(expr);
+        }
         createTypeStatementList.get(0).getParameters().forEach(x->{
             if(x.getDataType() instanceof XuguFunctionDataType){
                 if(((XuguFunctionDataType) x.getDataType()).getBlock() instanceof SQLBlockStatement){
-                    replaceBlockSchema((SQLBlockStatement) ((XuguFunctionDataType) x.getDataType()).getBlock(),map);
+                    replaceBlockSchema((SQLBlockStatement) ((XuguFunctionDataType) x.getDataType()).getBlock(),map,sourceSchema);
                 }
             }else if(x.getDataType() instanceof XuguProdecureDataType){
                 if(((XuguProdecureDataType) x.getDataType()).getBlock() instanceof SQLBlockStatement){
-                    replaceBlockSchema((SQLBlockStatement) ((XuguProdecureDataType) x.getDataType()).getBlock(),map);
+                    replaceBlockSchema((SQLBlockStatement) ((XuguProdecureDataType) x.getDataType()).getBlock(),map,sourceSchema);
                 }
             }
         });
+        if(createTypeStatementList.size()==2){
+            //替换类型体模式名
+            if(createTypeStatementList.get(1).getName() instanceof SQLPropertyExpr){
+                if(map.containsKey(((SQLPropertyExpr) createTypeStatementList.get(1).getName()).getOwnerName())){
+                    String key = ((SQLPropertyExpr) createTypeStatementList.get(1).getName()).getOwnerName();
+                    ((SQLPropertyExpr) createTypeStatementList.get(1).getName()).setOwner(map.get(key));
+                }
+            }
+            //增加类型体模式名
+            if(createTypeStatementList.get(1).getName() instanceof SQLIdentifierExpr&&map.containsKey(sourceSchema)){
+                SQLPropertyExpr expr =new SQLPropertyExpr(map.get(sourceSchema),((SQLIdentifierExpr) createTypeStatementList.get(1).getName()).getName());
+                createTypeStatementList.get(1).setName(expr);
+            }
+            createTypeStatementList.get(1).getParameters().forEach(x->{
+                if(x.getDataType() instanceof XuguFunctionDataType){
+                    if(((XuguFunctionDataType) x.getDataType()).getBlock() instanceof SQLBlockStatement){
+                        replaceBlockSchema((SQLBlockStatement) ((XuguFunctionDataType) x.getDataType()).getBlock(),map,sourceSchema);
+                    }
+                }else if(x.getDataType() instanceof XuguProdecureDataType){
+                    if(((XuguProdecureDataType) x.getDataType()).getBlock() instanceof SQLBlockStatement){
+                        replaceBlockSchema((SQLBlockStatement) ((XuguProdecureDataType) x.getDataType()).getBlock(),map,sourceSchema);
+                    }
+                }
+            });
+            return createTypeStatementList.get(0).toString()+createTypeStatementList.get(1).toString();
+        }
         return createTypeStatementList.get(0).toString();
     }
     
-    public static String replacePackageSqlSchema(String sql,Map<String,String> map){
+    public static String replacePackageSqlSchema(String sql,Map<String,String> map,String sourceSchema){
         XuguStatementParser parser = new XuguStatementParser(sql);
         List<SQLStatement> statementList = parser.parseStatementList();
         List<XuguCreatePackageStatement> createPackageStatementList = new ArrayList<>();
@@ -474,56 +513,74 @@ public class XuguParserApi {
                 createPackageStatementList.add((XuguCreatePackageStatement) x);
             }
         });
-        //替换包名
+        //替换包模式
         if(createPackageStatementList.get(0).getName() instanceof SQLPropertyExpr){
             if(map.containsKey(((SQLPropertyExpr) createPackageStatementList.get(0).getName()).getOwnerName())){
                 String key = ((SQLPropertyExpr) createPackageStatementList.get(0).getName()).getOwnerName();
                 ((SQLPropertyExpr) createPackageStatementList.get(0).getName()).setOwner(map.get(key));
             }
         }
-        //替换包体名
-        if(createPackageStatementList.get(1).getName() instanceof SQLPropertyExpr){
-            if(map.containsKey(((SQLPropertyExpr) createPackageStatementList.get(1).getName()).getOwnerName())){
-                String key = ((SQLPropertyExpr) createPackageStatementList.get(1).getName()).getOwnerName();
-                ((SQLPropertyExpr) createPackageStatementList.get(1).getName()).setOwner(map.get(key));
+        //增加包模式
+        if(createPackageStatementList.get(0).getName() instanceof SQLIdentifierExpr&&map.containsKey(sourceSchema)){
+            SQLPropertyExpr expr = new SQLPropertyExpr(map.get(sourceSchema),((SQLIdentifierExpr) createPackageStatementList.get(0).getName()).getName());
+            createPackageStatementList.get(0).setName(expr);
+        }
+        //替换包体模式
+        if(createPackageStatementList.size()>=2){
+            if(createPackageStatementList.get(1).getName() instanceof SQLPropertyExpr){
+                if(map.containsKey(((SQLPropertyExpr) createPackageStatementList.get(1).getName()).getOwnerName())){
+                    String key = ((SQLPropertyExpr) createPackageStatementList.get(1).getName()).getOwnerName();
+                    ((SQLPropertyExpr) createPackageStatementList.get(1).getName()).setOwner(map.get(key));
+                }
+            }
+            //增加包体模式
+            if(createPackageStatementList.get(1).getName() instanceof SQLIdentifierExpr&&map.containsKey(sourceSchema)){
+                SQLPropertyExpr expr = new SQLPropertyExpr(map.get(sourceSchema),((SQLIdentifierExpr) createPackageStatementList.get(1).getName()).getName());
+                createPackageStatementList.get(1).setName(expr);
             }
         }
         createPackageStatementList.get(0).getStatements().forEach(x->{
             if(x instanceof SQLCreateProcedureStatement){
                 SQLCreateProcedureStatement procedureStatement = (SQLCreateProcedureStatement) x;
                 if(procedureStatement.getBlock() instanceof SQLBlockStatement){
-                    replaceBlockSchema((SQLBlockStatement) procedureStatement.getBlock(),map);
+                    replaceBlockSchema((SQLBlockStatement) procedureStatement.getBlock(),map,sourceSchema);
                 }
             }else if(x instanceof SQLCreateFunctionStatement){
                 SQLCreateFunctionStatement functionStatement = (SQLCreateFunctionStatement) x;
                 if(functionStatement.getBlock()!=null){
-                    replaceBlockSchema((SQLBlockStatement) functionStatement.getBlock(),map);
+                    replaceBlockSchema((SQLBlockStatement) functionStatement.getBlock(),map,sourceSchema);
                 }
             }
         });
 
-        if(createPackageStatementList.get(1).getName() instanceof SQLPropertyExpr){
-            if(map.containsKey(((SQLPropertyExpr) createPackageStatementList.get(0).getName()).getOwnerName())){
-                String key = ((SQLPropertyExpr) createPackageStatementList.get(0).getName()).getOwnerName();
-                ((SQLPropertyExpr) createPackageStatementList.get(0).getName()).setOwner(map.get(key));
-            }
-        }
-        createPackageStatementList.get(1).getStatements().forEach(x->{
-            if(x instanceof SQLCreateProcedureStatement){
-                SQLCreateProcedureStatement procedureStatement = (SQLCreateProcedureStatement) x;
-                if(procedureStatement.getBlock() instanceof SQLBlockStatement){
-                    replaceBlockSchema((SQLBlockStatement) procedureStatement.getBlock(),map);
+        if(createPackageStatementList.size()>=2){
+            if(createPackageStatementList.get(1).getName() instanceof SQLPropertyExpr){
+                if(map.containsKey(((SQLPropertyExpr) createPackageStatementList.get(0).getName()).getOwnerName())){
+                    String key = ((SQLPropertyExpr) createPackageStatementList.get(0).getName()).getOwnerName();
+                    ((SQLPropertyExpr) createPackageStatementList.get(0).getName()).setOwner(map.get(key));
                 }
-            }else if(x instanceof SQLCreateFunctionStatement){
-                SQLCreateFunctionStatement functionStatement = (SQLCreateFunctionStatement) x;
-                replaceBlockSchema((SQLBlockStatement) functionStatement.getBlock(),map);
             }
-        });
+            createPackageStatementList.get(1).getStatements().forEach(x->{
+                if(x instanceof SQLCreateProcedureStatement){
+                    SQLCreateProcedureStatement procedureStatement = (SQLCreateProcedureStatement) x;
+                    if(procedureStatement.getBlock() instanceof SQLBlockStatement){
+                        replaceBlockSchema((SQLBlockStatement) procedureStatement.getBlock(),map,sourceSchema);
+                    }
+                }else if(x instanceof SQLCreateFunctionStatement){
+                    SQLCreateFunctionStatement functionStatement = (SQLCreateFunctionStatement) x;
+                    replaceBlockSchema((SQLBlockStatement) functionStatement.getBlock(),map,sourceSchema);
+                }
+            });
+        }
+        if(createPackageStatementList.size()>=2){
+            return createPackageStatementList.get(0).toString()+createPackageStatementList.get(1).toString();
+        }else{
+            return createPackageStatementList.get(0).toString();
+        }
         
-        return createPackageStatementList.get(0).toString()+createPackageStatementList.get(1).toString();
     }
     
-    public static String replaceViewSqlSchema(String sql,Map<String,String> map){
+    public static String replaceViewSqlSchema(String sql,Map<String,String> map,String sourceSchema){
         XuguStatementParser parser = new XuguStatementParser(sql);
         //List<String> schemas = new ArrayList<>();
         List<SQLCreateViewStatement> createViewStatements = new ArrayList<>();
@@ -536,11 +593,19 @@ public class XuguParserApi {
         }
         //schemas.add(createViewStatements.get(0).getSchema());
         //TODO 替换视图模式
-        if(map.containsKey(createViewStatements.get(0).getSchema())){
-            if(createViewStatements.get(0).getName() instanceof SQLPropertyExpr){
-                ((SQLPropertyExpr) createViewStatements.get(0).getName()).setOwner(map.get(createViewStatements.get(0).getSchema()));
+        if(createViewStatements.get(0).getSchema()!=null){
+            if(map.containsKey(createViewStatements.get(0).getSchema())){
+                if(createViewStatements.get(0).getName() instanceof SQLPropertyExpr){
+                    ((SQLPropertyExpr) createViewStatements.get(0).getName()).setOwner(map.get(createViewStatements.get(0).getSchema()));
+                }
+            }
+        }else{
+            if(map.containsKey(sourceSchema)&&createViewStatements.get(0).getName() instanceof SQLIdentifierExpr){
+                SQLPropertyExpr property = new SQLPropertyExpr(map.get(sourceSchema),((SQLIdentifierExpr) createViewStatements.get(0).getName()).getName());
+                createViewStatements.get(0).setName(property);
             }
         }
+
         //List<String> reverseSchemas = new ArrayList<>();
 
         for(SQLCreateViewStatement createViewStatement:createViewStatements){
@@ -548,14 +613,19 @@ public class XuguParserApi {
                 //对于join的,v1,v2,v3需倒排序模式
                 if(((OracleSelectQueryBlock) createViewStatement.getSubQuery().getQuery()).getFrom() instanceof OracleSelectJoin){
                     OracleSelectJoin join = (OracleSelectJoin) ((OracleSelectQueryBlock) createViewStatement.getSubQuery().getQuery()).getFrom();
-                    viewRecursion2(join,map);
+                    viewRecursion2(join,map,sourceSchema);
                 }else if(((OracleSelectQueryBlock) createViewStatement.getSubQuery().getQuery()).getFrom() instanceof OracleSelectTableReference){
                     SQLExpr expr = ((OracleSelectTableReference) ((OracleSelectQueryBlock) createViewStatement.getSubQuery().getQuery()).getFrom()).getExpr();
                     if(expr instanceof SQLPropertyExpr){
                         //reverseSchemas.add(((SQLPropertyExpr) expr).getOwnerName());
+                        //替换模式
                         if(map.containsKey(((SQLPropertyExpr) expr).getOwnerName())){
                             ((SQLPropertyExpr) expr).setOwner(map.get(((SQLPropertyExpr) expr).getOwnerName()));
                         }
+                        //视图依赖对象添加模式
+                    }else if(expr instanceof SQLIdentifierExpr && map.containsKey(sourceSchema)){
+                        SQLPropertyExpr propertyExpr = new SQLPropertyExpr(map.get(sourceSchema),((SQLIdentifierExpr) expr).getName());
+                        ((OracleSelectTableReference) ((OracleSelectQueryBlock) createViewStatement.getSubQuery().getQuery()).getFrom()).setExpr(propertyExpr);
                     }
                 }
             }else if(createViewStatement.getSubQuery().getQuery() instanceof SQLUnionQuery){
@@ -566,7 +636,7 @@ public class XuguParserApi {
                     if(sqlSelectQuery instanceof OracleSelectQueryBlock){
                         if(((OracleSelectQueryBlock) sqlSelectQuery).getFrom() instanceof OracleSelectJoin){
                             OracleSelectJoin join = (OracleSelectJoin) ((OracleSelectQueryBlock) createViewStatement.getSubQuery().getQuery()).getFrom();
-                            viewRecursion2(join,map);
+                            viewRecursion2(join,map,sourceSchema);
                         }else if (((OracleSelectQueryBlock) sqlSelectQuery).getFrom() instanceof OracleSelectTableReference){
                             SQLExpr expr = ((OracleSelectTableReference) ((OracleSelectQueryBlock) sqlSelectQuery).getFrom()).getExpr();
                             if(expr instanceof SQLPropertyExpr){
@@ -574,6 +644,10 @@ public class XuguParserApi {
                                 if(map.containsKey(((SQLPropertyExpr) expr).getOwnerName())){
                                     ((SQLPropertyExpr) expr).setOwner(map.get(((SQLPropertyExpr) expr).getOwnerName()));
                                 }
+                                //union添加模式
+                            }else if(expr instanceof SQLIdentifierExpr && map.containsKey(sourceSchema)){
+                                SQLPropertyExpr propertyExpr = new SQLPropertyExpr(map.get(sourceSchema),((SQLIdentifierExpr) expr).getName());
+                                ((OracleSelectTableReference) ((OracleSelectQueryBlock) sqlSelectQuery).getFrom()).setExpr(propertyExpr);
                             }
                         }
                     }
@@ -669,19 +743,26 @@ public class XuguParserApi {
         }*/
     }
 
-    private static void viewRecursion2(OracleSelectJoin join,Map<String,String> map){
+    private static void viewRecursion2(OracleSelectJoin join,Map<String,String> map,String sourceSchema){
         if(join.getLeft() instanceof OracleSelectTableReference){
             if(((OracleSelectTableReference) join.getRight()).getExpr() instanceof SQLPropertyExpr){
                 //reverseSchemas.add(((SQLPropertyExpr) ((OracleSelectTableReference) join.getRight()).getExpr()).getOwnerName());
                 if(map.containsKey(((SQLPropertyExpr) ((OracleSelectTableReference) join.getRight()).getExpr()).getOwnerName())){
                     ((SQLPropertyExpr) ((OracleSelectTableReference) join.getRight()).getExpr()).setOwner(map.get(((SQLPropertyExpr) ((OracleSelectTableReference) join.getRight()).getExpr()).getOwnerName()));
                 }
+                //依赖对象添加模式
+            }else if(((OracleSelectTableReference) join.getRight()).getExpr() instanceof SQLIdentifierExpr&&map.containsKey(sourceSchema)){
+                SQLPropertyExpr expr = new SQLPropertyExpr(map.get(sourceSchema),((SQLIdentifierExpr) ((OracleSelectTableReference) join.getRight()).getExpr()).getName());
+                ((OracleSelectTableReference) join.getRight()).setExpr(expr);
             }
             if(((OracleSelectTableReference) join.getLeft()).getExpr() instanceof SQLPropertyExpr){
                 //reverseSchemas.add(((SQLPropertyExpr) ((OracleSelectTableReference) join.getLeft()).getExpr()).getOwnerName());
                 if(map.containsKey(((SQLPropertyExpr) ((OracleSelectTableReference) join.getLeft()).getExpr()).getOwnerName())){
                     ((SQLPropertyExpr) ((OracleSelectTableReference) join.getLeft()).getExpr()).setOwner(map.get(((SQLPropertyExpr) ((OracleSelectTableReference) join.getLeft()).getExpr()).getOwnerName()));
                 }
+            }else if(((OracleSelectTableReference) join.getLeft()).getExpr() instanceof SQLIdentifierExpr&&map.containsKey(sourceSchema)){
+                SQLPropertyExpr expr = new SQLPropertyExpr(map.get(sourceSchema),((SQLIdentifierExpr) ((OracleSelectTableReference) join.getLeft()).getExpr()).getName());
+                ((OracleSelectTableReference) join.getLeft()).setExpr(expr);
             }
         }else if (join.getLeft() instanceof OracleSelectJoin){
             OracleSelectTableReference reference = (OracleSelectTableReference) join.getRight();
@@ -690,9 +771,12 @@ public class XuguParserApi {
                 if(map.containsKey(((SQLPropertyExpr) reference.getExpr()).getOwnerName())){
                     ((SQLPropertyExpr) reference.getExpr()).setOwner(map.get(((SQLPropertyExpr) reference.getExpr()).getOwnerName()));
                 }
+            }else if(reference.getExpr() instanceof SQLIdentifierExpr&&map.containsKey(sourceSchema)){
+                SQLPropertyExpr expr = new SQLPropertyExpr(map.get(sourceSchema),((SQLIdentifierExpr) reference.getExpr()).getName());
+                reference.setExpr(expr);
             }
             if(join.getLeft() instanceof OracleSelectJoin){
-                viewRecursion2((OracleSelectJoin) join.getLeft(),map);
+                viewRecursion2((OracleSelectJoin) join.getLeft(),map,sourceSchema);
             }else if(join.getLeft() instanceof OracleSelectTableReference){
                 OracleSelectTableReference tableReference = (OracleSelectTableReference) join.getLeft();
                 if(tableReference.getExpr() instanceof SQLPropertyExpr){
@@ -700,6 +784,9 @@ public class XuguParserApi {
                     if(map.containsKey(((SQLPropertyExpr) tableReference.getExpr()).getOwnerName())){
                         ((SQLPropertyExpr) tableReference.getExpr()).setOwner(map.get(((SQLPropertyExpr) tableReference.getExpr()).getOwnerName()));
                     }
+                }else if(tableReference.getExpr() instanceof SQLIdentifierExpr && map.containsKey(sourceSchema)){
+                    SQLPropertyExpr propertyExpr = new SQLPropertyExpr(map.get(sourceSchema),((SQLIdentifierExpr) tableReference.getExpr()).getName());
+                    tableReference.setExpr(propertyExpr);
                 }
             }
         }
@@ -708,7 +795,7 @@ public class XuguParserApi {
         }*/
     }
     
-    public static String replaceProcedureSqlSchema(String sql,Map<String,String> map){
+    public static String replaceProcedureSqlSchema(String sql,Map<String,String> map,String sourceSchema){
         XuguStatementParser parser = new XuguStatementParser(sql);
         List<SQLStatement> statementList = parser.parseStatementList();
         List<SQLCreateProcedureStatement> createProcedureStatementList = new ArrayList<>();
@@ -727,15 +814,19 @@ public class XuguParserApi {
             if (map.containsKey(expr.getOwnerName())){
                 expr.setOwner(map.get(expr.getOwnerName()));
             }
+        //过程名添加模式
+        }else if(createProcedureStatementList.get(0).getName() instanceof SQLIdentifierExpr&&map.containsKey(sourceSchema)){
+            SQLPropertyExpr expr = new SQLPropertyExpr(map.get(sourceSchema),((SQLIdentifierExpr) createProcedureStatementList.get(0).getName()).getName());
+            createProcedureStatementList.get(0).setName(expr);
         }
 
         if(createProcedureStatementList.get(0).getBlock()!=null){
-            replaceBlockSchema((SQLBlockStatement) createProcedureStatementList.get(0).getBlock(),map);
+            replaceBlockSchema((SQLBlockStatement) createProcedureStatementList.get(0).getBlock(),map,sourceSchema);
         }
         return createProcedureStatementList.get(0).toString();
     }
 
-    public static String replaceFunctionSqlSchema(String sql,Map<String,String> map){
+    public static String replaceFunctionSqlSchema(String sql,Map<String,String> map,String sourceSchema){
         XuguStatementParser parser = new XuguStatementParser(sql);
         List<SQLStatement> statementList = parser.parseStatementList();
         List<SQLCreateFunctionStatement> createFunctionStatementList = new ArrayList<>();
@@ -748,21 +839,26 @@ public class XuguParserApi {
                 blockStatementList.add((SQLBlockStatement) x);
             }*/
         });
-        //过程修改模式
+        //函数修改模式
         if(createFunctionStatementList.get(0).getName() instanceof SQLPropertyExpr){
             SQLPropertyExpr expr = (SQLPropertyExpr) createFunctionStatementList.get(0).getName();
             if (map.containsKey(expr.getOwnerName())){
                 expr.setOwner(map.get(expr.getOwnerName()));
             }
         }
+        //函数添加模式
+        if(map.containsKey(sourceSchema)&&createFunctionStatementList.get(0).getName() instanceof SQLIdentifierExpr){
+            SQLPropertyExpr expr = new SQLPropertyExpr(map.get(sourceSchema),((SQLIdentifierExpr) createFunctionStatementList.get(0).getName()).getName());
+            createFunctionStatementList.get(0).setName(expr);
+        }
 
         if(createFunctionStatementList.get(0).getBlock()!=null){
-            replaceBlockSchema((SQLBlockStatement) createFunctionStatementList.get(0).getBlock(),map);
+            replaceBlockSchema((SQLBlockStatement) createFunctionStatementList.get(0).getBlock(),map,sourceSchema);
         }
         return createFunctionStatementList.get(0).toString();
     }
 
-    public static String replaceTriggerSchema(String sql,Map<String,String> map){
+    public static String replaceTriggerSchema(String sql,Map<String,String> map,String sourceSchema){
         XuguStatementParser parser = new XuguStatementParser(sql);
         List<SQLStatement> statementList = parser.parseStatementList();
         List<SQLCreateTriggerStatement> createTriggerStatementList = new ArrayList<>();
@@ -777,6 +873,11 @@ public class XuguParserApi {
             if(map.containsKey(propertyExpr.getOwnerName())){
                 propertyExpr.setOwner(map.get(propertyExpr.getOwnerName()));
             }
+        }
+        //增加触发器中模式
+        if(createTriggerStatementList.get(0).getName() instanceof SQLIdentifierExpr && map.containsKey(sourceSchema)){
+            SQLPropertyExpr propertyExpr = new SQLPropertyExpr(map.get(sourceSchema),((SQLIdentifierExpr) createTriggerStatementList.get(0).getName()).getName());
+            createTriggerStatementList.get(0).setName(propertyExpr);
         }
         //替换on
         if(createTriggerStatementList.get(0).getOn().getExpr() instanceof SQLPropertyExpr){
@@ -802,18 +903,21 @@ public class XuguParserApi {
         //替换begin end块中模式
         if(createTriggerStatementList.get(0).getBody() instanceof SQLBlockStatement){
             SQLBlockStatement blockStatement = (SQLBlockStatement) createTriggerStatementList.get(0).getBody();
-            replaceBlockSchema(blockStatement,map);
+            replaceBlockSchema(blockStatement,map,sourceSchema);
         }
 
         return createTriggerStatementList.get(0).toString();
     }
     
-    private static void replaceBlockSchema(SQLBlockStatement blockStatement,Map<String,String> map){
+    private static void replaceBlockSchema(SQLBlockStatement blockStatement,Map<String,String> map,String sourceSchema){
         for(SQLStatement statement:blockStatement.getStatementList()){
             if(statement instanceof XuguInsertStatement){
                 XuguInsertStatement insertStatement = (XuguInsertStatement) statement;
                 if(map.containsKey(insertStatement.getTableSource().getSchema())){
                     insertStatement.getTableSource().setSchema(map.get(insertStatement.getTableSource().getSchema()));
+                }else if(insertStatement.getTableSource().getSchema()==null&&map.containsKey(sourceSchema)){
+                    SQLPropertyExpr expr = new SQLPropertyExpr(map.get(sourceSchema),insertStatement.getTableSource().getExpr().toString());
+                    insertStatement.getTableSource().setExpr(expr);
                 }
             }else if(statement instanceof XuguUpdateStatement){
                 XuguUpdateStatement updateStatement = (XuguUpdateStatement) statement;
@@ -823,8 +927,12 @@ public class XuguParserApi {
                             String key = ((SQLPropertyExpr) ((OracleSelectTableReference) updateStatement.getTableSource()).getExpr()).getOwnerName();
                             ((SQLPropertyExpr) ((OracleSelectTableReference) updateStatement.getTableSource()).getExpr()).setOwner(map.get(key));
                         }
+                    }else if(((OracleSelectTableReference) updateStatement.getTableSource()).getExpr() instanceof SQLIdentifierExpr&&map.containsKey(sourceSchema)){
+                        SQLPropertyExpr expr = new SQLPropertyExpr(map.get(sourceSchema),((OracleSelectTableReference) updateStatement.getTableSource()).getExpr().toString());
+                        ((OracleSelectTableReference) updateStatement.getTableSource()).setExpr(expr);
                     }
                 }
+                //update里的列只替换模式，不用增加模式
                 updateStatement.getItems().forEach(x->{
                     if(x instanceof SQLUpdateSetItem){
                         if(x.getColumn() instanceof SQLPropertyExpr){
@@ -849,6 +957,10 @@ public class XuguParserApi {
                             String key = ((SQLPropertyExpr) ((SQLExprTableSource) deleteStatement.getTableSource()).getExpr()).getOwnerName();
                             ((SQLPropertyExpr) ((SQLExprTableSource) deleteStatement.getTableSource()).getExpr()).setOwner(map.get(key));
                         }
+                    }else if(((SQLExprTableSource) deleteStatement.getTableSource()).getExpr() instanceof SQLIdentifierExpr&&map.containsKey(sourceSchema)){
+                        //delete表增加模式
+                        SQLPropertyExpr expr = new SQLPropertyExpr(map.get(sourceSchema),((SQLIdentifierExpr) ((SQLExprTableSource) deleteStatement.getTableSource()).getExpr()).getName());
+                        ((SQLExprTableSource) deleteStatement.getTableSource()).setExpr(expr);
                     }
                 }
                 if(deleteStatement.getWhere() instanceof SQLBinaryOpExpr){
@@ -873,7 +985,7 @@ public class XuguParserApi {
                         if(((OracleSelectQueryBlock) ((SQLSelectStatement) statement).getSelect().getQuery()).getFrom() instanceof OracleSelectJoin){
                             recursionWhere((SQLBinaryOpExpr) ((OracleSelectJoin) ((OracleSelectQueryBlock) ((SQLSelectStatement) statement).getSelect().getQuery()).getFrom()).getCondition(),map);
                             OracleSelectJoin join = (OracleSelectJoin) ((OracleSelectQueryBlock) ((SQLSelectStatement) statement).getSelect().getQuery()).getFrom();
-                            viewRecursion2(join,map);
+                            viewRecursion2(join,map,sourceSchema);
                         }else if(((OracleSelectQueryBlock) ((SQLSelectStatement) statement).getSelect().getQuery()).getFrom() instanceof OracleSelectTableReference){
                             //recursionWhere((SQLBinaryOpExpr) ((OracleSelectJoin) ((OracleSelectQueryBlock) ((SQLSelectStatement) statement).getSelect().getQuery()).getFrom()).getCondition(),map);
                             if(((OracleSelectQueryBlock) ((SQLSelectStatement) statement).getSelect().getQuery()).getWhere()!=null){
@@ -885,6 +997,9 @@ public class XuguParserApi {
                                 if(map.containsKey(((SQLPropertyExpr) expr).getOwnerName())){
                                     ((SQLPropertyExpr) expr).setOwner(map.get(((SQLPropertyExpr) expr).getOwnerName()));
                                 }
+                            }else if(expr instanceof SQLIdentifierExpr&&map.containsKey(sourceSchema)){
+                                SQLPropertyExpr expr1 = new SQLPropertyExpr(map.get(sourceSchema),((SQLIdentifierExpr) expr).getName());
+                                ((OracleSelectTableReference) ((OracleSelectQueryBlock) ((SQLSelectStatement) statement).getSelect().getQuery()).getFrom()).setExpr(expr1);
                             }
                         }
                         if(((OracleSelectQueryBlock) ((SQLSelectStatement) statement).getSelect().getQuery()).getWhere() instanceof SQLBinaryOpExpr){
@@ -899,7 +1014,7 @@ public class XuguParserApi {
                             if(sqlSelectQuery instanceof OracleSelectQueryBlock){
                                 if(((OracleSelectQueryBlock) sqlSelectQuery).getFrom() instanceof OracleSelectJoin){
                                     OracleSelectJoin join = (OracleSelectJoin)((OracleSelectQueryBlock) sqlSelectQuery).getFrom();
-                                    viewRecursion2(join,map);
+                                    viewRecursion2(join,map,sourceSchema);
                                 }else if (((OracleSelectQueryBlock) sqlSelectQuery).getFrom() instanceof OracleSelectTableReference){
                                     SQLExpr expr = ((OracleSelectTableReference) ((OracleSelectQueryBlock) sqlSelectQuery).getFrom()).getExpr();
                                     if(expr instanceof SQLPropertyExpr){
@@ -907,6 +1022,9 @@ public class XuguParserApi {
                                         if(map.containsKey(((SQLPropertyExpr) expr).getOwnerName())){
                                             ((SQLPropertyExpr) expr).setOwner(map.get(((SQLPropertyExpr) expr).getOwnerName()));
                                         }
+                                    }else if(expr instanceof SQLIdentifierExpr&&map.containsKey(sourceSchema)){
+                                        SQLPropertyExpr expr1 = new SQLPropertyExpr(map.get(sourceSchema),((SQLIdentifierExpr) expr).getName());
+                                        ((OracleSelectTableReference) ((OracleSelectQueryBlock) sqlSelectQuery).getFrom()).setExpr(expr1);
                                     }
                                 }
                             }
@@ -919,6 +1037,9 @@ public class XuguParserApi {
                                String key = ((SQLIdentifierExpr) ((SQLMethodInvokeExpr) ((XuguExecuteStatement) statement).getDynamicSql()).getOwner()).getName();
                                ((SQLIdentifierExpr) ((SQLMethodInvokeExpr) ((XuguExecuteStatement) statement).getDynamicSql()).getOwner()).setName(map.get(key));
                            }
+                       }else if(((SQLMethodInvokeExpr) ((XuguExecuteStatement) statement).getDynamicSql()).getOwner()==null){
+                           SQLIdentifierExpr identifierExpr =  new SQLIdentifierExpr(map.get(sourceSchema));
+                           ((SQLMethodInvokeExpr) ((XuguExecuteStatement) statement).getDynamicSql()).setOwner(identifierExpr);
                        }
                    }
             }else if(statement instanceof SQLCallStatement){
@@ -927,6 +1048,9 @@ public class XuguParserApi {
                         String key = ((SQLPropertyExpr) ((SQLCallStatement) statement).getProcedureName()).getOwnerName();
                         ((SQLPropertyExpr) ((SQLCallStatement) statement).getProcedureName()).setOwner(map.get(key));
                     }
+                }else if(((SQLCallStatement) statement).getProcedureName() instanceof SQLIdentifierExpr&&map.containsKey(sourceSchema)){
+                    SQLPropertyExpr propertyExpr = new SQLPropertyExpr(map.get(sourceSchema),((SQLIdentifierExpr) ((SQLCallStatement) statement).getProcedureName()).getName());
+                    ((SQLCallStatement) statement).setProcedureName(propertyExpr);
                 }
             }
             }

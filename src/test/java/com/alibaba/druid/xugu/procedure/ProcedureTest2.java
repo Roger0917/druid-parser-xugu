@@ -1,15 +1,19 @@
 package com.alibaba.druid.xugu.procedure;
 
+import cn.hutool.core.map.CaseInsensitiveMap;
 import com.alibaba.druid.sql.ast.SQLStatement;
 import com.alibaba.druid.sql.ast.statement.SQLBlockStatement;
 import com.alibaba.druid.sql.ast.statement.SQLCreateFunctionStatement;
 import com.alibaba.druid.sql.ast.statement.SQLCreateProcedureStatement;
+import com.alibaba.druid.sql.dialect.xugu.api.XuguParserApi;
+import com.alibaba.druid.sql.dialect.xugu.api.bean.CreateProcedureBean;
 import com.alibaba.druid.sql.dialect.xugu.parser.XuguStatementParser;
 import com.alibaba.druid.xugu.XuguTest;
 import junit.framework.TestCase;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class ProcedureTest2 extends XuguTest {
 
@@ -388,7 +392,7 @@ public class ProcedureTest2 extends XuguTest {
                 " update sysdba.t1 set id=1 where name='roger1';"+
                 " delete from sysdba.t3 where sysdba.t3.id=1;"+
                 " end;";
-        String normal2 =  "create or replace procedure test_proc3(id func_dep_base_type,name syno_base_type,address syno_base_type1)\n" +
+        String normal2 =  "create or replace procedure test_proc3(id int,name out varchar,address inout int)\n" +
                 "as\n" +
                 " begin\n" +
                 " insert into sysdba.t1(id,name) values(1,'roger');"+
@@ -396,14 +400,23 @@ public class ProcedureTest2 extends XuguTest {
                 " update sysdba.t1 set id=1 where name='roger1';"+
                 " delete from sysdba.t3 where sysdba.t3.id=1;"+
                 " end;";
-        String execImmediate = "create or replace procedure sysdba.pro_immediate(id int,name varchar,a in int, b in int) as \n" +
+        String normal3 = "create or replace procedure uu.test_proc3(id func_dep_base_type,name syno_base_type,address syno_base_type1)\n" +
+                "as\n" +
+                " begin\n" +
+                " insert into uu.t1(id,name) values(1,'roger');"+
+                " select * from uu.sys_tables ;\n" +
+                " update uu.t1 set id=1 where name='roger1';"+
+                " delete from uu.t3 where uu.t3.id=1;"+
+                " end;";
+        String execImmediate = "create or replace procedure pro_immediate(id int,name varchar,a in int, b in int) as \n" +
                 "begin\n" +
-                "select * from sysdba.test_1;\n" +
-                "update sysdba.test_1 set id=1 where name='roger';\n" +
-                "insert into sysdba.test_1(id,name)values(1,'roger');\n" +
-                "delete from sysdba.test_1 where id=1;\n" +
-                "execute sysdba.dep_base_proc_1(a,b);\n" +
-                "call sysdba.dep_base_proc_1(a,b);\n" +
+                "select t1.* from test_1 t1 inner join test_2 t2 inner join test_3 t3 on t1.id=t2.id and t2.id=t3.id;\n" +
+                "select t1.* from test_1;\n" +
+                "update test_1 set id=1 where name='roger';\n" +
+                "insert into test_1(id,name)values(1,'roger');\n" +
+                "delete from test_1 where id=1;\n" +
+                "execute dep_base_proc_1(a,b);\n" +
+                "call dep_base_proc_1(a,b);\n" +
                 "execute immediate 'create schema sc';\n" +
                 "execute immediate 'create table sc.tb1(id int,name varhcar)';\n" +
                 "execute immediate 'create table sc.students(id int,name varhcar)';\n" +
@@ -413,7 +426,7 @@ public class ProcedureTest2 extends XuguTest {
                 "execute immediate 'truncate table sc.tb1';\n" +
                 "execute immediate 'drop table sc.tb1';\n" +
                 "end;";
-        builder.append(sql);
+       /* builder.append(sql);
         builder.append(sql1);
         builder.append(sql2);
         builder.append(sql3);
@@ -458,8 +471,9 @@ public class ProcedureTest2 extends XuguTest {
         builder.append(sqlIntervalHourToMinute);
         builder.append(sqlIntervalHourToSecond);
         builder.append(sqlIntervalMinuteToSecond);
-        builder.append(normal);
+        builder.append(normal);*/
         builder.append(normal2);
+        builder.append(normal3);
         builder.append(execImmediate);
 
         XuguStatementParser parser = new XuguStatementParser(builder.toString());
@@ -472,7 +486,12 @@ public class ProcedureTest2 extends XuguTest {
                 createProcedureSqlStatementList.add(statement);
             }
         }
+        List<CreateProcedureBean> procedureBeans = XuguParserApi.parseCreateProcedure(execImmediate);
         print(createProcedureSqlStatementList);
-        //createProcedureStatementList.stream().forEach(x-> System.out.println(x.getParameters()));
+        Map<String,String> map = new CaseInsensitiveMap<>();
+        map.put("sysdba","sysdba1");
+        map.put("uu","uu1");
+        String renturnStr = XuguParserApi.replaceProcedureSqlSchema(execImmediate,map,"sysdba");
+        System.out.printf("222");
     }
 }

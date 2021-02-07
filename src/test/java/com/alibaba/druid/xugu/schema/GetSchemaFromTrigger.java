@@ -27,12 +27,12 @@ public class GetSchemaFromTrigger extends TestCase {
         map.put("sysdba","sysdba1");
         map.put("uu","uu1");
 
-        String returnStr = XuguParserApi.replaceTriggerSchema(sql,map);
+        //String returnStr = XuguParserApi.replaceTriggerSchema(sql,map);
         System.out.println(222);
     }
 
     public void test2(){
-        String sql = "CREATE TRIGGER sysdba.INSERT_err BEFORE update of(sysdba.test_1.id,sysdba.test_1.name) ON sysdba.test_1 \n" +
+        String sql = "CREATE TRIGGER INSERT_err BEFORE update of(sysdba.test_1.id,sysdba.test_1.name) ON sysdba.test_1 \n" +
                 "referencing new AS nn FOR each ROW \n" +
                 "BEGIN \n" +
                 "insert into uu.test1(1,'插入了一个过大的数！'); \n" +
@@ -45,8 +45,9 @@ public class GetSchemaFromTrigger extends TestCase {
         HashMap<String,String> map = new HashMap<>();
         map.put("sysdba","sysdba1");
         map.put("uu","uu1");
+        map.put("ss","ss1");
 
-        String returnStr = XuguParserApi.replaceTriggerSchema(sql,map);
+        String returnStr = XuguParserApi.replaceTriggerSchema(sql,map,"ss");
         System.out.println(222);
     }
 }

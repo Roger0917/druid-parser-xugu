@@ -1,10 +1,12 @@
 package com.alibaba.druid.xugu.schema;
 
+import cn.hutool.core.map.CaseInsensitiveMap;
 import cn.hutool.core.util.ReflectUtil;
 import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.SQLStatement;
 import com.alibaba.druid.sql.ast.expr.SQLPropertyExpr;
 import com.alibaba.druid.sql.ast.statement.SQLCreateViewStatement;
+import com.alibaba.druid.sql.ast.statement.SQLSelect;
 import com.alibaba.druid.sql.ast.statement.SQLSelectQuery;
 import com.alibaba.druid.sql.ast.statement.SQLUnionQuery;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleSelectJoin;
@@ -12,12 +14,15 @@ import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleSelectQueryBlock;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleSelectTableReference;
 import com.alibaba.druid.sql.dialect.xugu.api.XuguParserApi;
 import com.alibaba.druid.sql.dialect.xugu.parser.XuguStatementParser;
+import com.alibaba.druid.sql.dialect.xugu.visitor.XuguASTVisitor;
+import com.ibm.icu.util.CaseInsensitiveString;
 import junit.framework.TestCase;
 import org.junit.Assert;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class GetSchemaFromView extends TestCase {
     
@@ -29,7 +34,7 @@ public class GetSchemaFromView extends TestCase {
         String sql = "create view sysdba.view1 as select id from sysdba.students";
         HashMap map = new HashMap();
         map.put("sysdba","sysdba1");
-        String str = XuguParserApi.replaceViewSqlSchema(sql,map);
+        String str = XuguParserApi.replaceViewSqlSchema(sql,map,"");
         System.out.printf("222");
     }
     public void test2(){
@@ -42,7 +47,7 @@ public class GetSchemaFromView extends TestCase {
         map.put("u1","u11");
         map.put("u2","u22");
         map.put("u3","u33");
-        String returnStr = XuguParserApi.replaceViewSqlSchema(sql,map);
+        String returnStr = XuguParserApi.replaceViewSqlSchema(sql,map,"");
         System.out.println(222);
     }
     
@@ -62,7 +67,7 @@ public class GetSchemaFromView extends TestCase {
         map.put("u2","t2");
         map.put("u3","t3");
         map.put("u4","t4");
-        String replaceStr = XuguParserApi.replaceViewSqlSchema(sql,map);
+        String replaceStr = XuguParserApi.replaceViewSqlSchema(sql,map,"");
         System.out.println(222);
     }
     
@@ -76,8 +81,22 @@ public class GetSchemaFromView extends TestCase {
         map.put("user_sod","user_sod1");
         map.put("u1","t1");
         map.put("u3","t3");
-        String str = XuguParserApi.replaceViewSqlSchema(sql,map);
+        String str = XuguParserApi.replaceViewSqlSchema(sql,map,"");
         System.out.println(222);
-
+    }
+    
+    public void test5(){
+        String sql = "create view iop_v1 as select * from iop where id=1 and name='1' with read only;";
+        String sql2 = "create view iop_v2 as select * from iop with check option;";
+        XuguStatementParser parser = new XuguStatementParser(sql+sql2);
+        List<SQLStatement> statementList = parser.parseStatementList();
+        System.out.println(222);
+        SQLCreateViewStatement createViewStatement = (SQLCreateViewStatement) statementList.get(0);
+        Map<String,String> map =new CaseInsensitiveMap<>();
+        map.put("u1","s1");
+        map.put("u2","s2");
+        String str = XuguParserApi.replaceViewSqlSchema(sql,map,"u1");
+        String str2 = XuguParserApi.replaceViewSqlSchema(sql2,map,"u1");
+        System.out.println(222);
     }
 }

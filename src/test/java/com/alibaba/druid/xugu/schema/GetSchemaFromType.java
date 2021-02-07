@@ -11,7 +11,7 @@ import java.util.List;
 public class GetSchemaFromType extends TestCase {
     
     public void test(){
-        String sql = "create type body sysdba.pack_dep_base_type as" +
+        String sql = "create type body pack_dep_base_type as" +
                 "            member function getId(n int,na varchar(21)) return int" +
                 "            as" +
                 "            begin" +
@@ -37,13 +37,34 @@ public class GetSchemaFromType extends TestCase {
                 " send_msg('id='||p.id || ' name='||p.get_name || ' addr=' || p.get_adr());"+
                 " END;"+
                 "            end;";
-        XuguStatementParser parser = new XuguStatementParser(sql);
+        String sql10="create type syno_base_type as object" +
+                "(" +
+                "  name varchar," +
+                "  addr varchar," +
+                "  member function getName(n int,na numeric(21,6)) return varchar," +
+                "  member function getAddr(n int,na varchar) return varchar"+
+                ");";
+        String sql11=
+                "create type body syno_base_type as" +
+                        " member function getName(n int,na numeric(21,6)) return varchar" +
+                        " as" +
+                        " begin " +
+                        " return name;" +
+                        " end;" +
+                        " member function getAddr(n int,na varchar) return varchar" +
+                        " as" +
+                        " begin" +
+                        " return addr;" +
+                        "end;" +
+                        "end;";
+        XuguStatementParser parser = new XuguStatementParser(sql10+sql11);
         List<SQLStatement> statementList = parser.parseStatementList();
         HashMap<String,String> map = new HashMap<>();
         map.put("sysdba","sysdba1");
         map.put("uu","uu1");
+        map.put("ss","ss1");
 
-        String returnStr= XuguParserApi.replaceTypeSqlSchema(sql,map);
+        String returnStr= XuguParserApi.replaceTypeSqlSchema(sql10+sql11,map,"ss");
         System.out.println(222);
     }
 }

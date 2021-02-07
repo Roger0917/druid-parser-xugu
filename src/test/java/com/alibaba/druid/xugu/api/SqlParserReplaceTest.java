@@ -186,19 +186,19 @@ public class SqlParserReplaceTest {
         for(int i = 0;i<s1.length;i++){
             String typeName = s1[i].toLowerCase();
             if("view".equalsIgnoreCase(typeName)){
-                define = XuguParserApi.replaceViewSqlSchema(sql,schemasMap);
+                define = XuguParserApi.replaceViewSqlSchema(sql,schemasMap,"");
                 break;
             }else if("package".equalsIgnoreCase(typeName)){
-                define =  XuguParserApi.replacePackageSqlSchema(sql,schemasMap);
+                define =  XuguParserApi.replacePackageSqlSchema(sql,schemasMap,"");
                 break;
             }else if("function".equalsIgnoreCase(typeName)){
-                define = XuguParserApi.replaceFunctionSqlSchema(sql,schemasMap);
+                define = XuguParserApi.replaceFunctionSqlSchema(sql,schemasMap,"");
                 break;
             }else if("trigger".equalsIgnoreCase(typeName)){
-                define = XuguParserApi.replaceTriggerSchema(sql,schemasMap);
+                define = XuguParserApi.replaceTriggerSchema(sql,schemasMap,"");
                 break;
             }else if("procedure".equalsIgnoreCase(typeName)){
-                define = XuguParserApi.replaceProcedureSqlSchema(sql,schemasMap);
+                define = XuguParserApi.replaceProcedureSqlSchema(sql,schemasMap,"");
                 break;
             }
         }

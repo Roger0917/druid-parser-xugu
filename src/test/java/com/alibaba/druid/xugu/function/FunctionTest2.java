@@ -251,7 +251,7 @@ public class FunctionTest2 extends TestCase {
                 "begin\n" +
                 "insert into test_1(id,name)values(1,'roger');\n" +
                 "end;";
-        String sql35 = "create or replace function sysdba.dep_proc_func() return int as\n" +
+        String sql35 = "create or replace function sysdba.dep_proc_func(id int,name out varchar,address inout varchar,email in int) return int as\n" +
                 " begin\n" +
                 "   execute sysdba.dep_base_proc_1(a,b);\n" +
                 "   call sysdba.dep_base_proc_1(a,b);\n" +
@@ -307,13 +307,9 @@ public class FunctionTest2 extends TestCase {
                 createFunctionStatementList.add(createFunctionStatement);
             }
         }
-        List<CreateFunctionBean> createFunctionBeanList = XuguParserApi.parseCreateFunction(sql34);
-        try{
-            String str = createFunctionStatementList.get(0).toString();
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-        
+        List<CreateFunctionBean> createFunctionBeanList = XuguParserApi.parseCreateFunction(builder.toString());
+        String str = createFunctionStatementList.get(0).toString();
+
         System.out.printf("222");
     }
     

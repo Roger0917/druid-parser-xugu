@@ -28,6 +28,13 @@ public interface XuguASTVisitor extends SQLASTVisitor {
     default void endVisit(OracleSelectJoin x) {
 
     }*/
+    default boolean endVisit(OracleSelectRestriction.CheckOption x) {
+        return true;
+    }
+
+    default boolean endVisit(OracleSelectRestriction.ReadOnly x) {
+        return true;
+    }
 
     default void endVisit(XuguSelectSubqueryTableSource x) {
 

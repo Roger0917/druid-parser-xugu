@@ -149,7 +149,8 @@ public class XuguOutputVisitor extends SQLASTOutputVisitor implements XuguASTVis
         if (x.getRestriction() != null) {
             println();
             print("WITH ");
-            x.getRestriction().accept(this);
+            //x.getRestriction().accept(this);
+            print(x.getRestriction().toString());
         }
 
         SQLOrderBy orderBy = x.getOrderBy();
@@ -270,6 +271,28 @@ public class XuguOutputVisitor extends SQLASTOutputVisitor implements XuguASTVis
             print0(x.getAlias());
         }
 
+        return false;
+    }
+
+    @Override
+    public boolean endVisit(OracleSelectRestriction.CheckOption x) {
+        print0(ucase ? "CHECK OPTION" : "check option");
+        if (x.getConstraint() != null) {
+            print0(ucase ? " CONSTRAINT" : " constraint");
+            print(' ');
+            x.getConstraint().accept(this);
+        }
+        return false;
+    }
+
+    @Override
+    public boolean endVisit(OracleSelectRestriction.ReadOnly x) {
+        print0(ucase ? "READ ONLY" : "read only");
+        if (x.getConstraint() != null) {
+            print0(ucase ? " CONSTRAINT" : " constraint");
+            print(' ');
+            x.getConstraint().accept(this);
+        }
         return false;
     }
 

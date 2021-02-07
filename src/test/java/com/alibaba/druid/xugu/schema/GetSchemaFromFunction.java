@@ -11,7 +11,7 @@ import java.util.List;
 public class GetSchemaFromFunction extends TestCase {
 
     public void test(){
-        String sql = "create or replace function sysdba.fun1(a int,b interval minute to second) return interval minute(7) to second(3) as\n" +
+        String sql = "create or replace function fun1(a int,b interval minute to second) return interval minute(7) to second(3) as\n" +
                 "declare x int;\n" +
                 "y varchar;\n" +
                 "z char(10);\n" +
@@ -25,13 +25,19 @@ public class GetSchemaFromFunction extends TestCase {
                 "delete from schema1.t1 where schema1.t1.tname='tname' and schema1.t1.taddress='taddress' and schema1.t1.uu=1;\n" +
                 "return 5;"+
                 "end;";
-        XuguStatementParser parser = new XuguStatementParser(sql);
+
+        String sql2 = "create or replace function test_function(a out in int) return int as\n" +
+                " begin\n" +
+                "   a:=5;\n" +
+                "   return a;\n" +
+                " end;";
+        XuguStatementParser parser = new XuguStatementParser(sql2);
         List<SQLStatement> statementList = parser.parseStatementList();
 
         HashMap<String,String> map = new HashMap<>();
         map.put("schema1","schema2");
         map.put("sysdba","sysdba1");
-        String returnStr = XuguParserApi.replaceFunctionSqlSchema(sql,map);
+        String returnStr = XuguParserApi.replaceFunctionSqlSchema(sql,map,"schema1");
         System.out.println(222);
     }
 }

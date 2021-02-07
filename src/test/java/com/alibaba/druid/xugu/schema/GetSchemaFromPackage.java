@@ -11,13 +11,13 @@ import java.util.List;
 public class GetSchemaFromPackage extends TestCase {
     
     public void test(){
-        String sql = /*"create or replace package xugu_test_pack is\n" +
+        String sql = "create or replace package xugu_test_pack is\n" +
                 "                                procedure pack_proc1(id int,name varchar);\n" +
                 "                                function pack_fun1(id int,name varchar) return int;\n" +
                 "                                procedure pack_proc2(x int,y int);\n" +
                 "                                function pack_fun2(x int,y int) return int;\n" +
-                "                                end;"*/
-        "create or replace package body sysdba.xugu_test_pack is\n" +
+                "                                end;"+
+        "create or replace package body xugu_test_pack is\n" +
                 "                procedure sysdba.pack_proc1(id int,name varchar)is\n" +
                 "                begin\n" +
                 "                DBMS_OUTPUT.PUT_LINE(to_char(id)||name);\n" +
@@ -54,7 +54,8 @@ public class GetSchemaFromPackage extends TestCase {
         HashMap<String,String> map = new HashMap<>();
         map.put("sysdba","sysdba1");
         map.put("uu","uu1");
-        String str = XuguParserApi.replacePackageSqlSchema(sql,map);
+        map.put("ss","ss1");
+        String str = XuguParserApi.replacePackageSqlSchema(sql,map,"ss");
         System.out.println(222);
     }
 }

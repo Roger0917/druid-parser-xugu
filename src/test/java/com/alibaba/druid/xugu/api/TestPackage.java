@@ -13,14 +13,14 @@ import java.util.Map;
 public class TestPackage extends TestCase {
     
     public void test(){
-        String sql = "create or replace package u1.scpa is\n" +
+        String sql = "create or replace package scpa is\n" +
                 "procedure proc1();\n" +
                 "function proc2() return int;\n" +
                 "procedure proc3();\n" +
                 "procedure proc4();\n" +
                 "end;\n" +
                 "\n" +
-                "create package body u2.scpa as\n" +
+                "create package body scpa as\n" +
                 "\n" +
                 "procedure proc1()\n" +
                 "as\n" +
@@ -60,7 +60,7 @@ public class TestPackage extends TestCase {
         boolean b1 = map.containsKey("u1");
         boolean b2 = map.containsKey("U1");
 
-        String returnStr = XuguParserApi.replacePackageSqlSchema(sql,map);
+        String returnStr = XuguParserApi.replacePackageSqlSchema(sql,map,"");
         System.out.println(222);
     }
 }

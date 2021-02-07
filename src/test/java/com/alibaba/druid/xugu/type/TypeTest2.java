@@ -1,6 +1,8 @@
 package com.alibaba.druid.xugu.type;
 
 import com.alibaba.druid.sql.ast.SQLStatement;
+import com.alibaba.druid.sql.dialect.xugu.api.XuguParserApi;
+import com.alibaba.druid.sql.dialect.xugu.api.bean.CreateTypeBean;
 import com.alibaba.druid.sql.dialect.xugu.ast.stmt.XuguCreateTypeStatement;
 import com.alibaba.druid.sql.dialect.xugu.parser.XuguStatementParser;
 import junit.framework.TestCase;
@@ -49,6 +51,7 @@ public class TypeTest2 extends TestCase {
                 " addr varchar," +
                 " member function getId(n int,na varchar(21)) return int," +
                 " member function getAddr(n int,na varchar) return varchar," +
+                " member procedure getAddr(n int,na varchar)" +
                 " static PROCEDURE printfa(p person)"+
                 ");";
         String sql9 = "create type body pack_dep_base_type as" +
@@ -61,6 +64,11 @@ public class TypeTest2 extends TestCase {
                 "            as" +
                 "            begin" +
                 "             return addr;" +
+                "            end;" +
+                "            member procedure getAddr(n int,na varchar)" +
+                "            as" +
+                "            begin" +
+                "             send_msg(5);" +
                 "            end;" +
                 "static PROCEDURE printfa(p person)" +
                 " IS"+
@@ -130,27 +138,28 @@ public class TypeTest2 extends TestCase {
                 " END;"+
                 "END;";
         String sql16 = "DECLARE TYPE typea IS VARYING ARRAY(20) OF INTEGER; ta typea; BEGIN ta.extend; SELECT id BULK COLLECT INTO ta FROM test_1; FOR i IN ta.first..ta.last LOOP INSERT INTO test_2 VALUES (ta(i),'test'||i); END LOOP; END;";
-        builder.append(sql1);
+       /* builder.append(sql1);
         builder.append(sql2);
         builder.append(sql3);
         builder.append(sql4);
-        builder.append(sql5);
+        builder.append(sql5);*/
         builder.append(sql6);
         builder.append(sql7);
         builder.append(sql8);
         builder.append(sql9);
-        builder.append(sql10);
+        /*builder.append(sql10);
         builder.append(sql11);
         builder.append(sql12);
         builder.append(sql13);
         builder.append(sql14);
-        builder.append(sql15);
+        builder.append(sql15);*/
         //builder.append(sql16);
 
         XuguStatementParser parser = new XuguStatementParser(builder.toString());
         List<SQLStatement> statementList = parser.parseStatementList();
-        XuguCreateTypeStatement createTypeStatement = (XuguCreateTypeStatement) statementList.get(4);
-        String str = createTypeStatement.getParameters().get(2).toString();
+        //XuguCreateTypeStatement createTypeStatement = (XuguCreateTypeStatement) statementList.get(4);
+
+        CreateTypeBean createTypeBean = XuguParserApi.parseCreateType(sql8+sql9);
         System.out.println(222);
     }
 
