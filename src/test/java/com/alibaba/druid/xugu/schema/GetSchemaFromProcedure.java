@@ -1,5 +1,6 @@
 package com.alibaba.druid.xugu.schema;
 
+import cn.hutool.core.map.CaseInsensitiveMap;
 import com.alibaba.druid.pool.bonecp.TestPSCache;
 import com.alibaba.druid.sql.ast.SQLStatement;
 import com.alibaba.druid.sql.dialect.xugu.api.XuguParserApi;
@@ -9,6 +10,7 @@ import junit.framework.TestCase;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class GetSchemaFromProcedure extends TestCase {
     
@@ -91,5 +93,31 @@ public class GetSchemaFromProcedure extends TestCase {
         List<SQLStatement> statementList = parser.parseStatementList();
         String str = XuguParserApi.replaceProcedureSqlSchema(sql,map,"schema1");
         System.out.println(222);
+    }
+    
+    public void test4(){
+        String sql = "create or replace procedure test_procedure(a out int)\n" +
+                "                as\n" +
+                "                b int;\n" +
+                "                begin\n" +
+                "                 b:=5;\n" +
+                "                for i in 1..10 loop\n" +
+                "insert into test_proc_tab(id,dt)values(1,sysdate);\n" +
+                "                update test_proc_tab set id=5 where dt=sysdate;\n" +
+                "delete from test_proc_tab where id=5; \n" +
+                "select * from test_proc_tab;               \n" +
+                "b:=b+i;\n" +
+                "                end loop;\n" +
+                "                a:=b;\n" +
+                "                end;";
+        Map<String,String> map = new CaseInsensitiveMap<>();
+        map.put("qwe","sysdba1");
+        map.put("syssso","syssso1");
+        map.put("guest","guest1");
+        String resourceSchema="qwe";
+        XuguStatementParser parser= new XuguStatementParser(sql);
+        List<SQLStatement> statementList = parser.parseStatementList();
+        String returnStr = XuguParserApi.replaceProcedureSqlSchema(sql,map,resourceSchema);
+        System.out.println(returnStr);
     }
 }

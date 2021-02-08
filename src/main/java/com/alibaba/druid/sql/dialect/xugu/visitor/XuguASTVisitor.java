@@ -9,9 +9,7 @@ import com.alibaba.druid.sql.dialect.oracle.ast.stmt.*;
 import com.alibaba.druid.sql.dialect.xugu.ast.*;
 import com.alibaba.druid.sql.dialect.xugu.ast.clause.XuguLobStorageClause;
 import com.alibaba.druid.sql.dialect.xugu.ast.clause.XuguReturningClause;
-import com.alibaba.druid.sql.dialect.xugu.ast.expr.XuguBinaryDoubleExpr;
-import com.alibaba.druid.sql.dialect.xugu.ast.expr.XuguBinaryFloatExpr;
-import com.alibaba.druid.sql.dialect.xugu.ast.expr.XuguRangeExpr;
+import com.alibaba.druid.sql.dialect.xugu.ast.expr.*;
 import com.alibaba.druid.sql.dialect.xugu.ast.stmt.*;
 import com.alibaba.druid.sql.visitor.SQLASTVisitor;
 
@@ -81,6 +79,14 @@ public interface XuguASTVisitor extends SQLASTVisitor {
 
     }
 
+    default boolean visit(XuguOuterExpr x) {
+        return true;
+    }
+
+    default void endVisit(XuguOuterExpr x) {
+
+    }
+
     default boolean visit(OracleCursorExpr x) {
         return true;
     }
@@ -127,15 +133,15 @@ public interface XuguASTVisitor extends SQLASTVisitor {
 
     default void endVisit(OracleDatetimeExpr x) {
 
-    }
+    }*/
 
-    default boolean visit(OracleSysdateExpr x) {
+    default boolean visit(XuguSysdateExpr x) {
         return true;
     }
 
-    default void endVisit(OracleSysdateExpr x) {
+    default void endVisit(XuguSysdateExpr x) {
 
-    }*/
+    }
 
     default boolean visit(XuguExceptionStatement x) {
         return true;
@@ -153,15 +159,16 @@ public interface XuguASTVisitor extends SQLASTVisitor {
 
     }
 
-    /*
-    default boolean visit(OracleArgumentExpr x) {
+
+    default boolean visit(XuguArgumentExpr x) {
         return true;
     }
 
-    default void endVisit(OracleArgumentExpr x) {
+    default void endVisit(XuguArgumentExpr x) {
 
     }
 
+    /*
     default boolean visit(OracleSetTransactionStatement x) {
         return true;
     }

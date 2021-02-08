@@ -11,9 +11,7 @@ import com.alibaba.druid.sql.dialect.xugu.ast.*;
 import com.alibaba.druid.sql.dialect.xugu.ast.clause.XuguLobStorageClause;
 import com.alibaba.druid.sql.dialect.xugu.ast.clause.XuguReturningClause;
 import com.alibaba.druid.sql.dialect.xugu.ast.clause.XuguWithSubqueryEntry;
-import com.alibaba.druid.sql.dialect.xugu.ast.expr.XuguBinaryDoubleExpr;
-import com.alibaba.druid.sql.dialect.xugu.ast.expr.XuguBinaryFloatExpr;
-import com.alibaba.druid.sql.dialect.xugu.ast.expr.XuguRangeExpr;
+import com.alibaba.druid.sql.dialect.xugu.ast.expr.*;
 import com.alibaba.druid.sql.dialect.xugu.ast.stmt.*;
 import com.alibaba.druid.sql.dialect.xugu.parser.XuguFunctionDataType;
 import com.alibaba.druid.sql.dialect.xugu.parser.XuguProdecureDataType;
@@ -129,11 +127,11 @@ public class XuguOutputVisitor extends SQLASTOutputVisitor implements XuguASTVis
         return false;
     }
 
-    /*public boolean visit(OracleOuterExpr x) {
+    public boolean visit(XuguOuterExpr x) {
         x.getExpr().accept(this);
         print0("(+)");
         return false;
-    }*/
+    }
 
     @Override
     public boolean visit(SQLSelect x) {
@@ -296,7 +294,7 @@ public class XuguOutputVisitor extends SQLASTOutputVisitor implements XuguASTVis
         return false;
     }
 
-    /*public boolean visit(OracleSelectTableReference x) {
+    public boolean visit(XuguSelectTableReference x) {
         if (x.isOnly()) {
             print0(ucase ? "ONLY (" : "only (");
             printTableSourceExpr(x.getExpr());
@@ -325,17 +323,17 @@ public class XuguOutputVisitor extends SQLASTOutputVisitor implements XuguASTVis
             x.getSampleClause().accept(this);
         }
 
-        if (x.getPivot() != null) {
+        /*if (x.getPivot() != null) {
             println();
             x.getPivot().accept(this);
         }
 
-        printFlashback(x.getFlashback());
+        printFlashback(x.getFlashback());*/
 
         printAlias(x.getAlias());
 
         return false;
-    }*/
+    }
 
     @Override
     public boolean visit(XuguUpdateStatement x) {
@@ -506,17 +504,17 @@ public class XuguOutputVisitor extends SQLASTOutputVisitor implements XuguASTVis
         timeZone.accept(this);
 
         return false;
-    }
+    }*/
 
     @Override
-    public boolean visit(OracleSysdateExpr x) {
+    public boolean visit(XuguSysdateExpr x) {
         print0(ucase ? "SYSDATE" : "sysdate");
         if (x.getOption() != null) {
             print('@');
             print0(x.getOption());
         }
         return false;
-    }*/
+    }
 
     @Override
     public boolean visit(XuguExceptionStatement.Item x) {
@@ -562,15 +560,15 @@ public class XuguOutputVisitor extends SQLASTOutputVisitor implements XuguASTVis
         return false;
     }
 
-    /*@Override
-    public boolean visit(OracleArgumentExpr x) {
+    @Override
+    public boolean visit(XuguArgumentExpr x) {
         print0(x.getArgumentName());
         print0(" => ");
         x.getValue().accept(this);
         return false;
     }
 
-    @Override
+    /*@Override
     public boolean visit(OracleSetTransactionStatement x) {
         if (x.isReadOnly()) {
             print0(ucase ? "SET TRANSACTION READ ONLY" : "set transaction read only");

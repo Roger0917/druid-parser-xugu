@@ -1052,6 +1052,8 @@ public class XuguParserApi {
                     SQLPropertyExpr propertyExpr = new SQLPropertyExpr(map.get(sourceSchema),((SQLIdentifierExpr) ((SQLCallStatement) statement).getProcedureName()).getName());
                     ((SQLCallStatement) statement).setProcedureName(propertyExpr);
                 }
+            }else if(statement instanceof XuguForStatement){
+                replaceForSchema((XuguForStatement) statement,map,sourceSchema);
             }
             }
         }
@@ -1097,5 +1099,153 @@ public class XuguParserApi {
         }
     }
 
+    private static void replaceForSchema(XuguForStatement forStatement,Map<String,String> map,String sourceSchema){
+        for(SQLStatement statement:forStatement.getStatements()){
+            if(statement instanceof XuguInsertStatement){
+                XuguInsertStatement insertStatement = (XuguInsertStatement) statement;
+                if(map.containsKey(insertStatement.getTableSource().getSchema())){
+                    insertStatement.getTableSource().setSchema(map.get(insertStatement.getTableSource().getSchema()));
+                }else if(insertStatement.getTableSource().getSchema()==null&&map.containsKey(sourceSchema)){
+                    SQLPropertyExpr expr = new SQLPropertyExpr(map.get(sourceSchema),insertStatement.getTableSource().getExpr().toString());
+                    insertStatement.getTableSource().setExpr(expr);
+                }
+            }else if(statement instanceof XuguUpdateStatement){
+                XuguUpdateStatement updateStatement = (XuguUpdateStatement) statement;
+                if(updateStatement.getTableSource() instanceof OracleSelectTableReference){
+                    if(((OracleSelectTableReference) updateStatement.getTableSource()).getExpr() instanceof SQLPropertyExpr){
+                        if(map.containsKey(((SQLPropertyExpr) ((OracleSelectTableReference) updateStatement.getTableSource()).getExpr()).getOwnerName())){
+                            String key = ((SQLPropertyExpr) ((OracleSelectTableReference) updateStatement.getTableSource()).getExpr()).getOwnerName();
+                            ((SQLPropertyExpr) ((OracleSelectTableReference) updateStatement.getTableSource()).getExpr()).setOwner(map.get(key));
+                        }
+                    }else if(((OracleSelectTableReference) updateStatement.getTableSource()).getExpr() instanceof SQLIdentifierExpr&&map.containsKey(sourceSchema)){
+                        SQLPropertyExpr expr = new SQLPropertyExpr(map.get(sourceSchema),((OracleSelectTableReference) updateStatement.getTableSource()).getExpr().toString());
+                        ((OracleSelectTableReference) updateStatement.getTableSource()).setExpr(expr);
+                    }
+                }
+                //update里的列只替换模式，不用增加模式
+                updateStatement.getItems().forEach(x->{
+                    if(x instanceof SQLUpdateSetItem){
+                        if(x.getColumn() instanceof SQLPropertyExpr){
+                            if(((SQLPropertyExpr) x.getColumn()).getOwner() instanceof SQLPropertyExpr){
+                                if (map.containsKey(((SQLPropertyExpr) ((SQLPropertyExpr) x.getColumn()).getOwner()).getOwnerName())){
+                                    String key = ((SQLPropertyExpr) ((SQLPropertyExpr) x.getColumn()).getOwner()).getOwnerName();
+                                    ((SQLPropertyExpr) ((SQLPropertyExpr) x.getColumn()).getOwner()).setOwner(map.get(key));
+                                }
+                            }
+                        }
+                    }
+                });
+                if(updateStatement.getWhere() instanceof SQLBinaryOpExpr){
+                    recursionWhere((SQLBinaryOpExpr) updateStatement.getWhere(),map);
+                }
+            }else if(statement instanceof XuguDeleteStatement){
+                //delete 需替换表名模式和列名中模式
+                XuguDeleteStatement deleteStatement = (XuguDeleteStatement) statement;
+                if(deleteStatement.getTableSource() instanceof SQLExprTableSource){
+                    if(((SQLExprTableSource) deleteStatement.getTableSource()).getExpr() instanceof SQLPropertyExpr){
+                        if(map.containsKey(((SQLPropertyExpr) ((SQLExprTableSource) deleteStatement.getTableSource()).getExpr()).getOwnerName())){
+                            String key = ((SQLPropertyExpr) ((SQLExprTableSource) deleteStatement.getTableSource()).getExpr()).getOwnerName();
+                            ((SQLPropertyExpr) ((SQLExprTableSource) deleteStatement.getTableSource()).getExpr()).setOwner(map.get(key));
+                        }
+                    }else if(((SQLExprTableSource) deleteStatement.getTableSource()).getExpr() instanceof SQLIdentifierExpr&&map.containsKey(sourceSchema)){
+                        //delete表增加模式
+                        SQLPropertyExpr expr = new SQLPropertyExpr(map.get(sourceSchema),((SQLIdentifierExpr) ((SQLExprTableSource) deleteStatement.getTableSource()).getExpr()).getName());
+                        ((SQLExprTableSource) deleteStatement.getTableSource()).setExpr(expr);
+                    }
+                }
+                if(deleteStatement.getWhere() instanceof SQLBinaryOpExpr){
+                    recursionWhere((SQLBinaryOpExpr) deleteStatement.getWhere(),map);
+                }
+            }else if(statement instanceof SQLSelectStatement){
+                if(((SQLSelectStatement) statement).getSelect().getQuery() instanceof OracleSelectQueryBlock){
+                    //先处理selectlist
+                    ((OracleSelectQueryBlock) ((SQLSelectStatement) statement).getSelect().getQuery()).getSelectList().forEach(x->{
+                        if(x instanceof SQLSelectItem){
+                            if(x.getExpr() instanceof SQLPropertyExpr){
+                                if(((SQLPropertyExpr) x.getExpr()).getOwner() instanceof SQLPropertyExpr){
+                                    if(map.containsKey(((SQLPropertyExpr) ((SQLPropertyExpr) x.getExpr()).getOwner()).getOwnerName())){
+                                        String key = ((SQLPropertyExpr) ((SQLPropertyExpr) x.getExpr()).getOwner()).getOwnerName();
+                                        ((SQLPropertyExpr) ((SQLPropertyExpr) x.getExpr()).getOwner()).setOwner(map.get(key));
+                                    }
+                                }
+                            }
+                        }
+                    });
+                    //然后处理from里的left和right,对于join的,v1,v2,v3需倒排序模式
+                    if(((OracleSelectQueryBlock) ((SQLSelectStatement) statement).getSelect().getQuery()).getFrom() instanceof OracleSelectJoin){
+                        recursionWhere((SQLBinaryOpExpr) ((OracleSelectJoin) ((OracleSelectQueryBlock) ((SQLSelectStatement) statement).getSelect().getQuery()).getFrom()).getCondition(),map);
+                        OracleSelectJoin join = (OracleSelectJoin) ((OracleSelectQueryBlock) ((SQLSelectStatement) statement).getSelect().getQuery()).getFrom();
+                        viewRecursion2(join,map,sourceSchema);
+                    }else if(((OracleSelectQueryBlock) ((SQLSelectStatement) statement).getSelect().getQuery()).getFrom() instanceof OracleSelectTableReference){
+                        //recursionWhere((SQLBinaryOpExpr) ((OracleSelectJoin) ((OracleSelectQueryBlock) ((SQLSelectStatement) statement).getSelect().getQuery()).getFrom()).getCondition(),map);
+                        if(((OracleSelectQueryBlock) ((SQLSelectStatement) statement).getSelect().getQuery()).getWhere()!=null){
+                            recursionWhere((SQLBinaryOpExpr) ((OracleSelectQueryBlock) ((SQLSelectStatement) statement).getSelect().getQuery()).getWhere(),map);
+                        }
+                        SQLExpr expr = ((OracleSelectTableReference) ((OracleSelectQueryBlock) ((SQLSelectStatement) statement).getSelect().getQuery()).getFrom()).getExpr();
+                        if(expr instanceof SQLPropertyExpr){
+                            //reverseSchemas.add(((SQLPropertyExpr) expr).getOwnerName());
+                            if(map.containsKey(((SQLPropertyExpr) expr).getOwnerName())){
+                                ((SQLPropertyExpr) expr).setOwner(map.get(((SQLPropertyExpr) expr).getOwnerName()));
+                            }
+                        }else if(expr instanceof SQLIdentifierExpr&&map.containsKey(sourceSchema)){
+                            SQLPropertyExpr expr1 = new SQLPropertyExpr(map.get(sourceSchema),((SQLIdentifierExpr) expr).getName());
+                            ((OracleSelectTableReference) ((OracleSelectQueryBlock) ((SQLSelectStatement) statement).getSelect().getQuery()).getFrom()).setExpr(expr1);
+                        }
+                    }
+                    if(((OracleSelectQueryBlock) ((SQLSelectStatement) statement).getSelect().getQuery()).getWhere() instanceof SQLBinaryOpExpr){
+                        recursionWhere((SQLBinaryOpExpr) ((OracleSelectQueryBlock) ((SQLSelectStatement) statement).getSelect().getQuery()).getWhere(),map);
+                    }
+                }else if(((SQLSelectStatement) statement).getSelect().getQuery() instanceof SQLUnionQuery){
+                    //先处理selectlist
+                    //对于union的,union的每个语句里的模式要倒排,但union语句间模式保持顺序不变
+                    SQLUnionQuery unionQuery = (SQLUnionQuery) ((SQLSelectStatement) statement).getSelect().getQuery();
+                    for(SQLSelectQuery sqlSelectQuery:unionQuery.getRelations()){
+                        //List<String> oneUnionReverseSchemas = new ArrayList<>();
+                        if(sqlSelectQuery instanceof OracleSelectQueryBlock){
+                            if(((OracleSelectQueryBlock) sqlSelectQuery).getFrom() instanceof OracleSelectJoin){
+                                OracleSelectJoin join = (OracleSelectJoin)((OracleSelectQueryBlock) sqlSelectQuery).getFrom();
+                                viewRecursion2(join,map,sourceSchema);
+                            }else if (((OracleSelectQueryBlock) sqlSelectQuery).getFrom() instanceof OracleSelectTableReference){
+                                SQLExpr expr = ((OracleSelectTableReference) ((OracleSelectQueryBlock) sqlSelectQuery).getFrom()).getExpr();
+                                if(expr instanceof SQLPropertyExpr){
+                                    //oneUnionReverseSchemas.add(((SQLPropertyExpr) expr).getOwnerName());
+                                    if(map.containsKey(((SQLPropertyExpr) expr).getOwnerName())){
+                                        ((SQLPropertyExpr) expr).setOwner(map.get(((SQLPropertyExpr) expr).getOwnerName()));
+                                    }
+                                }else if(expr instanceof SQLIdentifierExpr&&map.containsKey(sourceSchema)){
+                                    SQLPropertyExpr expr1 = new SQLPropertyExpr(map.get(sourceSchema),((SQLIdentifierExpr) expr).getName());
+                                    ((OracleSelectTableReference) ((OracleSelectQueryBlock) sqlSelectQuery).getFrom()).setExpr(expr1);
+                                }
+                            }
+                        }
+                    }
+                }
+            }else if(statement instanceof XuguExecuteStatement){
+                if(((XuguExecuteStatement) statement).getDynamicSql() instanceof SQLMethodInvokeExpr){
+                    if(((SQLMethodInvokeExpr) ((XuguExecuteStatement) statement).getDynamicSql()).getOwner() instanceof SQLIdentifierExpr){
+                        if(map.containsKey(((SQLIdentifierExpr) ((SQLMethodInvokeExpr) ((XuguExecuteStatement) statement).getDynamicSql()).getOwner()).getName())){
+                            String key = ((SQLIdentifierExpr) ((SQLMethodInvokeExpr) ((XuguExecuteStatement) statement).getDynamicSql()).getOwner()).getName();
+                            ((SQLIdentifierExpr) ((SQLMethodInvokeExpr) ((XuguExecuteStatement) statement).getDynamicSql()).getOwner()).setName(map.get(key));
+                        }
+                    }else if(((SQLMethodInvokeExpr) ((XuguExecuteStatement) statement).getDynamicSql()).getOwner()==null){
+                        SQLIdentifierExpr identifierExpr =  new SQLIdentifierExpr(map.get(sourceSchema));
+                        ((SQLMethodInvokeExpr) ((XuguExecuteStatement) statement).getDynamicSql()).setOwner(identifierExpr);
+                    }
+                }
+            }else if(statement instanceof SQLCallStatement){
+                if(((SQLCallStatement) statement).getProcedureName() instanceof SQLPropertyExpr){
+                    if(map.containsKey(((SQLPropertyExpr) ((SQLCallStatement) statement).getProcedureName()).getOwnerName())){
+                        String key = ((SQLPropertyExpr) ((SQLCallStatement) statement).getProcedureName()).getOwnerName();
+                        ((SQLPropertyExpr) ((SQLCallStatement) statement).getProcedureName()).setOwner(map.get(key));
+                    }
+                }else if(((SQLCallStatement) statement).getProcedureName() instanceof SQLIdentifierExpr&&map.containsKey(sourceSchema)){
+                    SQLPropertyExpr propertyExpr = new SQLPropertyExpr(map.get(sourceSchema),((SQLIdentifierExpr) ((SQLCallStatement) statement).getProcedureName()).getName());
+                    ((SQLCallStatement) statement).setProcedureName(propertyExpr);
+                }
+            }else if(statement instanceof XuguForStatement){
+
+            }
+        }
+    }
 
 }

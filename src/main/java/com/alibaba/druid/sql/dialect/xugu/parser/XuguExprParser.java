@@ -4,19 +4,13 @@ import com.alibaba.druid.DbType;
 import com.alibaba.druid.sql.ast.*;
 import com.alibaba.druid.sql.ast.expr.*;
 import com.alibaba.druid.sql.ast.statement.*;
-import com.alibaba.druid.sql.dialect.oracle.ast.OracleDataTypeIntervalDay;
-import com.alibaba.druid.sql.dialect.oracle.ast.OracleDataTypeIntervalYear;
-import com.alibaba.druid.sql.dialect.oracle.ast.OracleSegmentAttributes;
-import com.alibaba.druid.sql.dialect.oracle.ast.clause.OracleLobStorageClause;
-import com.alibaba.druid.sql.dialect.oracle.ast.clause.OracleStorageClause;
 import com.alibaba.druid.sql.dialect.oracle.ast.expr.*;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.*;
-import com.alibaba.druid.sql.dialect.oracle.parser.OracleLexer;
-import com.alibaba.druid.sql.dialect.oracle.parser.OracleSelectParser;
-import com.alibaba.druid.sql.dialect.oracle.parser.OracleStatementParser;
 import com.alibaba.druid.sql.dialect.xugu.ast.*;
 import com.alibaba.druid.sql.dialect.xugu.ast.clause.XuguLobStorageClause;
+import com.alibaba.druid.sql.dialect.xugu.ast.expr.XuguOuterExpr;
 import com.alibaba.druid.sql.dialect.xugu.ast.expr.XuguRangeExpr;
+import com.alibaba.druid.sql.dialect.xugu.ast.expr.XuguSysdateExpr;
 import com.alibaba.druid.sql.dialect.xugu.ast.stmt.XuguConstraint;
 import com.alibaba.druid.sql.dialect.xugu.ast.stmt.XuguPrimaryKey;
 import com.alibaba.druid.sql.parser.*;
@@ -376,7 +370,7 @@ public class XuguExprParser extends SQLExprParser {
         switch (tok) {
             case SYSDATE:
                 lexer.nextToken();
-                OracleSysdateExpr sysdate = new OracleSysdateExpr();
+                XuguSysdateExpr sysdate = new XuguSysdateExpr();
                 if (lexer.token() == Token.MONKEYS_AT) {
                     lexer.nextToken();
                     accept(Token.BANG);
@@ -569,7 +563,7 @@ public class XuguExprParser extends SQLExprParser {
         if (lexer.token() == Token.PLUS) {
             lexer.nextToken();
             accept(Token.RPAREN);
-            return new OracleOuterExpr(expr);
+            return new XuguOuterExpr(expr);
         }
 
         if (expr instanceof SQLIdentifierExpr) {
@@ -788,7 +782,7 @@ public class XuguExprParser extends SQLExprParser {
             if (methodInvoke.getArguments().size() == 1) {
                 SQLExpr paramExpr = methodInvoke.getArguments().get(0);
                 if (paramExpr instanceof SQLIdentifierExpr && "+".equals(((SQLIdentifierExpr) paramExpr).getName())) {
-                    OracleOuterExpr outerExpr = new OracleOuterExpr();
+                    XuguOuterExpr outerExpr = new XuguOuterExpr();
                     if (methodInvoke.getOwner() == null) {
                         outerExpr.setExpr(new SQLIdentifierExpr(methodInvoke.getMethodName()));
                     } else {

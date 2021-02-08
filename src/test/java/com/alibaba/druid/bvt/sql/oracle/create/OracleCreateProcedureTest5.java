@@ -80,4 +80,24 @@ public class OracleCreateProcedureTest5 extends OracleTest {
 //        assertTrue(visitor.containsColumn("fact_brand_provider", "gyscode"));
 //        assertTrue(visitor.containsColumn("fact_brand_provider", "gysname"));
     }
+    
+    public void test_1(){
+        String sql = "create or replace procedure test_procedure(a out int)\n" +
+                "                as\n" +
+                "                b int;\n" +
+                "                begin\n" +
+                "                 b:=5;\n" +
+                "                for i in 1..10 loop\n" +
+                "insert into test_proc_tab(id,dt)values(1,sysdate);\n" +
+                "                update test_proc_tab set id=5 where dt=sysdate;\n" +
+                "delete from test_proc_tab where id=5; \n" +
+                "select * from test_proc_tab;               \n" +
+                "b:=b+i;\n" +
+                "                end loop;\n" +
+                "                a:=b;\n" +
+                "                end;";
+        OracleStatementParser parser = new OracleStatementParser(sql);
+        List<SQLStatement> statementList = parser.parseStatementList();
+        System.out.printf("22");
+    }
 }

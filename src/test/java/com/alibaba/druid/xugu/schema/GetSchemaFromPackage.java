@@ -18,32 +18,32 @@ public class GetSchemaFromPackage extends TestCase {
                 "                                function pack_fun2(x int,y int) return int;\n" +
                 "                                end;"+
         "create or replace package body xugu_test_pack is\n" +
-                "                procedure sysdba.pack_proc1(id int,name varchar)is\n" +
+                "                procedure pack_proc1(id int,name varchar)is\n" +
                 "                begin\n" +
                 "                DBMS_OUTPUT.PUT_LINE(to_char(id)||name);\n" +
-                "\t       insert into uu.test_1(id,name)values(1,'roger');\n" +
-                "                update uu.test_1 set uu.test_1.id=2,uu.test_1.name='name' where uu.test_1.id=1;\n" +
-                "\t       delete from uu.test_1 where uu.test_1.id=1;\n" +
+                "\t       insert into test_1(id,name)values(1,'roger');\n" +
+                "                update test_1 set test_1.id=2,test_1.name='name' where test_1.id=1;\n" +
+                "\t       delete from test_1 where test_1.id=1;\n" +
                 "                end;\n" +
                 "                function pack_fun1(id int,name varchar) return int is\n" +
                 "                begin\n" +
-                "\t       insert into sysdba.test_1(id,name)values(1,'roger');\n" +
-                "                update sysdba.test_1 set sysdba.test_1.id=2,sysdba.test_1.name='name' where sysdba.test_1.id=1;\n" +
-                "\t       delete from sysdba.test_1 where sysdba.test_1.id=1;\n" +
+                "\t       insert into test_1(id,name)values(1,'roger');\n" +
+                "                update test_1 set test_1.id=2,test_1.name='name' where test_1.id=1;\n" +
+                "\t       delete from test_1 where test_1.id=1;\n" +
                 "                return id;\n" +
                 "                end;\n" +
                 "                procedure pack_proc2(x int,y int)is\n" +
                 "                begin\n" +
                 "                DBMS_OUTPUT.PUT_LINE(x+y);\n" +
-                " insert into uu.test_1(id,name)values(1,'roger');\n" +
-        "                update uu.test_1 set uu.test_1.id=2,uu.test_1.name='name' where uu.test_1.id=1;\n" +
-                "\t       delete from uu.test_1 where uu.test_1.id=1;\n" +
+                " insert into test_1(id,name)values(1,'roger');\n" +
+        "                update test_1 set test_1.id=2,test_1.name='name' where test_1.id=1;\n" +
+                "\t       delete from test_1 where test_1.id=1;\n" +
                 "                end;\n" +
                 "                function pack_fun2(x int,y int) return int is\n" +
                 "                begin\n" +
-                " insert into uu.test_1(id,name)values(1,'roger');\n" +
-        "                update uu.test_1 set uu.test_1.id=2,uu.test_1.name='name' where uu.test_1.id=1;\n" +
-                "\t       delete from uu.test_1 where uu.test_1.id=1;\n" +
+                " insert into test_1(id,name)values(1,'roger');\n" +
+        "                update test_1 set test_1.id=2,test_1.name='name' where test_1.id=1;\n" +
+                "\t       delete from test_1 where test_1.id=1;\n" +
                 "                return x+y;\n" +
                 "                end;\n" +
                 "                end;";

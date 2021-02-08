@@ -24,6 +24,7 @@ import com.alibaba.druid.sql.dialect.mysql.ast.expr.MySqlCharExpr;
 import com.alibaba.druid.sql.dialect.oracle.ast.expr.OracleArgumentExpr;
 import com.alibaba.druid.sql.dialect.postgresql.ast.expr.PGTypeCastExpr;
 import com.alibaba.druid.sql.dialect.xugu.ast.XuguSQLPartitionValue;
+import com.alibaba.druid.sql.dialect.xugu.ast.expr.XuguArgumentExpr;
 import com.alibaba.druid.util.FnvHash;
 import com.alibaba.druid.util.HexBin;
 import com.alibaba.druid.util.MySqlUtils;
@@ -3096,7 +3097,11 @@ public class SQLExprParser extends SQLParser {
                 lexer.nextToken();
                 rightExp = expr();
                 String argumentName = ((SQLIdentifierExpr) expr).getName();
-                expr = new OracleArgumentExpr(argumentName, rightExp);
+                if(dbType==DbType.oracle){
+                    expr = new OracleArgumentExpr(argumentName, rightExp);
+                }else if(dbType==DbType.xugu){
+                    expr = new XuguArgumentExpr(argumentName, rightExp);
+                }
             }
             break;
             case BANGEQ:

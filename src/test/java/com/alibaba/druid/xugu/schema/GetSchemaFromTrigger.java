@@ -1,5 +1,6 @@
 package com.alibaba.druid.xugu.schema;
 
+import cn.hutool.core.map.CaseInsensitiveMap;
 import com.alibaba.druid.sql.ast.SQLStatement;
 import com.alibaba.druid.sql.dialect.xugu.api.XuguParserApi;
 import com.alibaba.druid.sql.dialect.xugu.parser.XuguStatementParser;
@@ -7,6 +8,7 @@ import junit.framework.TestCase;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class GetSchemaFromTrigger extends TestCase {
 
@@ -48,6 +50,25 @@ public class GetSchemaFromTrigger extends TestCase {
         map.put("ss","ss1");
 
         String returnStr = XuguParserApi.replaceTriggerSchema(sql,map,"ss");
+        System.out.println(222);
+    }
+    
+    public void test3(){
+        String sql = " create trigger dep_base_trig_1 after insert on dep_trig_base_table_3 for each row\n" +
+                " when(a>5)\n" +
+                " begin \n" +
+                "  insert into dep_trig_base_table_4 values(6,sysdate);\n" +
+                " end;\n" +
+                " create function dep_trig_func(a in int) return int as\n" +
+                " begin\n" +
+                "   insert into dep_trig_base_table_3 values(a);\n" +
+                " end;";
+        Map<String,String> map = new CaseInsensitiveMap<>();
+        map.put("qwe","sysdba1");
+        map.put("syssso","syssso1");
+        map.put("guest","guest1");
+        String resourceSchema="qwe";
+        String retunrnStr= XuguParserApi.replaceTriggerSchema(sql,map,resourceSchema);
         System.out.println(222);
     }
 }
