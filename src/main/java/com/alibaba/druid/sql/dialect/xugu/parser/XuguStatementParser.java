@@ -772,8 +772,11 @@ public class XuguStatementParser extends SQLStatementParser{
     }
 
     public SQLStatement parseExecute() {
-        acceptIdentifier("EXECUTE");
-
+        try{
+            acceptIdentifier("EXECUTE");
+        }catch (Exception e){
+            acceptIdentifier("EXEC");
+        }
         if (lexer.token() == Token.IMMEDIATE) {
             lexer.nextToken();
 

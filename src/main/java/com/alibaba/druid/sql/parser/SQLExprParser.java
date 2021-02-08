@@ -3859,7 +3859,9 @@ public class SQLExprParser extends SQLParser {
         }
 
         if (FnvHash.Constants.TIMESTAMP == dataType.nameHashCode64()
-                || FnvHash.Constants.TIME == dataType.nameHashCode64()) {
+                || FnvHash.Constants.TIME == dataType.nameHashCode64()
+                || FnvHash.Constants.DATETIME==dataType.nameHashCode64()) {
+            //兼容xugu datetime with time zone类型解析
             if (lexer.identifierEquals(FnvHash.Constants.WITHOUT)) {
                 lexer.nextToken();
                 acceptIdentifier("TIME");

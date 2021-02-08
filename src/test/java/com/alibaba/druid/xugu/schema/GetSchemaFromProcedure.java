@@ -15,7 +15,8 @@ import java.util.Map;
 public class GetSchemaFromProcedure extends TestCase {
     
     public void test(){
-        String sql = "create or replace procedure procedure1(a int,b varchar) as\n" +
+        //id datetime with time zone,name time with time zone
+        String sql = "create or replace procedure procedure1(id datetime with time zone,name time with time zone) as\n" +
                 "declare x int;\n" +
                 "y varchar;\n" +
                 "z char(10);\n" +
@@ -109,6 +110,10 @@ public class GetSchemaFromProcedure extends TestCase {
                 "b:=b+i;\n" +
                 "                end loop;\n" +
                 "                a:=b;\n" +
+                "call sysdba.dep_base_proc_1(a,b);\n" +
+                "execute immediate 'create schema sc';\n" +
+                "execute sysdba.dep_base_proc_1(a,b);\n" +
+                "exec sysdba.dep_base_proc_1(a,b);\n" +
                 "                end;";
         Map<String,String> map = new CaseInsensitiveMap<>();
         map.put("qwe","sysdba1");
