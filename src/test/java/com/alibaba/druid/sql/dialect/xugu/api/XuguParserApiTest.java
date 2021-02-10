@@ -3,6 +3,7 @@ package com.alibaba.druid.sql.dialect.xugu.api;
 import com.alibaba.druid.sql.dialect.xugu.api.bean.CreateCallBean;
 import com.alibaba.druid.sql.dialect.xugu.api.bean.CreateFunctionBean;
 import com.alibaba.druid.sql.dialect.xugu.api.bean.CreateProcedureBean;
+import com.alibaba.druid.sql.dialect.xugu.api.exception.ParserBusinessException;
 import org.junit.Test;
 
 import java.util.List;
@@ -45,7 +46,11 @@ public class XuguParserApiTest {
         builder.append(sqlIntervalMinuteToSecond);*/
         builder.append(normal);
         builder.append(normal2);
-        List<CreateProcedureBean> createProcedureBeans = XuguParserApi.parseCreateProcedure(builder.toString());
+        try {
+            List<CreateProcedureBean> createProcedureBeans = XuguParserApi.parseCreateProcedure(builder.toString());
+        } catch (ParserBusinessException e) {
+            e.printStackTrace();
+        }
         System.out.printf("222");
 
     }
@@ -97,7 +102,11 @@ public class XuguParserApiTest {
         builder.append(sql26);
         builder.append(sql27);
         builder.append(sql28);
-        List<CreateFunctionBean> createFunctionBeans = XuguParserApi.parseCreateFunction(builder.toString());
+        try {
+            List<CreateFunctionBean> createFunctionBeans = XuguParserApi.parseCreateFunction(builder.toString());
+        } catch (ParserBusinessException e) {
+            e.printStackTrace();
+        }
         System.out.println(222);
     }
 
@@ -124,7 +133,11 @@ public class XuguParserApiTest {
         builder.append(sql2);
         builder.append(sql3);
         builder.append(sql4);
-        List<CreateCallBean> callBeanList = XuguParserApi.parseCall(builder.toString());
+        try {
+            List<CreateCallBean> callBeanList = XuguParserApi.parseCall(builder.toString());
+        } catch (ParserBusinessException e) {
+            e.printStackTrace();
+        }
         System.out.println(222);
     }
 

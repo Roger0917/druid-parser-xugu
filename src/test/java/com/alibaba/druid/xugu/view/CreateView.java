@@ -5,6 +5,7 @@ import com.alibaba.druid.sql.ast.SQLStatement;
 import com.alibaba.druid.sql.ast.statement.SQLCreateTriggerStatement;
 import com.alibaba.druid.sql.ast.statement.SQLCreateViewStatement;
 import com.alibaba.druid.sql.dialect.xugu.api.XuguParserApi;
+import com.alibaba.druid.sql.dialect.xugu.api.exception.ParserBusinessException;
 import com.alibaba.druid.sql.dialect.xugu.parser.XuguStatementParser;
 import com.alibaba.druid.xugu.Base;
 import junit.framework.TestCase;
@@ -15,7 +16,7 @@ import java.util.Map;
 
 public class CreateView extends TestCase {
 
-    public void test(){
+    public void test() throws ParserBusinessException {
         List<SQLCreateViewStatement> createViewStatementList = new ArrayList<>();
         StringBuilder builder = new StringBuilder();
 

@@ -1,8 +1,15 @@
 package com.alibaba.druid.xugu.schema;
 
 import cn.hutool.core.map.CaseInsensitiveMap;
+import com.alibaba.druid.sql.ast.SQLParameter;
+import com.alibaba.druid.sql.ast.SQLPartition;
 import com.alibaba.druid.sql.ast.SQLStatement;
+import com.alibaba.druid.sql.ast.statement.SQLBlockStatement;
+import com.alibaba.druid.sql.ast.statement.SQLCreateProcedureStatement;
 import com.alibaba.druid.sql.dialect.xugu.api.XuguParserApi;
+import com.alibaba.druid.sql.dialect.xugu.api.bean.CreateFunctionBean;
+import com.alibaba.druid.sql.dialect.xugu.api.bean.CreateProcedureBean;
+import com.alibaba.druid.sql.dialect.xugu.api.exception.ParserBusinessException;
 import com.alibaba.druid.sql.dialect.xugu.parser.XuguStatementParser;
 import junit.framework.TestCase;
 
@@ -12,7 +19,7 @@ import java.util.Map;
 
 public class GetSchemaFromFunction extends TestCase {
 
-    public void test(){
+    public void test() throws ParserBusinessException {
         String sql = "create or replace function fun1(a int,b interval minute to second) return interval minute(7) to second(3) as\n" +
                 "declare x int;\n" +
                 "y varchar;\n" +
@@ -57,7 +64,7 @@ public class GetSchemaFromFunction extends TestCase {
         System.out.println(222);
     }
 
-    public void test4() {
+    public void test4() throws ParserBusinessException {
         String sql = "create or replace function test_procedure(a out int) return int\n" +
                 "                as\n" +
                 "                b int;\n" +
@@ -82,5 +89,57 @@ public class GetSchemaFromFunction extends TestCase {
         List<SQLStatement> statementList = parser.parseStatementList();
         String returnStr = XuguParserApi.replaceFunctionSqlSchema(sql, map, resourceSchema);
         System.out.println(returnStr);
+    }
+    
+    public void test5() throws ParserBusinessException {
+        String sql = "create or replace function test_procedure(a datetime with time zone,b time with time zone) return time with time zone\n" +
+                "                as\n" +
+                "                b int;\n" +
+                "                begin\n" +
+                "                 b:=5;\n" +
+                "                for i in 1..10 loop\n" +
+                "insert into test_proc_tab(id,dt)values(1,sysdate);\n" +
+                "                update test_proc_tab set id=5 where dt=sysdate;\n" +
+                "delete from test_proc_tab where id=5; \n" +
+                "select * from test_proc_tab;               \n" +
+                "b:=b+i;\n" +
+                "                end loop;\n" +
+                "                a:=b;\n" +
+                "return a;"+
+                "                end;";
+        Map<String, String> map = new CaseInsensitiveMap<>();
+        map.put("qwe", "sysdba1");
+        map.put("syssso", "syssso1");
+        map.put("guest", "guest1");
+        String resourceSchema = "qwe";
+        XuguStatementParser parser = new XuguStatementParser(sql);
+        List<CreateFunctionBean> functionBeans = XuguParserApi.parseCreateFunction(sql);
+        List<SQLStatement> statementList = parser.parseStatementList();
+        String returnStr = XuguParserApi.replaceFunctionSqlSchema(sql, map, resourceSchema);
+        System.out.println(returnStr);
+    }
+    
+    public void test6() throws ParserBusinessException {
+        String sql = "CREATE OR REPLACE FUNCTION ff5(p1 DATETIME WITH TIME zone) RETURN DATETIME WITH TIME zone AS\n" +
+                "BEGIN\n" +
+                " RETURN p1;\n" +
+                "END";
+        List<CreateFunctionBean> createFunctionBeans = XuguParserApi.parseCreateFunction(sql);
+        System.out.println(222);
+    }
+    
+    public void test7() throws ParserBusinessException {
+        String sql = "create or replace procedure test_procedure(a date,b numeric(4,2)) as\n" +
+                "                begin\n" +
+                "                send_msg('a='||a||','||'b='||b);\n" +
+                "                end;\n" +
+                " create or replace procedure test_procedure(a interval month,b interval day to second) as\n" +
+                "      begin\n" +
+                "          send_msg('a='||to_char(a)||','||'b='||to_char(b));\n" +
+                "       end;";
+        XuguStatementParser parser = new XuguStatementParser(sql);
+        List<SQLStatement> statementList = parser.parseStatementList();
+        List<CreateProcedureBean> createProcedureBeanList = XuguParserApi.parseCreateProcedure(sql);
+        System.out.printf("222");
     }
 }

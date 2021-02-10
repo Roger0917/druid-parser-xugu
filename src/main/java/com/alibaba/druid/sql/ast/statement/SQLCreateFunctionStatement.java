@@ -30,6 +30,7 @@ public class SQLCreateFunctionStatement extends SQLStatementImpl implements SQLC
 
     protected boolean            create     = true;
     protected boolean            orReplace;
+    protected boolean force;
     protected SQLName            name;
     protected SQLStatement       block;
     protected List<SQLParameter> parameters = new ArrayList<SQLParameter>();
@@ -145,6 +146,14 @@ public class SQLCreateFunctionStatement extends SQLStatementImpl implements SQLC
         this.authid = authid;
     }
 
+    public boolean isForce() {
+        return force;
+    }
+
+    public void setForce(boolean force) {
+        this.force = force;
+    }
+
     public String getLanguage() {
         return language;
     }
@@ -160,6 +169,7 @@ public class SQLCreateFunctionStatement extends SQLStatementImpl implements SQLC
     public void setOrReplace(boolean orReplace) {
         this.orReplace = orReplace;
     }
+
 
     public SQLName getDefiner() {
         return definer;

@@ -3,6 +3,7 @@ package com.alibaba.druid.xugu.type;
 import com.alibaba.druid.sql.ast.SQLStatement;
 import com.alibaba.druid.sql.dialect.xugu.api.XuguParserApi;
 import com.alibaba.druid.sql.dialect.xugu.api.bean.CreateTypeBean;
+import com.alibaba.druid.sql.dialect.xugu.api.exception.ParserBusinessException;
 import com.alibaba.druid.sql.dialect.xugu.ast.stmt.XuguCreateTypeStatement;
 import com.alibaba.druid.sql.dialect.xugu.parser.XuguStatementParser;
 import junit.framework.TestCase;
@@ -11,7 +12,7 @@ import java.util.List;
 
 public class TypeTest2 extends TestCase {
     
-    public void test(){
+    public void test() throws ParserBusinessException {
         StringBuilder builder = new StringBuilder();
         String sql1="create type ordi_type as " +
                 "object(a int, b int);";

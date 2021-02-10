@@ -4,6 +4,7 @@ import cn.hutool.core.map.CaseInsensitiveMap;
 import com.alibaba.druid.pool.bonecp.TestPSCache;
 import com.alibaba.druid.sql.ast.SQLStatement;
 import com.alibaba.druid.sql.dialect.xugu.api.XuguParserApi;
+import com.alibaba.druid.sql.dialect.xugu.api.exception.ParserBusinessException;
 import com.alibaba.druid.sql.dialect.xugu.ast.stmt.XuguStatement;
 import com.alibaba.druid.sql.dialect.xugu.parser.XuguStatementParser;
 import junit.framework.TestCase;
@@ -14,7 +15,7 @@ import java.util.Map;
 
 public class GetSchemaFromProcedure extends TestCase {
     
-    public void test(){
+    public void test() throws ParserBusinessException {
         //id datetime with time zone,name time with time zone
         String sql = "create or replace procedure procedure1(id datetime with time zone,name time with time zone) as\n" +
                 "declare x int;\n" +
@@ -40,7 +41,7 @@ public class GetSchemaFromProcedure extends TestCase {
         System.out.println(222);
     }
     
-    public void test2(){
+    public void test2() throws ParserBusinessException {
         String sql = "create or replace procedure sysdba.pro_immediate(id int,name varchar,a in int, b in int) as \n" +
                 "begin\n" +
                 "select * from sysdba.test_1 where sysdba.test_1.id=1;\n" +
@@ -68,7 +69,7 @@ public class GetSchemaFromProcedure extends TestCase {
         System.out.println(222);
     }
 
-    public void test3(){
+    public void test3() throws ParserBusinessException {
         String sql = "create or replace procedure pro_immediate(id int,name varchar,a in int, b in int) as \n" +
                 "begin\n" +
                 "select * from sysdba.test_1 where sysdba.test_1.id=1;\n" +
@@ -96,7 +97,7 @@ public class GetSchemaFromProcedure extends TestCase {
         System.out.println(222);
     }
     
-    public void test4(){
+    public void test4() throws ParserBusinessException {
         String sql = "create or replace procedure test_procedure(a out int)\n" +
                 "                as\n" +
                 "                b int;\n" +

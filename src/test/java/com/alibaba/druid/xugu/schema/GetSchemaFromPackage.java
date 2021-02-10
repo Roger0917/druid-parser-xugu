@@ -2,6 +2,7 @@ package com.alibaba.druid.xugu.schema;
 
 import com.alibaba.druid.sql.ast.SQLStatement;
 import com.alibaba.druid.sql.dialect.xugu.api.XuguParserApi;
+import com.alibaba.druid.sql.dialect.xugu.api.exception.ParserBusinessException;
 import com.alibaba.druid.sql.dialect.xugu.parser.XuguStatementParser;
 import junit.framework.TestCase;
 
@@ -10,7 +11,7 @@ import java.util.List;
 
 public class GetSchemaFromPackage extends TestCase {
     
-    public void test(){
+    public void test() throws ParserBusinessException {
         String sql = "create or replace package xugu_test_pack is\n" +
                 "                                procedure pack_proc1(id int,name varchar);\n" +
                 "                                function pack_fun1(id int,name varchar) return int;\n" +

@@ -2,11 +2,12 @@ package com.alibaba.druid.xugu.pack;
 
 import com.alibaba.druid.sql.dialect.xugu.api.XuguParserApi;
 import com.alibaba.druid.sql.dialect.xugu.api.bean.CreatePackageBean;
+import com.alibaba.druid.sql.dialect.xugu.api.exception.ParserBusinessException;
 import junit.framework.TestCase;
 
 public class XuguSysPack extends TestCase {
 
-    public void test(){
+    public void test() throws ParserBusinessException {
         //sys_pack DBMS_DBA
         String sql="CREATE OR REPLACE PACKAGE SYSDBA.DBMS_DBA \n" +
                 "IS\n" +
@@ -21,7 +22,7 @@ public class XuguSysPack extends TestCase {
         System.out.println(packageBean.getCreateFunctionBeans());
     }
 
-    public void test1() {
+    public void test1() throws ParserBusinessException {
         //sys_pack DBMS_OUTPUT
         String sql = "CREATE OR REPLACE PACKAGE SYSDBA.DBMS_OUTPUT \n" +
                 "IS\n" +
@@ -34,7 +35,7 @@ public class XuguSysPack extends TestCase {
         System.out.println(packageBean.getCreateFunctionBeans());
     }
 
-    public void test2(){
+    public void test2() throws ParserBusinessException {
         //sys_pack DBMS_INFO
         //TODO subtype类型暂不支持解析
         String sql="CREATE PACKAGE SYSDBA.DBMS_INFO \n" +
@@ -50,7 +51,7 @@ public class XuguSysPack extends TestCase {
         System.out.println(packageBean.getCreateFunctionBeans());
     }
 
-    public void test3(){
+    public void test3() throws ParserBusinessException {
         //sql_pack DBMS_TEST
         String sql = "CREATE OR REPLACE PACKAGE SYSDBA.DBMS_TEST \n" +
                 "IS\n" +
@@ -68,7 +69,7 @@ public class XuguSysPack extends TestCase {
 
     }
 
-    public void test4(){
+    public void test4() throws ParserBusinessException {
         //sql_pack DBMS_STAT
         String sql = "CREATE OR REPLACE PACKAGE SYSDBA.DBMS_STAT\n" +
                 "IS\n" +
@@ -88,7 +89,7 @@ public class XuguSysPack extends TestCase {
 
     }
 
-    public void test5(){
+    public void test5() throws ParserBusinessException {
         //sql_pack DBMS_IMPORT
         String sql = "CREATE OR REPLACE  PACKAGE SYSDBA.DBMS_IMPORT\n" +
                 "IS\n" +
@@ -116,7 +117,7 @@ public class XuguSysPack extends TestCase {
         List<SQLStatement> stmtList = SQLUtils.parseStatements(sql, dbType);
         System.out.printf("222");
     }*/
-    public void test6(){
+    public void test6() throws ParserBusinessException {
         //sql_pack DBMS_SCHEDULER
         String sql = "CREATE OR REPLACE PACKAGE SYSDBA.DBMS_SCHEDULER \n" +
                 "AUTHID CURRENT_USER\n" +
@@ -306,7 +307,7 @@ public class XuguSysPack extends TestCase {
 
     }
 
-    public void test7(){
+    public void test7() throws ParserBusinessException {
         //sql_pack DBMS_SQL
         String sql = "CREATE OR REPLACE PACKAGE SYSDBA.DBMS_SQL\n" +
                 "AUTHID CURRENT_USER\n" +
@@ -414,7 +415,7 @@ public class XuguSysPack extends TestCase {
 
     }
 
-    public void test8(){
+    public void test8() throws ParserBusinessException {
         //sql_pack CTX_DOC
         // "CREATE OR REPLACE PACKAGE  \"SYSDBA\".\"CTX_DOC\"\n" +
         String sql =  "CREATE OR REPLACE PACKAGE  \"SYSDBA\".\"CTX_DOC\"\n" +
@@ -473,7 +474,7 @@ public class XuguSysPack extends TestCase {
 
     }
 
-    public void test9(){
+    public void test9() throws ParserBusinessException {
         //sql_pack DBMS_LOB
         String sql = "CREATE OR REPLACE PACKAGE SYSDBA.DBMS_LOB \n" +
                 "IS\n" +
@@ -490,7 +491,7 @@ public class XuguSysPack extends TestCase {
 
     }
 
-    public void test10(){
+    public void test10() throws ParserBusinessException {
         //sql_pack UTL_RAW
         String sql = "CREATE PACKAGE SYSDBA.UTL_RAW\n" +
                 "IS    \n" +
@@ -548,7 +549,7 @@ public class XuguSysPack extends TestCase {
 
     }
 
-    public void test11(){
+    public void test11() throws ParserBusinessException {
         //sql_pack DBMS_REPLICATION
         String sql ="CREATE OR REPLACE PACKAGE SYSDBA.DBMS_REPLICATION\n" +
                 "IS    \n" +
@@ -569,7 +570,7 @@ public class XuguSysPack extends TestCase {
 
     }
 
-    public void test12(){
+    public void test12() throws ParserBusinessException {
         //sql_pack DBMS_CRYPTO
         String sql = "CREATE OR REPLACE PACKAGE SYSDBA.DBMS_CRYPTO IS\n" +
                 "    -- hash算法\n" +
@@ -647,7 +648,7 @@ public class XuguSysPack extends TestCase {
 
     }
 
-    public void test13(){
+    public void test13() throws ParserBusinessException {
         //sql_pack DBMS_BACKUP
         //"CREATE OR REPLACE PACKAGE \"SYSDBA\".\"DBMS_BACKUP\"\n" +
         String sql = "CREATE OR REPLACE PACKAGE \"SYSDBA\".\"DBMS_BACKUP\"\n" +
@@ -762,7 +763,7 @@ public class XuguSysPack extends TestCase {
 
     }
 
-    public void test14(){
+    public void test14() throws ParserBusinessException {
         String sql = "CREATE OR REPLACE PACKAGE DBMS_STAT1\n" +
                 "comment '测试包'\n" +
                 "                IS\n" +

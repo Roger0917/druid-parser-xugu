@@ -3,6 +3,7 @@ package com.alibaba.druid.xugu.api;
 import cn.hutool.core.map.CaseInsensitiveMap;
 import com.alibaba.druid.sql.ast.SQLStatement;
 import com.alibaba.druid.sql.dialect.xugu.api.XuguParserApi;
+import com.alibaba.druid.sql.dialect.xugu.api.exception.ParserBusinessException;
 import com.alibaba.druid.sql.dialect.xugu.parser.XuguStatementParser;
 import junit.framework.TestCase;
 
@@ -12,7 +13,7 @@ import java.util.Map;
 
 public class TestPackage extends TestCase {
     
-    public void test(){
+    public void test() throws ParserBusinessException {
         String sql = "create or replace package scpa is\n" +
                 "procedure proc1();\n" +
                 "function proc2() return int;\n" +

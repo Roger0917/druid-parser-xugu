@@ -7,6 +7,7 @@ import com.alibaba.druid.sql.ast.statement.SQLCreateFunctionStatement;
 import com.alibaba.druid.sql.ast.statement.SQLCreateProcedureStatement;
 import com.alibaba.druid.sql.dialect.xugu.api.XuguParserApi;
 import com.alibaba.druid.sql.dialect.xugu.api.bean.CreateProcedureBean;
+import com.alibaba.druid.sql.dialect.xugu.api.exception.ParserBusinessException;
 import com.alibaba.druid.sql.dialect.xugu.parser.XuguStatementParser;
 import com.alibaba.druid.xugu.XuguTest;
 import junit.framework.TestCase;
@@ -17,7 +18,7 @@ import java.util.Map;
 
 public class ProcedureTest2 extends XuguTest {
 
-    public void test(){
+    public void test() throws ParserBusinessException {
         StringBuilder builder = new StringBuilder();
         String sql = "-- Create Procedure --\n" +
                 "CREATE OR REPLACE PROCEDURE prc_test1()\n" +

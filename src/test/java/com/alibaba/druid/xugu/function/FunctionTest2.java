@@ -4,6 +4,7 @@ import com.alibaba.druid.sql.ast.SQLStatement;
 import com.alibaba.druid.sql.ast.statement.SQLCreateFunctionStatement;
 import com.alibaba.druid.sql.dialect.xugu.api.XuguParserApi;
 import com.alibaba.druid.sql.dialect.xugu.api.bean.CreateFunctionBean;
+import com.alibaba.druid.sql.dialect.xugu.api.exception.ParserBusinessException;
 import com.alibaba.druid.sql.dialect.xugu.parser.XuguStatementParser;
 import junit.framework.TestCase;
 
@@ -12,7 +13,7 @@ import java.util.List;
 
 public class FunctionTest2 extends TestCase {
     
-    public void test(){
+    public void test() throws ParserBusinessException {
         StringBuilder builder = new StringBuilder();
         String sql1="create function \"abc123ABC啊~!@#$%^&*(\"  (a in out int) return int as\n" +
                 "begin\n" +
@@ -256,6 +257,12 @@ public class FunctionTest2 extends TestCase {
                 "   execute sysdba.dep_base_proc_1(a,b);\n" +
                 "   call sysdba.dep_base_proc_1(a,b);\n" +
                 " end;";
+        String sql36 = "CREATE OR REPLACE FUNCTION FMIS9912.\"BIT_AND\" (p1 number,p2 number)\n" +
+                "RETURN number-- 返回值的数据类型\n" +
+                "IS\n" +
+                "BEGIN\n" +
+                "  return biwei_utils.AndOper(p1,p2);\n" +
+                "END;";
         builder.append(sql1);
         builder.append(sql2);
         builder.append(sql3);
@@ -296,9 +303,10 @@ public class FunctionTest2 extends TestCase {
         builder.append(sql33);
         builder.append(sql34);
         builder.append(sql35);
+        builder.append(sql36);
 
 
-        XuguStatementParser parser = new XuguStatementParser(builder.toString());
+        XuguStatementParser parser = new XuguStatementParser(sql36);
         List<SQLCreateFunctionStatement> createFunctionStatementList = new ArrayList<>();
         List<SQLStatement> statementList = parser.parseStatementList();
         for(SQLStatement statement:statementList){

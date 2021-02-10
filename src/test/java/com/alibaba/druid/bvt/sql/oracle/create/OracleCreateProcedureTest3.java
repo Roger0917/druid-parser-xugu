@@ -27,7 +27,7 @@ import java.util.List;
 public class OracleCreateProcedureTest3 extends OracleTest {
 
     public void test_0() throws Exception {
-        String sql = "PROCEDURE PRC_DEALSMS IS\n" +
+       /* String sql = "PROCEDURE PRC_DEALSMS IS\n" +
                 "  LV_HOUR NUMBER; --??\n" +
                 "BEGIN\n" +
                 "  SELECT TO_CHAR(SYSDATE, 'HH24') INTO LV_HOUR FROM DUAL;\n" +
@@ -38,7 +38,11 @@ public class OracleCreateProcedureTest3 extends OracleTest {
                 "       AND TRUNC(T.SENDREALTIME) = TRUNC(SYSDATE);\n" +
                 "    COMMIT;\n" +
                 "  END IF;\n" +
-                "END PRC_DEALSMS;"; //
+                "END PRC_DEALSMS;"; //*/
+        String sql = "CREATE OR REPLACE PACKAGE DBMS_SQL2 AS\n" +
+                "  TYPE VARCHAR2_TABLE IS TABLE OF VARCHAR2(2000);\n" +
+                "  TYPE NUMBER_TABLE IS TABLE OF NUMBER;\n" +
+                "END;";
 
         OracleStatementParser parser = new OracleStatementParser(sql);
         List<SQLStatement> statementList = parser.parseStatementList();

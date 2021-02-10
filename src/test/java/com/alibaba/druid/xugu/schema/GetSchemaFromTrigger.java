@@ -3,6 +3,7 @@ package com.alibaba.druid.xugu.schema;
 import cn.hutool.core.map.CaseInsensitiveMap;
 import com.alibaba.druid.sql.ast.SQLStatement;
 import com.alibaba.druid.sql.dialect.xugu.api.XuguParserApi;
+import com.alibaba.druid.sql.dialect.xugu.api.exception.ParserBusinessException;
 import com.alibaba.druid.sql.dialect.xugu.parser.XuguStatementParser;
 import junit.framework.TestCase;
 
@@ -33,7 +34,7 @@ public class GetSchemaFromTrigger extends TestCase {
         System.out.println(222);
     }
 
-    public void test2(){
+    public void test2() throws ParserBusinessException {
         String sql = "CREATE TRIGGER INSERT_err BEFORE update of(sysdba.test_1.id,sysdba.test_1.name) ON sysdba.test_1 \n" +
                 "referencing new AS nn FOR each ROW \n" +
                 "BEGIN \n" +
@@ -53,7 +54,7 @@ public class GetSchemaFromTrigger extends TestCase {
         System.out.println(222);
     }
     
-    public void test3(){
+    public void test3() throws ParserBusinessException {
         String sql = " create trigger dep_base_trig_1 after insert on dep_trig_base_table_3 for each row\n" +
                 " when(a>5)\n" +
                 " begin \n" +

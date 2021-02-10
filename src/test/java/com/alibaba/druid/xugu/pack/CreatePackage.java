@@ -2,6 +2,7 @@ package com.alibaba.druid.xugu.pack;
 
 import com.alibaba.druid.sql.dialect.xugu.api.XuguParserApi;
 import com.alibaba.druid.sql.dialect.xugu.api.bean.CreatePackageBean;
+import com.alibaba.druid.sql.dialect.xugu.api.exception.ParserBusinessException;
 import com.alibaba.druid.sql.dialect.xugu.ast.stmt.XuguCreatePackageStatement;
 import junit.framework.TestCase;
 
@@ -16,7 +17,7 @@ import java.util.List;
 
 public class CreatePackage extends TestCase {
 
-    public void test(){
+    public void test() throws ParserBusinessException {
         List<XuguCreatePackageStatement> createPackageStatementList = new ArrayList<>();
         StringBuilder builder = new StringBuilder();
         String sql = "create or replace package xugu_test_pack is\n" +

@@ -1145,9 +1145,11 @@ public class XuguOutputVisitor extends SQLASTOutputVisitor implements XuguASTVis
         boolean create = x.isCreate();
         if (!create) {
             print0(ucase ? "FUNCTION " : "function ");
-        } else if (x.isOrReplace()) {
+        } else if (x.isOrReplace()&&x.isForce()) {
+            print0(ucase ? "CREATE OR REPLACE FORCE FUNCTION " : "create or replace force function ");
+        } else if(x.isOrReplace()&&!x.isForce()){
             print0(ucase ? "CREATE OR REPLACE FUNCTION " : "create or replace function ");
-        } else {
+        }else {
             print0(ucase ? "CREATE FUNCTION " : "create function ");
         }
         x.getName().accept(this);

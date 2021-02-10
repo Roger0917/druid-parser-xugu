@@ -13,6 +13,7 @@ import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleSelectJoin;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleSelectQueryBlock;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleSelectTableReference;
 import com.alibaba.druid.sql.dialect.xugu.api.XuguParserApi;
+import com.alibaba.druid.sql.dialect.xugu.api.exception.ParserBusinessException;
 import com.alibaba.druid.sql.dialect.xugu.parser.XuguStatementParser;
 import com.alibaba.druid.sql.dialect.xugu.visitor.XuguASTVisitor;
 import com.ibm.icu.util.CaseInsensitiveString;
@@ -30,14 +31,14 @@ public class GetSchemaFromView extends TestCase {
         String sql = "";
     }
     
-    public  void test(){
+    public  void test() throws ParserBusinessException {
         String sql = "create view sysdba.view1 as select id from sysdba.students";
         HashMap map = new HashMap();
         map.put("sysdba","sysdba1");
         String str = XuguParserApi.replaceViewSqlSchema(sql,map,"");
         System.out.printf("222");
     }
-    public void test2(){
+    public void test2() throws ParserBusinessException {
         String sql = "create view user_sod.view2 as SELECT all_spaces.nodeid AS `nodeId`,clusters.node_ip AS `nodeIp`,all_spaces.space_id AS `spaceId`,all_spaces.space_name AS `spaceName`,all_datafiles.PATH AS `path` \n" +
                 "FROM u1.sys_all_tablespaces  all_spaces INNER JOIN\n" +
                 "                u2.sys_all_datafiles all_datafiles ON all_spaces.space_id=all_datafiles.space_id INNER JOIN u3.sys_clusters clusters ON all_spaces.nodeid=clusters.node_id\n" +
@@ -51,7 +52,7 @@ public class GetSchemaFromView extends TestCase {
         System.out.println(222);
     }
     
-    public void test3(){
+    public void test3() throws ParserBusinessException {
         String sql = "create view sysdba.view1 as SELECT tags.tagname\n" +
                 "FROM u1.posts\n" +
                 "    JOIN u2.posts_tags ON posts.id = posts_tags.post_id\n" +
@@ -71,7 +72,7 @@ public class GetSchemaFromView extends TestCase {
         System.out.println(222);
     }
     
-    public void test4(){
+    public void test4() throws ParserBusinessException {
         String sql = "create view user_sod.view3 as\n" +
                 "SELECT country FROM u1.Websites\n" +
                 "UNION\n" +
@@ -85,7 +86,7 @@ public class GetSchemaFromView extends TestCase {
         System.out.println(222);
     }
     
-    public void test5(){
+    public void test5() throws ParserBusinessException {
         String sql = "create view iop_v1 as select * from iop where id=1 and name='1' with read only;";
         String sql2 = "create view iop_v2 as select * from iop with check option;";
         XuguStatementParser parser = new XuguStatementParser(sql+sql2);

@@ -977,6 +977,10 @@ public class XuguStatementParser extends SQLStatementParser{
             stmt.setCreate(false);
         }
 
+        if("FORCE".equals(lexer.stringVal())){
+            stmt.setForce(true);
+            lexer.nextToken();
+        }
         accept(Token.FUNCTION);
 
         SQLName functionName = this.exprParser.name();
@@ -2657,9 +2661,9 @@ public class XuguStatementParser extends SQLStatementParser{
             accept(Token.AS);
         }
         //创包语句只解析包中过程和函数,忽略掉变量,类型,子类型等
-        while(lexer.token()!=Token.FUNCTION&&lexer.token()!=Token.PROCEDURE){
+        /*while(lexer.token()!=Token.FUNCTION&&lexer.token()!=Token.PROCEDURE){
             lexer.nextToken();
-        }
+        }*/
 
         // this.parseStatementList(stmt.getStatements(), -1, stmt);
         for (;;) {
@@ -2765,11 +2769,13 @@ public class XuguStatementParser extends SQLStatementParser{
             accept(Token.END);
         }*/
 
-
+        if(lexer.token()==Token.EOF){
+            return stmt;
+        }
         if (lexer.identifierEquals(pkgName.getSimpleName())) {
             lexer.nextToken();
         }else{
-            while (lexer.token()!=Token.SEMI){
+            while (lexer.token()!=Token.SEMI&&lexer.token()!=Token.EOF){
                 lexer.nextToken();
             }
         }

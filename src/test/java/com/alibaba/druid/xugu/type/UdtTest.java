@@ -2,6 +2,7 @@ package com.alibaba.druid.xugu.type;
 
 import com.alibaba.druid.sql.dialect.xugu.api.XuguParserApi;
 import com.alibaba.druid.sql.dialect.xugu.api.bean.CreateTypeBean;
+import com.alibaba.druid.sql.dialect.xugu.api.exception.ParserBusinessException;
 import org.junit.Test;
 
 import java.util.Iterator;
@@ -125,7 +126,7 @@ public class UdtTest {
     Map<String, String> methodsMap ;
 
     @Test
-    public void udtTest1(){
+    public void udtTest1() throws ParserBusinessException {
         CreateTypeBean createTypeBean = XuguParserApi.parseCreateType(sql1);
         attributesHashMap =  createTypeBean.getAttributeMap();
         methodsMap = createTypeBean.getMethodMap();
@@ -138,7 +139,7 @@ public class UdtTest {
     }
 
     @Test
-    public void udtTest2(){
+    public void udtTest2() throws ParserBusinessException {
         CreateTypeBean createTypeBean = XuguParserApi.parseCreateType(sql2);
         attributesHashMap =  createTypeBean.getAttributeMap();
         methodsMap = createTypeBean.getMethodMap();
@@ -151,7 +152,7 @@ public class UdtTest {
     }
 
 
-    public void udtTest3(){
+    public void udtTest3() throws ParserBusinessException {
         CreateTypeBean createTypeBean = XuguParserApi.parseCreateType(sql3);
         attributesHashMap =  createTypeBean.getAttributeMap();
         methodsMap = createTypeBean.getMethodMap();
@@ -164,7 +165,7 @@ public class UdtTest {
     }
 
     @Test
-    public void udtTest4(){
+    public void udtTest4() throws ParserBusinessException {
         CreateTypeBean createTypeBean = XuguParserApi.parseCreateType(sql4);
         attributesHashMap =  createTypeBean.getAttributeMap();
         methodsMap = createTypeBean.getMethodMap();
@@ -177,7 +178,7 @@ public class UdtTest {
     }
 
     @Test
-    public void udtTest5(){
+    public void udtTest5() throws ParserBusinessException {
         CreateTypeBean createTypeBean = XuguParserApi.parseCreateType(sql5);
         attributesHashMap =  createTypeBean.getAttributeMap();
         methodsMap = createTypeBean.getMethodMap();
@@ -190,7 +191,7 @@ public class UdtTest {
     }
 
     @Test
-    public void udtTest6(){
+    public void udtTest6() throws ParserBusinessException {
         CreateTypeBean createTypeBean = XuguParserApi.parseCreateType(sql6);
         attributesHashMap =  createTypeBean.getAttributeMap();
         methodsMap = createTypeBean.getMethodMap();
@@ -203,7 +204,7 @@ public class UdtTest {
     }
 
     @Test
-    public void udtTest7(){
+    public void udtTest7() throws ParserBusinessException {
         CreateTypeBean createTypeBean = XuguParserApi.parseCreateType(sql7);
         attributesHashMap =  createTypeBean.getAttributeMap();
         methodsMap = createTypeBean.getMethodMap();
@@ -216,7 +217,7 @@ public class UdtTest {
     }
 
     @Test
-    public void udtTest8(){
+    public void udtTest8() throws ParserBusinessException {
         CreateTypeBean createTypeBean = XuguParserApi.parseCreateType(sql8);
         attributesHashMap =  createTypeBean.getAttributeMap();
         methodsMap = createTypeBean.getMethodMap();
@@ -229,7 +230,7 @@ public class UdtTest {
     }
 
     @Test
-    public void udtTest9(){
+    public void udtTest9() throws ParserBusinessException {
         CreateTypeBean createTypeBean = XuguParserApi.parseCreateType(sql9);
         attributesHashMap =  createTypeBean.getAttributeMap();
         methodsMap = createTypeBean.getMethodMap();
@@ -242,7 +243,7 @@ public class UdtTest {
     }
 
     @Test
-    public void udtTest10(){
+    public void udtTest10() throws ParserBusinessException {
         CreateTypeBean createTypeBean = XuguParserApi.parseCreateType(sql10);
         attributesHashMap =  createTypeBean.getAttributeMap();
         methodsMap = createTypeBean.getMethodMap();
@@ -255,7 +256,7 @@ public class UdtTest {
     }
 
     @Test
-    public void udtTest11(){
+    public void udtTest11() throws ParserBusinessException {
         CreateTypeBean createTypeBean = XuguParserApi.parseCreateType(sql11);
         attributesHashMap =  createTypeBean.getAttributeMap();
         methodsMap = createTypeBean.getMethodMap();

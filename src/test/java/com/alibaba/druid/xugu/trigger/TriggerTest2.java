@@ -3,6 +3,7 @@ package com.alibaba.druid.xugu.trigger;
 import com.alibaba.druid.pool.bonecp.TestPSCache;
 import com.alibaba.druid.sql.ast.SQLStatement;
 import com.alibaba.druid.sql.dialect.xugu.api.XuguParserApi;
+import com.alibaba.druid.sql.dialect.xugu.api.exception.ParserBusinessException;
 import com.alibaba.druid.sql.dialect.xugu.parser.XuguStatementParser;
 import junit.framework.TestCase;
 
@@ -10,7 +11,7 @@ import java.util.List;
 
 public class TriggerTest2 extends TestCase {
     
-    public void test(){
+    public void test() throws ParserBusinessException {
         String sql = "create trigger trig_user after update of (id,name,address) on text_table_trigger\n" +
                 "for each row\n" +
                 "begin\n" +
@@ -23,7 +24,7 @@ public class TriggerTest2 extends TestCase {
         System.out.println(XuguParserApi.parseCreateTrigger(sql));
     }
     
-    public void test2(){
+    public void test2() throws ParserBusinessException {
         String sql = "CREATE OR REPLACE TRIGGER trig_user AFTER INSERT OR UPDATE OF (id,name) ON text_table_trigger\n" +
                 "FOR each ROW\n" +
                 "BEGIN\n" +
@@ -42,7 +43,7 @@ public class TriggerTest2 extends TestCase {
         System.out.println(XuguParserApi.parseCreateTrigger(sql));
     }
     
-    public void test3(){
+    public void test3() throws ParserBusinessException {
         String sql = "CREATE OR REPLACE TRIGGER trig_user BEFORE INSERT ON text_table_trigger REFERENCING new AS nn\n" +
                 "FOR each ROW\n" +
                 "BEGIN\n" +

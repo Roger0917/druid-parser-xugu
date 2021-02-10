@@ -2,6 +2,7 @@ package com.alibaba.druid.xugu.schema;
 
 import com.alibaba.druid.sql.ast.SQLStatement;
 import com.alibaba.druid.sql.dialect.xugu.api.XuguParserApi;
+import com.alibaba.druid.sql.dialect.xugu.api.exception.ParserBusinessException;
 import com.alibaba.druid.sql.dialect.xugu.parser.XuguStatementParser;
 import junit.framework.TestCase;
 
@@ -10,7 +11,7 @@ import java.util.List;
 
 public class GetSchemaFromType extends TestCase {
     
-    public void test(){
+    public void test() throws ParserBusinessException {
         String sql = "create type body pack_dep_base_type as" +
                 "            member function getId(n int,na varchar(21)) return int" +
                 "            as" +

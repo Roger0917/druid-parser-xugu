@@ -2,12 +2,13 @@ package com.alibaba.druid.xugu.api;
 
 import com.alibaba.druid.sql.dialect.xugu.api.XuguParserApi;
 import com.alibaba.druid.sql.dialect.xugu.api.bean.CreateTriggerBean;
+import com.alibaba.druid.sql.dialect.xugu.api.exception.ParserBusinessException;
 import com.alibaba.druid.xugu.trigger.CreateTrigger;
 import junit.framework.TestCase;
 
 public class TestTrigger extends TestCase {
     
-    public void test(){
+    public void test() throws ParserBusinessException {
         String sql = "CREATE OR REPLACE TRIGGER trig_user BEFORE INSERT ON text_table_trigger REFERENCING new AS nn\n" +
                 "FOR each ROW\n" +
                 "BEGIN\n" +

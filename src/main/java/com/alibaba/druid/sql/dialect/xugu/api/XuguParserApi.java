@@ -10,6 +10,7 @@ import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleSelectJoin;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleSelectQueryBlock;
 import com.alibaba.druid.sql.dialect.oracle.ast.stmt.OracleSelectTableReference;
 import com.alibaba.druid.sql.dialect.xugu.api.bean.*;
+import com.alibaba.druid.sql.dialect.xugu.api.exception.ParserBusinessException;
 import com.alibaba.druid.sql.dialect.xugu.ast.XuguDataTypeIntervalDayToSecond;
 import com.alibaba.druid.sql.dialect.xugu.ast.XuguDataTypeIntervalHourToSecond;
 import com.alibaba.druid.sql.dialect.xugu.ast.XuguDataTypeIntervalMinuteToSecond;
@@ -17,296 +18,348 @@ import com.alibaba.druid.sql.dialect.xugu.ast.stmt.*;
 import com.alibaba.druid.sql.dialect.xugu.parser.XuguFunctionDataType;
 import com.alibaba.druid.sql.dialect.xugu.parser.XuguProdecureDataType;
 import com.alibaba.druid.sql.dialect.xugu.parser.XuguStatementParser;
-import org.apache.ibatis.jdbc.SQL;
+import com.alibaba.druid.sql.parser.ParserException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
 public class XuguParserApi {
     
-    public static List<CreateProcedureBean> parseCreateProcedure(String sql){
-        List<SQLCreateProcedureStatement> createProcedureStatementList = new ArrayList<>();
-        XuguStatementParser parser = new XuguStatementParser(sql);
-        List<SQLStatement> statementList = parser.parseStatementList();
-        for(SQLStatement sqlStatement:statementList){
-            if(sqlStatement instanceof SQLCreateProcedureStatement){
-                SQLCreateProcedureStatement sqlCreateProcedureStatement = (SQLCreateProcedureStatement) sqlStatement;
-                createProcedureStatementList.add(sqlCreateProcedureStatement);
-            }
-        }
-        return getProcedureBeanListByStatement(createProcedureStatementList);
-    }
-
-    public static List<CreateFunctionBean> parseCreateFunction(String sql){
-        List<SQLCreateFunctionStatement> createFunctionStatementList = new ArrayList<>();
-        XuguStatementParser parser = new XuguStatementParser(sql);
-        List<SQLStatement> statementList = parser.parseStatementList();
-        for(SQLStatement sqlStatement:statementList){
-            if(sqlStatement instanceof SQLCreateFunctionStatement){
-                SQLCreateFunctionStatement statement = (SQLCreateFunctionStatement) sqlStatement;
-                createFunctionStatementList.add(statement);
-            }
-        }
-        return getFunctionBeanListByStatement(createFunctionStatementList);
-    }
-    
-    public static CreatePackageBean parseCreatePackage(String sql){
-        CreatePackageBean createPackageBean = new CreatePackageBean();
-        List<XuguCreatePackageStatement> createPackageStatementList = new ArrayList<>();
-        XuguStatementParser parser = new XuguStatementParser(sql);
-        List<SQLStatement> statementList = parser.parseStatementList();
-
-        for (SQLStatement statement : statementList) {
-            if(statement instanceof XuguCreatePackageStatement){
-                XuguCreatePackageStatement xuguCreatePackageStatement = (XuguCreatePackageStatement) statement;
-                createPackageStatementList.add(xuguCreatePackageStatement);
-            }
-        }
-        List<SQLCreateProcedureStatement> createProcedureStatements = new ArrayList<>();
-        List<SQLCreateFunctionStatement> createFunctionStatements = new ArrayList<>();
-
-        for(SQLStatement sqlStatement:createPackageStatementList.get(0).getStatements()){
-            if(sqlStatement instanceof SQLCreateProcedureStatement){
-                SQLCreateProcedureStatement statement = (SQLCreateProcedureStatement) sqlStatement;
-                createProcedureStatements.add(statement);
-            }else if(sqlStatement instanceof SQLCreateFunctionStatement){
-                SQLCreateFunctionStatement statement = (SQLCreateFunctionStatement) sqlStatement;
-                createFunctionStatements.add(statement);
-            }
-        }
-        createPackageBean.setCreateProcedureBeans(getProcedureBeanListByStatement(createProcedureStatements));
-        createPackageBean.setCreateFunctionBeans(getFunctionBeanListByStatement(createFunctionStatements));
-        return createPackageBean;
-    }
-
-    public static CreateTriggerBean parseCreateTrigger(String sql){
-        List<SQLCreateTriggerStatement> createTriggerStatementList = new ArrayList<>();
-        List<String> operators = new ArrayList<>();
-        CreateTriggerBean triggerBean = new CreateTriggerBean();
-        XuguStatementParser parser = new XuguStatementParser(sql);
-        List<SQLStatement> statementList = parser.parseStatementList();
-        String text = Base.print(statementList);
-        for (SQLStatement statement : statementList) {
-            SQLCreateTriggerStatement sqlCreateTriggerStatement = (SQLCreateTriggerStatement) statement;
-            createTriggerStatementList.add(sqlCreateTriggerStatement);
-        }
-        for(SQLCreateTriggerStatement sqlCreateTriggerStatement:createTriggerStatementList){
-            triggerBean.setTriggerName(sqlCreateTriggerStatement.getName().toString());
-            if(sqlCreateTriggerStatement.isForEachRow()){
-                triggerBean.setTriggerType("FOR EACH ROW");
-            }else{
-                triggerBean.setTriggerType("FOR STATEMENT");
-            }
-            triggerBean.setTable(sqlCreateTriggerStatement.getOn().getTableName());
-            triggerBean.setTriggerOccasion(sqlCreateTriggerStatement.getTriggerType().name());
-            if(sqlCreateTriggerStatement.isInsert()){
-                operators.add("INSERT");
-            }
-            if(sqlCreateTriggerStatement.isUpdate()){
-                operators.add("UPDATE");
-            }
-            if(sqlCreateTriggerStatement.isDelete()){
-                operators.add("DELETE");
-            }
-            triggerBean.setOperators(operators);
-            if(sqlCreateTriggerStatement.getUpdateOfColumns().size()>0){
-                triggerBean.setUpdateColumns(sqlCreateTriggerStatement.getUpdateOfColumns().stream().map(SQLName::getSimpleName).collect(Collectors.toList()));
-            }
-            if(sqlCreateTriggerStatement.getWhen()!=null){
-                triggerBean.setWhen(sqlCreateTriggerStatement.getWhen().toString());
-            }
-            triggerBean.setBody(sqlCreateTriggerStatement.getBody().toString());
-            triggerBean.setDefine(text.substring(0,text.indexOf(sqlCreateTriggerStatement.getBody().toString())));
-        }
-        return triggerBean;
-    }
-    
-    public static CreateTypeBean parseCreateType(String sql){
-        CreateTypeBean createTypeBean = new CreateTypeBean();
-        List<XuguCreateTypeStatement> createTypeStatementList = new ArrayList<>();
-        XuguStatementParser parser = new XuguStatementParser(sql);
-        List<SQLStatement> statementList = parser.parseStatementList();
-
-        for (SQLStatement statement : statementList) {
-            XuguCreateTypeStatement createTypeStatement = (XuguCreateTypeStatement) statement;
-            createTypeStatementList.add(createTypeStatement);
-        }
-        for(XuguCreateTypeStatement createTypeStatement:createTypeStatementList){
-            Map<String,String> attributeMap = new HashMap<>();
-            if(!createTypeStatement.isBody()){
-                createTypeBean.setHeader(createTypeStatement.toString());
-                for(SQLParameter sqlParameter:createTypeStatement.getParameters()){
-                    //普通类型
-                    if(sqlParameter.getName()!=null){
-                        attributeMap.put(sqlParameter.getName().toString(),sqlParameter.getDataType().toString());
-                    }else{
-                        //过程或函数类型
-                        if(sqlParameter.getDataType() instanceof XuguProdecureDataType){
-                            attributeMap.put(sqlParameter.getDataType().getName(), "PROCEDURE");
-                        }else if(sqlParameter.getDataType() instanceof XuguFunctionDataType){
-                            attributeMap.put(sqlParameter.getDataType().getName(), "FUNCTION");
-                        }
-
-                    }
-                }
-                createTypeBean.setAttributeMap(attributeMap);
-            }else{
-                createTypeBean.setBody(createTypeStatement.toString());
-                Map<String,String> methodMap = new HashMap<>();
-                for(SQLParameter sqlParameter:createTypeStatement.getParameters()){
-                    //自定义类型存方法名和类型
-                     if(sqlParameter.getDataType() instanceof XuguFunctionDataType){
-                         methodMap.put(sqlParameter.getDataType().getName(),"FUNCTION");
-                    } else if (sqlParameter.getDataType() instanceof XuguProdecureDataType) {
-                         methodMap.put(sqlParameter.getDataType().getName(),"PROCEDURE");
-                    }
-                    //methodMap.put(sqlParameter.getDataType().getName(),sqlParameter.toString());
-                }
-                createTypeBean.setMethodMap(methodMap);
-            }
-        }
-        return createTypeBean;
-    }
-
-    public static List<CreateCallBean> parseCall(String sql){
-        List<CreateCallBean> callBeanList = new ArrayList<>();
-        List<SQLCallStatement> callStatementList = new ArrayList<>();
-        StringBuilder builder = new StringBuilder();
-        builder.append(sql);
-        XuguStatementParser parser = new XuguStatementParser(builder.toString());
-        List<SQLStatement> statementList = parser.parseStatementList();
-        //SQLStatement statement = statementList.get(0);
-
-        for(SQLStatement sqlStatement:statementList){
-            SQLCallStatement sqlCallStatement = (SQLCallStatement) sqlStatement;
-            callStatementList.add(sqlCallStatement);
-        }
-
-        for (SQLCallStatement sqlCallStatement:callStatementList){
-            CreateCallBean callBean = new CreateCallBean();
-            List<String> paramList = new ArrayList<>();
-            callBean.setName(sqlCallStatement.getProcedureName().getSimpleName());
-            for(SQLExpr sqlExpr:sqlCallStatement.getParameters()){
-                if(sqlExpr.toString().contains(":")){
-                    paramList.add(sqlExpr.toString().replaceAll(":",""));
-                }else if(sqlExpr.toString().contains("=>")){
-                    paramList.add(sqlExpr.toString().substring(0,sqlExpr.toString().indexOf("=>")));
+    private final static Logger logger = LoggerFactory.getLogger(XuguParserApi.class);
+    public static List<CreateProcedureBean> parseCreateProcedure(String sql) throws ParserBusinessException {
+        try{
+            List<SQLCreateProcedureStatement> createProcedureStatementList = new ArrayList<>();
+            XuguStatementParser parser = new XuguStatementParser(sql);
+            List<SQLStatement> statementList = parser.parseStatementList();
+            for(SQLStatement sqlStatement:statementList){
+                if(sqlStatement instanceof SQLCreateProcedureStatement){
+                    SQLCreateProcedureStatement sqlCreateProcedureStatement = (SQLCreateProcedureStatement) sqlStatement;
+                    createProcedureStatementList.add(sqlCreateProcedureStatement);
                 }
             }
-            callBean.setParamList(paramList);
-            callBeanList.add(callBean);
+            return getProcedureBeanListByStatement(createProcedureStatementList); 
+        }catch (ParserException e){
+            logger.error(e.getMessage());
+            throw new ParserBusinessException("暂不支持");
         }
-        return callBeanList;
+    }
+
+    public static List<CreateFunctionBean> parseCreateFunction(String sql) throws ParserBusinessException {
+        try {
+            List<SQLCreateFunctionStatement> createFunctionStatementList = new ArrayList<>();
+            XuguStatementParser parser = new XuguStatementParser(sql);
+            List<SQLStatement> statementList = parser.parseStatementList();
+            for (SQLStatement sqlStatement : statementList) {
+                if (sqlStatement instanceof SQLCreateFunctionStatement) {
+                    SQLCreateFunctionStatement statement = (SQLCreateFunctionStatement) sqlStatement;
+                    createFunctionStatementList.add(statement);
+                }
+            }
+            return getFunctionBeanListByStatement(createFunctionStatementList);
+        } catch (ParserException e) {
+            logger.error(e.getMessage());
+            throw new ParserBusinessException("暂不支持");
+        }
     }
     
-    public static List<CreateExecuteBean> parseExecute(String sql) {
-        List<CreateExecuteBean> executeBeanList = new ArrayList<>();
-        List<XuguExecuteStatement> executeStatementList = new ArrayList<>();
-        StringBuilder builder = new StringBuilder();
-        builder.append(sql);
-        XuguStatementParser parser = new XuguStatementParser(builder.toString());
-        List<SQLStatement> statementList = parser.parseStatementList();
-        //SQLStatement statement = statementList.get(0);
+    public static CreatePackageBean parseCreatePackage(String sql) throws ParserBusinessException {
+        try{
+            CreatePackageBean createPackageBean = new CreatePackageBean();
+            List<XuguCreatePackageStatement> createPackageStatementList = new ArrayList<>();
+            XuguStatementParser parser = new XuguStatementParser(sql);
+            List<SQLStatement> statementList = parser.parseStatementList();
 
-        for (SQLStatement sqlStatement : statementList) {
-            XuguExecuteStatement executeStatement = (XuguExecuteStatement) sqlStatement;
-            executeStatementList.add(executeStatement);
+            for (SQLStatement statement : statementList) {
+                if(statement instanceof XuguCreatePackageStatement){
+                    XuguCreatePackageStatement xuguCreatePackageStatement = (XuguCreatePackageStatement) statement;
+                    createPackageStatementList.add(xuguCreatePackageStatement);
+                }
+            }
+            List<SQLCreateProcedureStatement> createProcedureStatements = new ArrayList<>();
+            List<SQLCreateFunctionStatement> createFunctionStatements = new ArrayList<>();
+
+            for(SQLStatement sqlStatement:createPackageStatementList.get(0).getStatements()){
+                if(sqlStatement instanceof SQLCreateProcedureStatement){
+                    SQLCreateProcedureStatement statement = (SQLCreateProcedureStatement) sqlStatement;
+                    createProcedureStatements.add(statement);
+                }else if(sqlStatement instanceof SQLCreateFunctionStatement){
+                    SQLCreateFunctionStatement statement = (SQLCreateFunctionStatement) sqlStatement;
+                    createFunctionStatements.add(statement);
+                }
+            }
+            createPackageBean.setCreateProcedureBeans(getProcedureBeanListByStatement(createProcedureStatements));
+            createPackageBean.setCreateFunctionBeans(getFunctionBeanListByStatement(createFunctionStatements));
+            return createPackageBean;
+        }catch (ParserException e){
+            logger.error(e.getMessage());
+            throw new ParserBusinessException("暂不支持");
         }
+    }
 
-        for (XuguExecuteStatement executeStatement : executeStatementList) {
-            CreateExecuteBean executeBean = new CreateExecuteBean();
-            List<String> paramList = new ArrayList<>();
-            if (executeStatement.getDynamicSql() instanceof SQLMethodInvokeExpr) {
-                executeBean.setName(((SQLMethodInvokeExpr) executeStatement.getDynamicSql()).getMethodName());
-                if(((SQLMethodInvokeExpr) executeStatement.getDynamicSql()).getOwner()==null){
-                    executeBean.setSchema(null);
+    public static CreateTriggerBean parseCreateTrigger(String sql) throws ParserBusinessException {
+        try{
+            List<SQLCreateTriggerStatement> createTriggerStatementList = new ArrayList<>();
+            List<String> operators = new ArrayList<>();
+            CreateTriggerBean triggerBean = new CreateTriggerBean();
+            XuguStatementParser parser = new XuguStatementParser(sql);
+            List<SQLStatement> statementList = parser.parseStatementList();
+            String text = Base.print(statementList);
+            for (SQLStatement statement : statementList) {
+                SQLCreateTriggerStatement sqlCreateTriggerStatement = (SQLCreateTriggerStatement) statement;
+                createTriggerStatementList.add(sqlCreateTriggerStatement);
+            }
+            for(SQLCreateTriggerStatement sqlCreateTriggerStatement:createTriggerStatementList){
+                triggerBean.setTriggerName(sqlCreateTriggerStatement.getName().toString());
+                if(sqlCreateTriggerStatement.isForEachRow()){
+                    triggerBean.setTriggerType("FOR EACH ROW");
                 }else{
-                    executeBean.setSchema(((SQLMethodInvokeExpr) executeStatement.getDynamicSql()).getOwner().toString());
+                    triggerBean.setTriggerType("FOR STATEMENT");
                 }
-                for (SQLExpr sqlExpr : ((SQLMethodInvokeExpr) executeStatement.getDynamicSql()).getArguments()) {
-                    if (sqlExpr.toString().contains(":")) {
-                        paramList.add(sqlExpr.toString().replaceAll(":", ""));
-                    } else if (sqlExpr.toString().contains("=>")) {
-                        paramList.add(sqlExpr.toString().substring(0, sqlExpr.toString().indexOf("=>")));
-                    }else{
-                        paramList.add(sqlExpr.toString());
-                    }
+                triggerBean.setTable(sqlCreateTriggerStatement.getOn().getTableName());
+                triggerBean.setTriggerOccasion(sqlCreateTriggerStatement.getTriggerType().name());
+                if(sqlCreateTriggerStatement.isInsert()){
+                    operators.add("INSERT");
                 }
-                executeBean.setParamList(paramList);
-                executeBeanList.add(executeBean);
+                if(sqlCreateTriggerStatement.isUpdate()){
+                    operators.add("UPDATE");
+                }
+                if(sqlCreateTriggerStatement.isDelete()){
+                    operators.add("DELETE");
+                }
+                triggerBean.setOperators(operators);
+                if(sqlCreateTriggerStatement.getUpdateOfColumns().size()>0){
+                    triggerBean.setUpdateColumns(sqlCreateTriggerStatement.getUpdateOfColumns().stream().map(SQLName::getSimpleName).collect(Collectors.toList()));
+                }
+                if(sqlCreateTriggerStatement.getWhen()!=null){
+                    triggerBean.setWhen(sqlCreateTriggerStatement.getWhen().toString());
+                }
+                triggerBean.setBody(sqlCreateTriggerStatement.getBody().toString());
+                triggerBean.setDefine(text.substring(0,text.indexOf(sqlCreateTriggerStatement.getBody().toString())));
             }
+            return triggerBean;  
+        }catch (ParserException e){
+            logger.error(e.getMessage());
+            throw new ParserBusinessException("暂不支持");
         }
-        return executeBeanList;
     }
+    
+    public static CreateTypeBean parseCreateType(String sql) throws ParserBusinessException {
+        try{
+            CreateTypeBean createTypeBean = new CreateTypeBean();
+            List<XuguCreateTypeStatement> createTypeStatementList = new ArrayList<>();
+            XuguStatementParser parser = new XuguStatementParser(sql);
+            List<SQLStatement> statementList = parser.parseStatementList();
 
-    public static List<BlockProAndFunBean> parseBlockProAndFun(String sql) {
-        List<SQLBlockStatement> blockStatementList = new ArrayList<>();
-        List<BlockProAndFunBean> blockProAndFunBeans = new ArrayList<>();
-        StringBuilder builder = new StringBuilder();
-        builder.append(sql);
-        XuguStatementParser parser = new XuguStatementParser(builder.toString());
-        List<SQLStatement> statementList = parser.parseStatementList();
-        String text = Base.print(statementList);
-
-        for (SQLStatement sqlStatement : statementList) {
-            SQLBlockStatement sqlBlockStatement = (SQLBlockStatement) sqlStatement;
-            blockStatementList.add(sqlBlockStatement);
-        }
-
-        for (SQLBlockStatement sqlBlockStatement : blockStatementList) {
-            for (SQLStatement sqlStatement : sqlBlockStatement.getStatementList()) {
-                if (sqlStatement instanceof SQLExprStatement) {
-                    SQLExprStatement exprStatement = (SQLExprStatement) sqlStatement;
-                    if (exprStatement.getExpr() instanceof SQLMethodInvokeExpr) {
-                        BlockProAndFunBean bean = new BlockProAndFunBean();
-                        List<String> paramList = new ArrayList<>();
-                        SQLMethodInvokeExpr sqlMethodInvokeExpr = (SQLMethodInvokeExpr) exprStatement.getExpr();
-                        //System.out.println("方法名: "+sqlMethodInvokeExpr.getMethodName());
-                        bean.setName(sqlMethodInvokeExpr.getMethodName());
-                        for (SQLExpr expr : sqlMethodInvokeExpr.getArguments()) {
-                            if (expr.toString().contains("=>")) {
-                                //System.out.println("參數名: "+expr.toString().substring(0,expr.toString().indexOf("=>")));
-                                paramList.add(expr.toString().substring(0, expr.toString().indexOf("=>")));
-                            } else {
-                                //System.out.println("參數名: "+expr.toString());
-                                paramList.add(expr.toString());
+            for (SQLStatement statement : statementList) {
+                XuguCreateTypeStatement createTypeStatement = (XuguCreateTypeStatement) statement;
+                createTypeStatementList.add(createTypeStatement);
+            }
+            for(XuguCreateTypeStatement createTypeStatement:createTypeStatementList){
+                Map<String,String> attributeMap = new HashMap<>();
+                if(!createTypeStatement.isBody()){
+                    createTypeBean.setHeader(createTypeStatement.toString());
+                    for(SQLParameter sqlParameter:createTypeStatement.getParameters()){
+                        //普通类型
+                        if(sqlParameter.getName()!=null){
+                            attributeMap.put(sqlParameter.getName().toString(),sqlParameter.getDataType().toString());
+                        }else{
+                            //过程或函数类型
+                            if(sqlParameter.getDataType() instanceof XuguProdecureDataType){
+                                attributeMap.put(sqlParameter.getDataType().getName(), "PROCEDURE");
+                            }else if(sqlParameter.getDataType() instanceof XuguFunctionDataType){
+                                attributeMap.put(sqlParameter.getDataType().getName(), "FUNCTION");
                             }
-                            bean.setParameters(paramList);
+
                         }
-                        blockProAndFunBeans.add(bean);
+                    }
+                    createTypeBean.setAttributeMap(attributeMap);
+                }else{
+                    createTypeBean.setBody(createTypeStatement.toString());
+                    Map<String,String> methodMap = new HashMap<>();
+                    for(SQLParameter sqlParameter:createTypeStatement.getParameters()){
+                        //自定义类型存方法名和类型
+                        if(sqlParameter.getDataType() instanceof XuguFunctionDataType){
+                            methodMap.put(sqlParameter.getDataType().getName(),"FUNCTION");
+                        } else if (sqlParameter.getDataType() instanceof XuguProdecureDataType) {
+                            methodMap.put(sqlParameter.getDataType().getName(),"PROCEDURE");
+                        }
+                        //methodMap.put(sqlParameter.getDataType().getName(),sqlParameter.toString());
+                    }
+                    createTypeBean.setMethodMap(methodMap);
+                }
+            }
+            return createTypeBean;
+        }catch (ParserException e){
+            logger.error(e.getMessage());
+            throw new ParserBusinessException("暂不支持");
+        }
+    }
+
+    public static List<CreateCallBean> parseCall(String sql) throws ParserBusinessException {
+        try{
+            List<CreateCallBean> callBeanList = new ArrayList<>();
+            List<SQLCallStatement> callStatementList = new ArrayList<>();
+            StringBuilder builder = new StringBuilder();
+            builder.append(sql);
+            XuguStatementParser parser = new XuguStatementParser(builder.toString());
+            List<SQLStatement> statementList = parser.parseStatementList();
+            //SQLStatement statement = statementList.get(0);
+
+            for(SQLStatement sqlStatement:statementList){
+                SQLCallStatement sqlCallStatement = (SQLCallStatement) sqlStatement;
+                callStatementList.add(sqlCallStatement);
+            }
+
+            for (SQLCallStatement sqlCallStatement:callStatementList){
+                CreateCallBean callBean = new CreateCallBean();
+                List<String> paramList = new ArrayList<>();
+                callBean.setName(sqlCallStatement.getProcedureName().getSimpleName());
+                for(SQLExpr sqlExpr:sqlCallStatement.getParameters()){
+                    if(sqlExpr.toString().contains(":")){
+                        paramList.add(sqlExpr.toString().replaceAll(":",""));
+                    }else if(sqlExpr.toString().contains("=>")){
+                        paramList.add(sqlExpr.toString().substring(0,sqlExpr.toString().indexOf("=>")));
+                    }
+                }
+                callBean.setParamList(paramList);
+                callBeanList.add(callBean);
+            }
+            return callBeanList; 
+        }catch (ParserException e){
+            logger.error(e.getMessage());
+            throw new ParserBusinessException("暂不支持");
+        }
+        
+    }
+    
+    public static List<CreateExecuteBean> parseExecute(String sql) throws ParserBusinessException {
+        try{
+            List<CreateExecuteBean> executeBeanList = new ArrayList<>();
+            List<XuguExecuteStatement> executeStatementList = new ArrayList<>();
+            StringBuilder builder = new StringBuilder();
+            builder.append(sql);
+            XuguStatementParser parser = new XuguStatementParser(builder.toString());
+            List<SQLStatement> statementList = parser.parseStatementList();
+            //SQLStatement statement = statementList.get(0);
+
+            for (SQLStatement sqlStatement : statementList) {
+                XuguExecuteStatement executeStatement = (XuguExecuteStatement) sqlStatement;
+                executeStatementList.add(executeStatement);
+            }
+
+            for (XuguExecuteStatement executeStatement : executeStatementList) {
+                CreateExecuteBean executeBean = new CreateExecuteBean();
+                List<String> paramList = new ArrayList<>();
+                if (executeStatement.getDynamicSql() instanceof SQLMethodInvokeExpr) {
+                    executeBean.setName(((SQLMethodInvokeExpr) executeStatement.getDynamicSql()).getMethodName());
+                    if(((SQLMethodInvokeExpr) executeStatement.getDynamicSql()).getOwner()==null){
+                        executeBean.setSchema(null);
+                    }else{
+                        executeBean.setSchema(((SQLMethodInvokeExpr) executeStatement.getDynamicSql()).getOwner().toString());
+                    }
+                    for (SQLExpr sqlExpr : ((SQLMethodInvokeExpr) executeStatement.getDynamicSql()).getArguments()) {
+                        if (sqlExpr.toString().contains(":")) {
+                            paramList.add(sqlExpr.toString().replaceAll(":", ""));
+                        } else if (sqlExpr.toString().contains("=>")) {
+                            paramList.add(sqlExpr.toString().substring(0, sqlExpr.toString().indexOf("=>")));
+                        }else{
+                            paramList.add(sqlExpr.toString());
+                        }
+                    }
+                    executeBean.setParamList(paramList);
+                    executeBeanList.add(executeBean);
+                }
+            }
+            return executeBeanList;
+        }catch (ParserException e){
+            logger.error(e.getMessage());
+            throw new ParserBusinessException("暂不支持");
+        }
+       
+    }
+
+    public static List<BlockProAndFunBean> parseBlockProAndFun(String sql) throws ParserBusinessException {
+        try{
+            List<SQLBlockStatement> blockStatementList = new ArrayList<>();
+            List<BlockProAndFunBean> blockProAndFunBeans = new ArrayList<>();
+            StringBuilder builder = new StringBuilder();
+            builder.append(sql);
+            XuguStatementParser parser = new XuguStatementParser(builder.toString());
+            List<SQLStatement> statementList = parser.parseStatementList();
+            String text = Base.print(statementList);
+
+            for (SQLStatement sqlStatement : statementList) {
+                SQLBlockStatement sqlBlockStatement = (SQLBlockStatement) sqlStatement;
+                blockStatementList.add(sqlBlockStatement);
+            }
+
+            for (SQLBlockStatement sqlBlockStatement : blockStatementList) {
+                for (SQLStatement sqlStatement : sqlBlockStatement.getStatementList()) {
+                    if (sqlStatement instanceof SQLExprStatement) {
+                        SQLExprStatement exprStatement = (SQLExprStatement) sqlStatement;
+                        if (exprStatement.getExpr() instanceof SQLMethodInvokeExpr) {
+                            BlockProAndFunBean bean = new BlockProAndFunBean();
+                            List<String> paramList = new ArrayList<>();
+                            SQLMethodInvokeExpr sqlMethodInvokeExpr = (SQLMethodInvokeExpr) exprStatement.getExpr();
+                            //System.out.println("方法名: "+sqlMethodInvokeExpr.getMethodName());
+                            bean.setName(sqlMethodInvokeExpr.getMethodName());
+                            for (SQLExpr expr : sqlMethodInvokeExpr.getArguments()) {
+                                if (expr.toString().contains("=>")) {
+                                    //System.out.println("參數名: "+expr.toString().substring(0,expr.toString().indexOf("=>")));
+                                    paramList.add(expr.toString().substring(0, expr.toString().indexOf("=>")));
+                                } else {
+                                    //System.out.println("參數名: "+expr.toString());
+                                    paramList.add(expr.toString());
+                                }
+                                bean.setParameters(paramList);
+                            }
+                            blockProAndFunBeans.add(bean);
+                        }
                     }
                 }
             }
+            return blockProAndFunBeans;
+        }catch (ParserException e){
+            logger.error(e.getMessage());
+            throw new ParserBusinessException("暂不支持");
         }
-        return blockProAndFunBeans;
+
     }
 
-    public static List<CreateViewBean> parseCreateView(String sql){
-        List<SQLCreateViewStatement> createViewStatementList = new ArrayList<>();
-        List<CreateViewBean> createViewBeans = new ArrayList<>();
-        XuguStatementParser parser = new XuguStatementParser(sql);
-        List<SQLStatement> statementList = parser.parseStatementList();
+    public static List<CreateViewBean> parseCreateView(String sql) throws ParserBusinessException {
+        try{
+            List<SQLCreateViewStatement> createViewStatementList = new ArrayList<>();
+            List<CreateViewBean> createViewBeans = new ArrayList<>();
+            XuguStatementParser parser = new XuguStatementParser(sql);
+            List<SQLStatement> statementList = parser.parseStatementList();
 
-        for (SQLStatement statement : statementList) {
-            SQLCreateViewStatement createViewStatement = (SQLCreateViewStatement) statement;
-            createViewStatementList.add(createViewStatement);
-        }
-        for(SQLCreateViewStatement createViewStatement:createViewStatementList){
-            CreateViewBean viewBean;
-            OracleSelectQueryBlock block=null;
-            if(createViewStatement.getSubQuery().getQuery() instanceof OracleSelectQueryBlock){
-                block = (OracleSelectQueryBlock) createViewStatement.getSubQuery().getQuery();
+            for (SQLStatement statement : statementList) {
+                SQLCreateViewStatement createViewStatement = (SQLCreateViewStatement) statement;
+                createViewStatementList.add(createViewStatement);
             }
-            if(createViewStatement.getSchema()!=null){
-                viewBean = CreateViewBean.builder().name(createViewStatement.getName().getSimpleName()).
-                        schemaName(createViewStatement.getSchema()).tableName(block.getFrom().toString()).build();
-            }else{
-                viewBean = CreateViewBean.builder().name(createViewStatement.getName().getSimpleName()).
-                        schemaName(null).tableName(block.getFrom().toString()).build();
+            for(SQLCreateViewStatement createViewStatement:createViewStatementList){
+                CreateViewBean viewBean;
+                OracleSelectQueryBlock block=null;
+                if(createViewStatement.getSubQuery().getQuery() instanceof OracleSelectQueryBlock){
+                    block = (OracleSelectQueryBlock) createViewStatement.getSubQuery().getQuery();
+                }
+                if(createViewStatement.getSchema()!=null){
+                    viewBean = CreateViewBean.builder().name(createViewStatement.getName().getSimpleName()).
+                            schemaName(createViewStatement.getSchema()).tableName(block.getFrom().toString()).build();
+                }else{
+                    viewBean = CreateViewBean.builder().name(createViewStatement.getName().getSimpleName()).
+                            schemaName(null).tableName(block.getFrom().toString()).build();
+                }
+                createViewBeans.add(viewBean);
             }
-            createViewBeans.add(viewBean);
+            return createViewBeans;
+        }catch (ParserException e){
+            logger.error(e.getMessage());
+            throw new ParserBusinessException("暂不支持");
         }
-        return createViewBeans;
+
     }
 
     private static List<CreateProcedureBean> getProcedureBeanListByStatement(List<SQLCreateProcedureStatement> createProcedureStatementList){
@@ -326,28 +379,44 @@ public class XuguParserApi {
                     param.setIndex(i+1);
                     param.setName(parameter.getName().toString());
                     param.setParamType(parameter.getParamType().name());
-                    param.setDataType(parameter.getDataType().getName());
+                    try{
+                        param.setDataType(parameter.getDataType().toString());
+                    }catch (Exception e){
+                        param.setDataType(parameter.getDataType().getName());
+                    }
                     param.setDefaultValue(parameter.getDefaultValue().toString());
                     getPrecisionAndScale(parameter,param);
                 }else if(type!=null&&expr==null){
                     param.setIndex(i+1);
                     param.setName(parameter.getName().toString());
                     param.setParamType(parameter.getParamType().name());
-                    param.setDataType(parameter.getDataType().getName());
+                    try{
+                        param.setDataType(parameter.getDataType().toString());
+                    }catch (Exception e){
+                        param.setDataType(parameter.getDataType().getName());
+                    }
                     param.setDefaultValue(null);
                     getPrecisionAndScale(parameter,param);
                 }else if(type==null&expr!=null){
                     param.setIndex(i+1);
                     param.setName(parameter.getName().toString());
                     param.setParamType("IN");
-                    param.setDataType(parameter.getDataType().getName());
+                    try{
+                        param.setDataType(parameter.getDataType().toString());
+                    }catch (Exception e){
+                        param.setDataType(parameter.getDataType().getName());
+                    }
                     param.setDefaultValue(parameter.getDefaultValue().toString());
                     getPrecisionAndScale(parameter,param);
                 }else{
                     param.setIndex(i+1);
                     param.setName(parameter.getName().toString());
                     param.setParamType("IN");
-                    param.setDataType(parameter.getDataType().getName());
+                    try{
+                        param.setDataType(parameter.getDataType().toString());
+                    }catch (Exception e){
+                        param.setDataType(parameter.getDataType().getName());
+                    }
                     param.setDefaultValue(null);
                     getPrecisionAndScale(parameter,param);
                 }
@@ -380,28 +449,44 @@ public class XuguParserApi {
                     param.setIndex(i+1);
                     param.setName(parameter.getName().toString());
                     param.setParamType(parameter.getParamType().name());
-                    param.setDataType(parameter.getDataType().getName());
+                    try{
+                        param.setDataType(parameter.getDataType().toString());
+                    }catch (Exception e){
+                        param.setDataType(parameter.getDataType().getName());
+                    }
                     param.setDefaultValue(parameter.getDefaultValue().toString());
                     getPrecisionAndScale(parameter,param);
                 }else if(type!=null&&expr==null){
                     param.setIndex(i+1);
                     param.setName(parameter.getName().toString());
                     param.setParamType(parameter.getParamType().name());
-                    param.setDataType(parameter.getDataType().getName());
+                    try{
+                        param.setDataType(parameter.getDataType().toString());
+                    }catch (Exception e){
+                        param.setDataType(parameter.getDataType().getName());
+                    }
                     param.setDefaultValue(null);
                     getPrecisionAndScale(parameter,param);
                 }else if(type==null&expr!=null){
                     param.setIndex(i+1);
                     param.setName(parameter.getName().toString());
                     param.setParamType("IN");
-                    param.setDataType(parameter.getDataType().getName());
+                    try{
+                        param.setDataType(parameter.getDataType().toString());
+                    }catch (Exception e){
+                        param.setDataType(parameter.getDataType().getName());
+                    }
                     param.setDefaultValue(parameter.getDefaultValue().toString());
                     getPrecisionAndScale(parameter,param);
                 }else{
                     param.setIndex(i+1);
                     param.setName(parameter.getName().toString());
                     param.setParamType("IN");
-                    param.setDataType(parameter.getDataType().getName());
+                    try{
+                        param.setDataType(parameter.getDataType().toString());
+                    }catch (Exception e){
+                        param.setDataType(parameter.getDataType().getName());
+                    }
                     param.setDefaultValue(null);
                     getPrecisionAndScale(parameter,param);
                 }
@@ -443,9 +528,15 @@ public class XuguParserApi {
         }
     }
     
-    public static String replaceTypeSqlSchema(String sql,Map<String,String> map,String sourceSchema){
+    public static String replaceTypeSqlSchema(String sql,Map<String,String> map,String sourceSchema) throws ParserBusinessException {
         XuguStatementParser parser = new XuguStatementParser(sql);
-        List<SQLStatement> statementList = parser.parseStatementList();
+        List<SQLStatement> statementList = new ArrayList<>();
+        try{
+            statementList = parser.parseStatementList();
+        }catch (ParserException e){
+            logger.error(e.getMessage());
+            throw new ParserBusinessException("暂不支持");
+        }
         List<XuguCreateTypeStatement> createTypeStatementList = new ArrayList<>();
         statementList.forEach(x->{
             if(x instanceof XuguCreateTypeStatement){
@@ -504,9 +595,15 @@ public class XuguParserApi {
         return createTypeStatementList.get(0).toString();
     }
     
-    public static String replacePackageSqlSchema(String sql,Map<String,String> map,String sourceSchema){
+    public static String replacePackageSqlSchema(String sql,Map<String,String> map,String sourceSchema) throws ParserBusinessException {
         XuguStatementParser parser = new XuguStatementParser(sql);
-        List<SQLStatement> statementList = parser.parseStatementList();
+        List<SQLStatement> statementList = new ArrayList<>();
+        try{
+            statementList = parser.parseStatementList();
+        }catch (ParserException e){
+            logger.error(e.getMessage());
+            throw new ParserBusinessException("暂不支持");
+        }
         List<XuguCreatePackageStatement> createPackageStatementList = new ArrayList<>();
         statementList.forEach(x->{
             if(x instanceof XuguCreatePackageStatement){
@@ -577,14 +674,19 @@ public class XuguParserApi {
         }else{
             return createPackageStatementList.get(0).toString();
         }
-        
     }
     
-    public static String replaceViewSqlSchema(String sql,Map<String,String> map,String sourceSchema){
+    public static String replaceViewSqlSchema(String sql,Map<String,String> map,String sourceSchema) throws ParserBusinessException {
         XuguStatementParser parser = new XuguStatementParser(sql);
         //List<String> schemas = new ArrayList<>();
         List<SQLCreateViewStatement> createViewStatements = new ArrayList<>();
-        List<SQLStatement> statementList = parser.parseStatementList();
+        List<SQLStatement> statementList = new ArrayList<>();
+        try{
+            statementList = parser.parseStatementList();
+        }catch (ParserException e){
+            logger.error(e.getMessage());
+            throw new ParserBusinessException("暂不支持");
+        }
         for(SQLStatement statement:statementList){
             if(statement instanceof SQLCreateViewStatement){
                 SQLCreateViewStatement createViewStatement = (SQLCreateViewStatement) statement;
@@ -795,9 +897,16 @@ public class XuguParserApi {
         }*/
     }
     
-    public static String replaceProcedureSqlSchema(String sql,Map<String,String> map,String sourceSchema){
+    public static String replaceProcedureSqlSchema(String sql,Map<String,String> map,String sourceSchema) throws ParserBusinessException {
         XuguStatementParser parser = new XuguStatementParser(sql);
-        List<SQLStatement> statementList = parser.parseStatementList();
+        List<SQLStatement> statementList = new ArrayList<>();
+        try{
+            statementList = parser.parseStatementList();
+        }catch(ParserException e){
+            logger.error(e.getMessage());
+            throw new ParserBusinessException("暂不支持");
+        }
+        
         List<SQLCreateProcedureStatement> createProcedureStatementList = new ArrayList<>();
         //List<SQLBlockStatement> blockStatementList = new ArrayList<>();
         statementList.forEach(x-> {
@@ -826,9 +935,15 @@ public class XuguParserApi {
         return createProcedureStatementList.get(0).toString();
     }
 
-    public static String replaceFunctionSqlSchema(String sql,Map<String,String> map,String sourceSchema){
+    public static String replaceFunctionSqlSchema(String sql,Map<String,String> map,String sourceSchema) throws ParserBusinessException {
         XuguStatementParser parser = new XuguStatementParser(sql);
-        List<SQLStatement> statementList = parser.parseStatementList();
+        List<SQLStatement> statementList = new ArrayList<>();
+        try{
+            statementList = parser.parseStatementList();
+        }catch(ParserException e){
+            logger.error(e.getMessage());
+            throw new ParserBusinessException("暂不支持");
+        }
         List<SQLCreateFunctionStatement> createFunctionStatementList = new ArrayList<>();
         //List<SQLBlockStatement> blockStatementList = new ArrayList<>();
         statementList.forEach(x-> {
@@ -858,9 +973,15 @@ public class XuguParserApi {
         return createFunctionStatementList.get(0).toString();
     }
 
-    public static String replaceTriggerSchema(String sql,Map<String,String> map,String sourceSchema){
+    public static String replaceTriggerSchema(String sql,Map<String,String> map,String sourceSchema) throws ParserBusinessException {
         XuguStatementParser parser = new XuguStatementParser(sql);
-        List<SQLStatement> statementList = parser.parseStatementList();
+        List<SQLStatement> statementList = new ArrayList<>();
+        try{
+           statementList = parser.parseStatementList();
+        }catch (ParserException e){
+            logger.error(e.getMessage());
+            throw new ParserBusinessException("暂不支持");
+        }
         List<SQLCreateTriggerStatement> createTriggerStatementList = new ArrayList<>();
         statementList.forEach(x->{
             if (x instanceof SQLCreateTriggerStatement){

@@ -4,6 +4,7 @@ import com.alibaba.druid.sql.ast.SQLStatement;
 import com.alibaba.druid.sql.ast.statement.SQLCallStatement;
 import com.alibaba.druid.sql.dialect.xugu.api.XuguParserApi;
 import com.alibaba.druid.sql.dialect.xugu.api.bean.CreateExecuteBean;
+import com.alibaba.druid.sql.dialect.xugu.api.exception.ParserBusinessException;
 import com.alibaba.druid.sql.dialect.xugu.ast.stmt.XuguExecuteImmediateStatement;
 import com.alibaba.druid.sql.dialect.xugu.parser.XuguStatementParser;
 import com.alibaba.druid.xugu.Base;
@@ -20,7 +21,7 @@ import java.util.List;
 
 public class Execute extends TestCase {
 
-    public void test() {
+    public void test() throws ParserBusinessException {
         List<XuguExecuteImmediateStatement> executeImmediateStatementList = new ArrayList<>();
         String sql = "execute xugu_test_pro(id => 5,name=>'ggg',address => 'vvv');";
         String sql2 = "execute xugu_test_pro(:1,:2);";

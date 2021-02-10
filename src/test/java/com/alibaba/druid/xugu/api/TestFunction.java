@@ -3,6 +3,7 @@ package com.alibaba.druid.xugu.api;
 import cn.hutool.core.map.CaseInsensitiveMap;
 import cn.hutool.core.util.StrUtil;
 import com.alibaba.druid.sql.dialect.xugu.api.XuguParserApi;
+import com.alibaba.druid.sql.dialect.xugu.api.exception.ParserBusinessException;
 import junit.framework.TestCase;
 
 import java.util.Map;
@@ -13,7 +14,7 @@ import java.util.Map;
  */
 public class TestFunction extends TestCase {
     
-    public void test(){
+    public void test() throws ParserBusinessException {
         String sql = "create or replace function sysdba.dep_proc_func(id int,name out varchar,address inout varchar,email in int) return int as\n" +
                 " begin\n" +
                 "   execute dep_base_proc_1(a,b);\n" +

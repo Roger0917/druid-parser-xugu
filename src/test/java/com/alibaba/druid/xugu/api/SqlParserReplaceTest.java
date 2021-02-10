@@ -3,6 +3,7 @@ package com.alibaba.druid.xugu.api;
 
 
 import com.alibaba.druid.sql.dialect.xugu.api.XuguParserApi;
+import com.alibaba.druid.sql.dialect.xugu.api.exception.ParserBusinessException;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -115,63 +116,63 @@ public class SqlParserReplaceTest {
     }
 
     @Test
-    public void functionReplaceTest1(){
+    public void functionReplaceTest1() throws ParserBusinessException {
         String s = replaceSchemas(funSql1,schemasMap);
         System.out.println(s);
         Assert.assertNotNull(s);
     }
 
     @Test
-    public void functionReplaceTest2(){
+    public void functionReplaceTest2() throws ParserBusinessException {
         String s = replaceSchemas(funSql2,schemasMap);
         System.out.println(s);
         Assert.assertNotNull(s);
     }
 
     @Test
-    public void functionReplaceTest3(){
+    public void functionReplaceTest3() throws ParserBusinessException {
         String s = replaceSchemas(funSql3,schemasMap);
         System.out.println(s);
         Assert.assertNotNull(s);
     }
 
     @Test
-    public void functionReplaceTest4(){
+    public void functionReplaceTest4() throws ParserBusinessException {
         String s = replaceSchemas(funSql4,schemasMap);
         System.out.println(s);
         Assert.assertNotNull(s);
     }
 
     @Test
-    public void procedureReplaceTest1(){
+    public void procedureReplaceTest1() throws ParserBusinessException {
         String s = replaceSchemas(proSql1,schemasMap);
         System.out.println(s);
         Assert.assertNotNull(s);
     }
 
     @Test
-    public void procedureReplaceTest2(){
+    public void procedureReplaceTest2() throws ParserBusinessException {
         String s = replaceSchemas(proSql2,schemasMap);
         System.out.println(s);
         Assert.assertNotNull(s);
     }
 
     @Test
-    public void procedureReplaceTest3(){
+    public void procedureReplaceTest3() throws ParserBusinessException {
         String s = replaceSchemas(proSql3,schemasMap);
         System.out.println(s);
         Assert.assertNotNull(s);
     }
 
     @Test
-    public void procedureReplaceTest4(){
+    public void procedureReplaceTest4() throws ParserBusinessException {
         String s = replaceSchemas(proSql4,schemasMap);
         System.out.println(s);
         Assert.assertNotNull(s);
     }
 
     @Test
-    public void packageReplaceTest1(){
+    public void packageReplaceTest1() throws ParserBusinessException {
         String s =  replaceSchemas(pack1,schemasMap);
         System.out.println(s);
             Assert.assertNotNull(s);
@@ -179,7 +180,7 @@ public class SqlParserReplaceTest {
 
 
 
-    public String replaceSchemas(String sql,  HashMap<String,String> schemasMap){
+    public String replaceSchemas(String sql,  HashMap<String,String> schemasMap) throws ParserBusinessException {
         //正则表达式按空格分隔
         String s1[] = sql.split("\\s+");
         String define = sql;
