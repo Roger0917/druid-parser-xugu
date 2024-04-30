@@ -151,6 +151,14 @@ public class WallFilter extends FilterAdapter implements WallFilterMBean {
 
                 provider = new OracleWallProvider(config);
                 break;
+            case xugu:
+            case cae:
+                if (config == null) {
+                    config = new WallConfig(XuguWallProvider.DEFAULT_CONFIG_DIR);
+                }
+
+                provider = new XuguWallProvider(config);
+                break;
             case sqlserver:
             case jtds:
                 if (config == null) {

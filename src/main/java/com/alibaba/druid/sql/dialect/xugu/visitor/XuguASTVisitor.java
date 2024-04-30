@@ -119,6 +119,38 @@ public interface XuguASTVisitor extends SQLASTVisitor {
         endVisit((SQLInsertStatement) x);
     }
 
+    default boolean visit(XuguMultiInsertStatement x) {
+        return true;
+    }
+
+    default void endVisit(XuguMultiInsertStatement x) {
+
+    }
+
+    default boolean visit(XuguMultiInsertStatement.ConditionalInsertClause x) {
+        return true;
+    }
+
+    default void endVisit(XuguMultiInsertStatement.ConditionalInsertClause x) {
+
+    }
+
+    default boolean visit(XuguMultiInsertStatement.ConditionalInsertClauseItem x) {
+        return true;
+    }
+
+    default void endVisit(XuguMultiInsertStatement.ConditionalInsertClauseItem x) {
+
+    }
+
+    default boolean visit(XuguMultiInsertStatement.InsertIntoClause x) {
+        return true;
+    }
+
+    default void endVisit(XuguMultiInsertStatement.InsertIntoClause x) {
+
+    }
+
     /*default boolean visit(OracleSelectQueryBlock x) {
         return visit((SQLSelectQueryBlock) x);
     }

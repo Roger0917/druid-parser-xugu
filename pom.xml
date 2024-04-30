@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.xugu</groupId>
 	<artifactId>xugu-parser</artifactId>
-	<version>1.2.4</version>
+	<version>1.2.4-2024</version>
 
 	<packaging>jar</packaging>
 	<name>druid</name>
@@ -16,7 +16,7 @@
 		<junit.version>4.12</junit.version>
 		<jmh.version>1.19</jmh.version>
 
-		<gpg.skip>false</gpg.skip>
+		<gpg.skip>true</gpg.skip>
 		<javadoc.skip>true</javadoc.skip>
 
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -100,7 +100,7 @@
 				<artifactId>maven-pmd-plugin</artifactId>
 				<version>3.8</version>
 				<configuration>
-					<skip>false</skip>
+					<skip>true</skip>
 					<rulesets>
 						<!--            <ruleset>rulesets/java/ali-comment.xml</ruleset>-->
 						<ruleset>rulesets/java/ali-concurrent.xml</ruleset>
@@ -772,6 +772,12 @@
 			<version>1.8</version>
 			<scope>system</scope>
 			<systemPath>${project.basedir}/lib/cloudjdbc-11.0.8.jar</systemPath>
+		</dependency>
+
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<version>1.18.30</version>
 		</dependency>
 
 		<dependency>

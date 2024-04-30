@@ -56,6 +56,7 @@ public enum DbType {
     kdb          (0),
     log4jdbc          (0),
     xugu          (1 << 36),
+    cae          (1 << 37),
     firebirdsql          (0),
     JSQLConnect          (0),
     JTurbo          (0),

@@ -488,6 +488,104 @@ public class XuguOutputVisitor extends SQLASTOutputVisitor implements XuguASTVis
         return false;
     }
 
+    public boolean visit(XuguMultiInsertStatement.InsertIntoClause x) {
+        print0(ucase ? "INTO " : "into ");
+
+        x.getTableSource().accept(this);
+
+        if (x.getColumns().size() > 0) {
+            this.indentCount++;
+            println();
+            print('(');
+            for (int i = 0, size = x.getColumns().size(); i < size; ++i) {
+                if (i != 0) {
+                    if (i % 5 == 0) {
+                        println();
+                    }
+                    print0(", ");
+                }
+                x.getColumns().get(i).accept(this);
+            }
+            print(')');
+            this.indentCount--;
+        }
+
+        if (x.getValues() != null) {
+            println();
+            print0(ucase ? "VALUES " : "values ");
+            x.getValues().accept(this);
+        } else {
+            if (x.getQuery() != null) {
+                println();
+                x.getQuery().accept(this);
+            }
+        }
+
+        return false;
+    }
+
+    @Override
+    public boolean visit(XuguMultiInsertStatement x) {
+        print0(ucase ? "INSERT " : "insert ");
+
+        if (x.getHints().size() > 0) {
+            this.printHints(x.getHints());
+        }
+
+        if (x.getOption() != null) {
+            print0(x.getOption().name());
+            print(' ');
+        }
+
+        for (int i = 0, size = x.getEntries().size(); i < size; ++i) {
+            this.indentCount++;
+            println();
+            x.getEntries().get(i).accept(this);
+            this.indentCount--;
+        }
+
+        println();
+        x.getSubQuery().accept(this);
+
+        return false;
+    }
+
+    @Override
+    public boolean visit(XuguMultiInsertStatement.ConditionalInsertClause x) {
+        for (int i = 0, size = x.getItems().size(); i < size; ++i) {
+            if (i != 0) {
+                println();
+            }
+
+            XuguMultiInsertStatement.ConditionalInsertClauseItem item = x.getItems().get(i);
+
+            item.accept(this);
+        }
+
+        if (x.getElseItem() != null) {
+            println();
+            print0(ucase ? "ELSE" : "else");
+            this.indentCount++;
+            println();
+            x.getElseItem().accept(this);
+            this.indentCount--;
+        }
+
+        return false;
+    }
+
+    @Override
+    public boolean visit(XuguMultiInsertStatement.ConditionalInsertClauseItem x) {
+        print0(ucase ? "WHEN " : "when ");
+        x.getWhen().accept(this);
+        print0(ucase ? " THEN" : " then");
+        this.indentCount++;
+        println();
+        x.getThen().accept(this);
+        this.indentCount--;
+        return false;
+    }
+
     /*@Override
     public boolean visit(OracleDatetimeExpr x) {
         x.getExpr().accept(this);
